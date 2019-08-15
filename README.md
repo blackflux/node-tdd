@@ -37,3 +37,12 @@ Type: `boolean`<br>
 Default: `false`
 
 When set to true, all requests are automatically nocked. The recording files are automatically created relative to the current test file.
+
+#### envVars
+
+Type: `object`<br>
+Default: `{}`
+
+Used to declare environment variables per describe. Environment variables are also picked up from shadow files as e.g. `test.spec.js.env.yml`.
+
+To allow overwriting of environment variables prefix the name of the environment variable with `^`.
