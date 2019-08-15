@@ -1,0 +1,97 @@
+{
+  "name": "node-tdd",
+  "version": "0.0.0-development",
+  "description": "Test wrapper to abstract commonly used test setups",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "npm run clean && npm run gardener && npm run test-simple",
+    "clean": "rm -rf lib",
+    "build": "npx babel src --out-dir lib --copy-files --include-dotfiles --config-file ./.babelrc",
+    "build-clean": "npm run clean && npm run build",
+    "test-simple": "nyc mocha \"./test/**/*.spec.js\"",
+    "docker": "docker run -u`id -u`:`id -g` -v $(pwd):/user/project -v ~/.aws:/user/.aws -v ~/.npmrc:/user/.npmrc -w /user/project -it --entrypoint /bin/bash",
+    "yu": "yarn upgrade --latest --force",
+    "yi": "yarn install --frozen-lockfile",
+    "t": "yarn test",
+    "ts": "yarn run test-simple",
+    "tsv": "yarn run test-simple --verbose",
+    "coveralls": "node ./node_modules/coveralls/bin/coveralls.js < ./coverage/lcov.info",
+    "semantic-release": "npm run build-clean && npx semantic-release",
+    "gardener": "node gardener"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blackflux/node-tdd.git"
+  },
+  "keywords": [
+    "testing",
+    "test",
+    "framwork",
+    "abstraction",
+    "tdd",
+    "test framework"
+  ],
+  "author": "Lukas Siemon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/blackflux/node-tdd/issues"
+  },
+  "homepage": "https://github.com/blackflux/node-tdd#readme",
+  "devDependencies": {
+    "@babel/cli": "7.5.5",
+    "@babel/core": "7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
+    "@babel/register": "7.5.5",
+    "@blackflux/eslint-plugin-rules": "1.1.4",
+    "@blackflux/robo-config-plugin": "2.4.6",
+    "babel-eslint": "10.0.2",
+    "chai": "4.2.0",
+    "coveralls": "3.0.6",
+    "eslint": "6.1.0",
+    "js-gardener": "2.0.65",
+    "nyc": "14.1.1",
+    "semantic-release": "15.13.21"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/blackflux/node-tdd/blob/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": ">= 10"
+  },
+  "nyc": {
+    "exclude": [
+      "gardener.js",
+      "node_modules/*",
+      "coverage/*",
+      "lib/*"
+    ],
+    "tempDir": "./coverage/.nyc_output",
+    "report-dir": "./coverage",
+    "check-coverage": true,
+    "per-file": false,
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100,
+    "include": [
+      "**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "extension": [],
+    "cache": true,
+    "all": true,
+    "babel": true
+  },
+  "files": [
+    "lib"
+  ]
+}
