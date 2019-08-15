@@ -93,5 +93,8 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "dependencies": {
+    "tmp": "0.1.0"
+  }
 }
