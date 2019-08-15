@@ -38,7 +38,7 @@ desc('Testing useTmpDir', () => {
   });
 });
 
-desc('Testing useNock', { useNock: true }, () => {
+desc('Testing useNock', { useNock: true }, ({ it }) => {
   it('Testing useNock empty recording', () => {});
 
   it('Testing useNock record request', async () => {
@@ -49,6 +49,40 @@ desc('Testing useNock', { useNock: true }, () => {
       resolveWithFullResponse: true
     });
     expect(result.headers.date).to.equal('Sun, 19 Nov 2017 02:02:30 GMT');
+  });
+});
+
+desc('Testing environment variables', ({
+  before, after, beforeEach, afterEach, it
+}) => {
+  before(() => {
+    assert(process.env.VAR !== undefined);
+  });
+
+  after(() => {
+    assert(process.env.VAR === undefined);
+  });
+
+  beforeEach(() => {
+    assert(process.env.VAR !== undefined);
+  });
+
+  afterEach(() => {
+    assert(process.env.VAR !== undefined);
+  });
+
+  it('Testing environment variable set', () => {
+    expect(process.env.VAR).to.equal('VALUE');
+  });
+
+  desc('Testing environment variable overwrite', {
+    envVars: {
+      '^VAR': 'OTHER'
+    }
+  }, () => {
+    it('Testing environment variable overwritten', () => {
+      expect(process.env.VAR).to.equal('OTHER');
+    });
   });
 });
 
