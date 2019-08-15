@@ -14,7 +14,10 @@ const genCassetteName = (test) => {
   }
   return names
     .filter((e) => !!e)
-    .map((e) => e.toLowerCase().replace(/[^a-zA-Z0-9_\-\\]+/g, '-'))
+    .map((e) => e
+      .replace(/[^a-zA-Z0-9_\-\\]+/g, '-')
+      .replace(/^\w/, c => c.toLowerCase())
+      .replace(/-([a-z])/g, (_, char) => char.toUpperCase()))
     .concat(['recording.json'])
     .join('_');
 };
@@ -49,7 +52,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
         }
         if (useNock === true) {
           nockBack.setMode('record');
-          nockBack.fixtures = `${testFile}_cassette/`;
+          nockBack.fixtures = `${testFile}__cassettes/`;
           nockDone = await new Promise((resolve) => nockBack(genCassetteName(this.currentTest), {}, resolve));
         }
         await beforeEachCb(getArgs());
