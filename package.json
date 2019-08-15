@@ -93,5 +93,11 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "dependencies": {
+    "@hapi/joi": "15.1.0",
+    "joi-strict": "1.0.5",
+    "lodash.get": "4.4.2",
+    "tmp": "0.1.0"
+  }
 }
