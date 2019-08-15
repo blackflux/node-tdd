@@ -1,3 +1,5 @@
+# node-tdd
+
 [![Build Status](https://circleci.com/gh/blackflux/node-tdd.png?style=shield)](https://circleci.com/gh/blackflux/node-tdd)
 [![Test Coverage](https://img.shields.io/coveralls/blackflux/node-tdd/master.svg)](https://coveralls.io/github/blackflux/node-tdd?branch=master)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=blackflux/node-tdd)](https://dependabot.com)
@@ -6,5 +8,25 @@
 [![Downloads](https://img.shields.io/npm/dt/node-tdd.svg)](https://www.npmjs.com/package/node-tdd)
 [![Semantic-Release](https://github.com/blackflux/js-gardener/blob/master/assets/icons/semver.svg)](https://github.com/semantic-release/semantic-release)
 [![Gardener](https://github.com/blackflux/js-gardener/blob/master/assets/badge.svg)](https://github.com/blackflux/js-gardener)
-# node-tdd
+
 Test wrapper to abstract commonly used test setups
+
+
+## Install
+
+Install with [npm](https://www.npmjs.com/):
+
+    $ npm install --save node-tdd
+
+## Usage
+
+Please see tests for usage examples.
+
+### Options
+
+#### useTmpDir
+
+Type: `boolean`<br>
+Default: `false`
+
+When set to true, a fresh temporary directory is set up for each test. The directory is cleaned up after the test run has completed.

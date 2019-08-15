@@ -1,6 +1,16 @@
+const get = require('lodash.get');
 const tmp = require('tmp');
+const Joi = require('joi-strict');
 
-module.exports = (suiteName, tests) => {
+module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
+  const opts = testsOrNull === null ? {} : optsOrTests;
+  const tests = testsOrNull === null ? optsOrTests : testsOrNull;
+
+  Joi.assert(opts, Joi.object().keys({
+    useTmpDir: Joi.boolean().optional()
+  }), 'Bad Options Provided');
+  const useTmpDir = get(opts, 'useTmpDir', false);
+
   let dir = null;
   const getArgs = () => ({ dir });
   let beforeEachCb = () => {};
@@ -12,7 +22,9 @@ module.exports = (suiteName, tests) => {
     });
 
     beforeEach(async () => {
-      dir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
+      if (useTmpDir === true) {
+        dir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
+      }
       await beforeEachCb(getArgs());
     });
 
