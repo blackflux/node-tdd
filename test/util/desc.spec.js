@@ -56,7 +56,7 @@ desc('Testing environment variables', ({
   before, after, beforeEach, afterEach, it
 }) => {
   before(() => {
-    assert(process.env.VAR !== undefined);
+    assert(process.env.VAR === 'VALUE');
   });
 
   after(() => {
@@ -64,11 +64,11 @@ desc('Testing environment variables', ({
   });
 
   beforeEach(() => {
-    assert(process.env.VAR !== undefined);
+    assert(['VALUE', 'OTHER'].includes(process.env.VAR));
   });
 
   afterEach(() => {
-    assert(process.env.VAR !== undefined);
+    assert(['VALUE', 'OTHER'].includes(process.env.VAR));
   });
 
   it('Testing environment variable set', () => {
@@ -76,11 +76,31 @@ desc('Testing environment variables', ({
   });
 
   desc('Testing environment variable overwrite', {
-    envVars: {
-      '^VAR': 'OTHER'
-    }
-  }, () => {
-    it('Testing environment variable overwritten', () => {
+    envVars: { '^VAR': 'OTHER' }
+  }, ({
+    before: beforeInner,
+    after: afterInner,
+    beforeEach: beforeEachInner,
+    afterEach: afterEachInner,
+    it: itInner
+  }) => {
+    beforeInner(() => {
+      assert(process.env.VAR === 'OTHER');
+    });
+
+    afterInner(() => {
+      assert(process.env.VAR === 'VALUE');
+    });
+
+    beforeEachInner(() => {
+      assert(process.env.VAR === 'OTHER');
+    });
+
+    afterEachInner(() => {
+      assert(process.env.VAR === 'OTHER');
+    });
+
+    itInner('Testing environment variable overwritten', () => {
       expect(process.env.VAR).to.equal('OTHER');
     });
   });
