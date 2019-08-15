@@ -17,7 +17,7 @@ desc('Testing useTmpDir', () => {
     });
 
     afterEach(({ dir }) => {
-      assert(dir == null);
+      assert(dir === null);
     });
 
     it('Testing dir matched beforeEach dir', ({ dir }) => {
