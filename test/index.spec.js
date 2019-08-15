@@ -8,7 +8,7 @@ const desc = require('../src/index');
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
 
 desc('Testing useTmpDir', () => {
-  desc('Testing Custom Before/After', { useTmpDir: true }, ({ it, beforeEach, afterEach }) => {
+  desc('Testing Custom Before/After', { useTmpDir: true }, ({ beforeEach, afterEach, it }) => {
     let beforeDir;
 
     beforeEach(({ dir }) => {
@@ -49,5 +49,34 @@ desc('Testing useNock', { useNock: true }, () => {
       resolveWithFullResponse: true
     });
     expect(result.headers.date).to.equal('Sun, 19 Nov 2017 02:02:30 GMT');
+  });
+});
+
+desc('Testing Before/After', ({ before, after, beforeEach, afterEach, it }) => {
+  const state = [];
+
+  before(() => {
+    state.push('before');
+  });
+
+  after(() => {
+    state.push('after');
+    assert(state.join('-') === 'before-beforeEach-testOne-afterEach-beforeEach-testTwo-afterEach-after');
+  });
+
+  beforeEach(() => {
+    state.push('beforeEach');
+  });
+
+  afterEach(() => {
+    state.push('afterEach');
+  });
+
+  it('Test one', () => {
+    state.push('testOne');
+  });
+
+  it('Test two', () => {
+    state.push('testTwo');
   });
 });

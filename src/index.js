@@ -39,10 +39,20 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   let nockDone = null;
 
   const getArgs = () => ({ dir });
+  let beforeCb = () => {};
+  let afterCb = () => {};
   let beforeEachCb = () => {};
   let afterEachCb = () => {};
 
   describe(suiteName, () => {
+    before(async () => {
+      await beforeCb();
+    });
+
+    after(async () => {
+      await afterCb();
+    });
+
     // eslint-disable-next-line func-names
     beforeEach(function () {
       return (async () => {
@@ -71,13 +81,19 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
     });
 
     tests({
-      it: (testName, fn) => it(testName, () => fn(getArgs())),
+      before: (fn) => {
+        beforeCb = fn;
+      },
+      after: (fn) => {
+        afterCb = fn;
+      },
       beforeEach: (fn) => {
         beforeEachCb = fn;
       },
       afterEach: (fn) => {
         afterEachCb = fn;
-      }
+      },
+      it: (testName, fn) => it(testName, () => fn(getArgs()))
     });
   });
 };
