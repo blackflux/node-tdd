@@ -2,6 +2,7 @@ const assert = require('assert');
 const os = require('os');
 const path = require('path');
 const expect = require('chai').expect;
+const request = require('request-promise');
 const desc = require('../src/index');
 
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
@@ -16,7 +17,7 @@ desc('Testing useTmpDir', () => {
     });
 
     afterEach(({ dir }) => {
-      assert(dir.startsWith(dirPrefix));
+      assert(dir == null);
     });
 
     it('Testing dir matched beforeEach dir', ({ dir }) => {
@@ -34,5 +35,19 @@ desc('Testing useTmpDir', () => {
     it('Testing dir is null', ({ dir }) => {
       expect(dir).to.equal(null);
     });
+  });
+});
+
+desc('Testing useNock', { useNock: true }, () => {
+  it('Testing useNock empty recording', () => {});
+
+  it('Testing useNock record request', async () => {
+    const result = await request({
+      uri: 'http://ip-api.com/json',
+      method: 'GET',
+      json: true,
+      resolveWithFullResponse: true
+    });
+    expect(result.headers.date).to.equal('Sun, 19 Nov 2017 02:02:30 GMT');
   });
 });

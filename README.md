@@ -30,3 +30,10 @@ Type: `boolean`<br>
 Default: `false`
 
 When set to true, a fresh temporary directory is set up for each test. The directory is cleaned up after the test run has completed.
+
+#### useNock
+
+Type: `boolean`<br>
+Default: `false`
+
+When set to true, all requests are automatically nocked. The recording files are automatically created relative to the current test file.
