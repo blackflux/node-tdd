@@ -50,6 +50,8 @@
     "eslint": "6.1.0",
     "js-gardener": "2.0.65",
     "nyc": "14.1.1",
+    "request": "2.88.0",
+    "request-promise": "4.2.4",
     "semantic-release": "15.13.21"
   },
   "licenses": [
@@ -96,8 +98,10 @@
   ],
   "dependencies": {
     "@hapi/joi": "15.1.0",
+    "callsite": "1.0.0",
     "joi-strict": "1.0.5",
     "lodash.get": "4.4.2",
+    "nock": "10.0.6",
     "tmp": "0.1.0"
   }
 }
