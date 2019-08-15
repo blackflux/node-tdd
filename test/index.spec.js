@@ -52,7 +52,9 @@ desc('Testing useNock', { useNock: true }, () => {
   });
 });
 
-desc('Testing Before/After', ({ before, after, beforeEach, afterEach, it }) => {
+desc('Testing Before/After', ({
+  before, after, beforeEach, afterEach, it
+}) => {
   const state = [];
 
   before(() => {
