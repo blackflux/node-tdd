@@ -23,7 +23,14 @@
     "type": "git",
     "url": "https://github.com/blackflux/node-tdd.git"
   },
-  "keywords": [],
+  "keywords": [
+    "testing",
+    "test",
+    "framwork",
+    "abstraction",
+    "tdd",
+    "test framework"
+  ],
   "author": "Lukas Siemon",
   "license": "MIT",
   "bugs": {
