@@ -7,7 +7,8 @@ describe('Testing index.js', () => {
       'desc',
       'EnvManager',
       'timeKeeper',
-      'ConsoleRecorder'
+      'ConsoleRecorder',
+      'RandomSeeder'
     ]);
   });
 });
