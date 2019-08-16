@@ -9,9 +9,15 @@ const EnvManager = require('../modules/env-manager');
 const TimeKeeper = require('../modules/time-keeper');
 const ConsoleRecorder = require('../modules/console-recorder');
 const RandomSeeder = require('../modules/random-seeder');
-const MochaCensor = require('./mocha-censor');
 
-const { mocha } = MochaCensor;
+const mocha = {
+  it,
+  describe,
+  before,
+  after,
+  beforeEach,
+  afterEach
+};
 
 const getParents = (test) => {
   const names = [];
@@ -31,8 +37,6 @@ const genCassetteName = (test) => getParents(test)
     .replace(/-([a-zA-Z])/g, (_, char) => char.toUpperCase()))
   .concat(['recording.json'])
   .join('_');
-
-const descCbArgsStack = [];
 
 module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   const opts = testsOrNull === null ? {} : optsOrTests;
@@ -73,11 +77,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   let beforeEachCb = () => {};
   let afterEachCb = () => {};
 
-  const censor = MochaCensor();
-
   mocha.describe(suiteName, () => {
-    censor.apply();
-
     // eslint-disable-next-line func-names
     mocha.before(function () {
       return (async () => {
@@ -155,32 +155,22 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       await afterEachCb(getArgs());
     });
 
-    const kwargs = Object.entries({
-      before: (fn) => {
-        beforeCb = fn;
-      },
-      after: (fn) => {
-        afterCb = fn;
-      },
-      beforeEach: (fn) => {
-        beforeEachCb = fn;
-      },
-      afterEach: (fn) => {
-        afterEachCb = fn;
-      },
-      it: (testName, fn) => mocha.it(testName, () => fn(getArgs()))
-    })
-      .reduce((p, [name, fn]) => Object.assign(p, {
-        [name]: (...args) => {
-          if (descCbArgsStack[descCbArgsStack.length - 1] !== kwargs) {
-            throw new Error(`Please use "${name}" from parent "desc".`);
-          }
-          return fn(...args);
-        }
-      }), {});
-    descCbArgsStack.push(kwargs);
-    tests(kwargs);
-    descCbArgsStack.pop();
-    censor.unapply();
+    global.before = (fn) => {
+      beforeCb = fn;
+    };
+    global.after = (fn) => {
+      afterCb = fn;
+    };
+    global.beforeEach = (fn) => {
+      beforeEachCb = fn;
+    };
+    global.afterEach = (fn) => {
+      afterEachCb = fn;
+    };
+    global.it = (testName, fn) => mocha.it(testName, () => fn(getArgs()));
+    tests();
+    Object.entries(mocha).forEach(([k, v]) => {
+      global[k] = v;
+    });
   });
 };
