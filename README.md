@@ -46,3 +46,10 @@ Default: `{}`
 Used to declare environment variables per describe. Environment variables are also picked up from shadow files as e.g. `test.spec.js.env.yml`.
 
 To allow overwriting of environment variables prefix the name of the environment variable with `^`.
+
+#### timestamp
+
+Type: `number`<br>
+Default: `null`
+
+Set timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
