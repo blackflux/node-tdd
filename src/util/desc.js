@@ -3,8 +3,8 @@ const fs = require('smart-fs');
 const callsite = require('callsite');
 const get = require('lodash.get');
 const tmp = require('tmp');
-const nockBack = require('nock').back;
 const Joi = require('joi-strict');
+const RequestRecorder = require('./request-recorder');
 const EnvManager = require('./env-manager');
 const TimeKeeper = require('./time-keeper');
 const ConsoleRecorder = require('./console-recorder');
@@ -42,17 +42,17 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     timestamp: Joi.number().optional().min(0),
     recordConsole: Joi.boolean().optional(),
-    seed: Joi.string().optional()
+    cryptoSeed: Joi.string().optional()
   }), 'Bad Options Provided');
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
   const recordConsole = get(opts, 'recordConsole', false);
-  const seed = get(opts, 'seed', null);
+  const cryptoSeed = get(opts, 'cryptoSeed', null);
 
   let dir = null;
-  let nockDone = null;
+  let requestRecorder = null;
   let envManagerFile = null;
   let envManagerDesc = null;
   let timeKeeper = null;
@@ -81,9 +81,9 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
           timeKeeper = TimeKeeper();
           timeKeeper.freeze(timestamp);
         }
-        if (seed !== null) {
+        if (cryptoSeed !== null) {
           randomSeeder = RandomSeeder();
-          randomSeeder.seed(seed);
+          randomSeeder.seed(cryptoSeed);
         }
         await beforeCb();
       })();
@@ -117,9 +117,8 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
           dir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
         }
         if (useNock === true) {
-          nockBack.setMode('record');
-          nockBack.fixtures = `${testFile}__cassettes/`;
-          nockDone = await new Promise((resolve) => nockBack(genCassetteName(this.currentTest), {}, resolve));
+          requestRecorder = RequestRecorder(`${testFile}__cassettes/`);
+          await requestRecorder.inject(genCassetteName(this.currentTest));
         }
         if (recordConsole === true) {
           consoleRecorder = ConsoleRecorder(true);
@@ -134,9 +133,9 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
         consoleRecorder.release();
         consoleRecorder = null;
       }
-      if (nockDone !== null) {
-        nockDone();
-        nockDone = null;
+      if (requestRecorder !== null) {
+        requestRecorder.release();
+        requestRecorder = null;
       }
       if (dir !== null) {
         dir = null;
@@ -157,7 +156,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       afterEach: (fn) => {
         afterEachCb = fn;
       },
-      it: (testName, fn) => it(testName, () => fn(getArgs()))
+      t: (testName, fn) => it(testName, () => fn(getArgs()))
     });
   });
 };
