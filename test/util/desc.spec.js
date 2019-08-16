@@ -127,27 +127,23 @@ desc('Testing console recording', { recordConsole: true }, ({ t }) => {
     [c]: (...args) => console[c](...args)
   }), {});
 
-  t('Testing recorded logs', ({ getLogs }) => {
-    expect(getLogs()).to.deep.equal({
-      defaultLogs: [],
-      errorLogs: [],
-      logs: []
+  t('Testing recorded logs', ({ getConsoleOutput }) => {
+    expect(getConsoleOutput()).to.deep.equal([]);
+    ['log', 'warn', 'error', 'info'].forEach((level) => {
+      logger[level](level);
     });
-    logger.log('log');
-    logger.warn('warn');
-    logger.error('error');
-    logger.info('info');
-    expect(getLogs()).to.deep.equal({
-      defaultLogs: ['log', 'info'],
-      errorLogs: ['warn', 'error'],
-      logs: ['log', 'warn', 'error', 'info']
+    const result = getConsoleOutput();
+    expect(result).to.deep.equal(['log', 'warn', 'error', 'info']);
+    ['log', 'warn', 'error', 'info'].forEach((level) => {
+      expect(result[level]).to.deep.equal([level]);
     });
   });
 
-  t('Testing recording resets', ({ getLogs }) => {
-    expect(getLogs().logs).to.deep.equal([]);
+  t('Testing recording resets', ({ getConsoleOutput }) => {
+    expect(getConsoleOutput()).to.deep.equal([]);
     logger.log('log');
-    expect(getLogs().logs).to.deep.equal(['log']);
+    expect(getConsoleOutput()).to.deep.equal(['log']);
+    expect(getConsoleOutput().error).to.deep.equal([]);
   });
 });
 
