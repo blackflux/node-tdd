@@ -3,6 +3,7 @@ const os = require('os');
 const path = require('path');
 const expect = require('chai').expect;
 const request = require('request-promise');
+const uuid4 = require('uuid/v4');
 const desc = require('../../src/util/desc');
 
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
@@ -147,6 +148,13 @@ desc('Testing console recording', { recordConsole: true }, ({ it }) => {
     expect(getLogs().logs).to.deep.equal([]);
     logger.log('log');
     expect(getLogs().logs).to.deep.equal(['log']);
+  });
+});
+
+desc('Testing random mocking', { seed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, () => {
+  it('Testing random is mocked', () => {
+    expect(uuid4()).to.deep.equal('f052644d-e485-4693-aef0-76267f1499ea');
+    expect(uuid4()).to.deep.equal('ba8e46ec-d63d-4fb8-9189-23e2454f7172');
   });
 });
 
