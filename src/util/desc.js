@@ -8,6 +8,7 @@ const Joi = require('joi-strict');
 const EnvManager = require('./env-manager');
 const timeKeeper = require('./time-keeper');
 const ConsoleRecorder = require('./console-recorder');
+const RandomSeeder = require('./random-seeder');
 
 const getParents = (test) => {
   const names = [];
@@ -40,19 +41,22 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
     useNock: Joi.boolean().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     timestamp: Joi.number().optional().min(0),
-    recordConsole: Joi.boolean().optional()
+    recordConsole: Joi.boolean().optional(),
+    seed: Joi.string().optional()
   }), 'Bad Options Provided');
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
   const recordConsole = get(opts, 'recordConsole', false);
+  const seed = get(opts, 'seed', null);
 
   let dir = null;
   let nockDone = null;
   let envManagerFile = null;
   let envManagerDesc = null;
   let consoleRecorder = null;
+  let randomSeeder = null;
 
   const getArgs = () => ({ dir, ...(consoleRecorder === null ? {} : { getLogs: consoleRecorder.get }) });
   let beforeCb = () => {};
@@ -75,11 +79,19 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
         if (timestamp !== null) {
           timeKeeper.freeze(timestamp);
         }
+        if (seed !== null) {
+          randomSeeder = RandomSeeder();
+          randomSeeder.seed(seed);
+        }
         await beforeCb();
       })();
     });
 
     after(async () => {
+      if (randomSeeder !== null) {
+        randomSeeder.release();
+        randomSeeder = null;
+      }
       if (timeKeeper.isFrozen()) {
         timeKeeper.unfreeze();
       }

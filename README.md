@@ -41,7 +41,7 @@ When set to true, all requests are automatically nocked. The recording files are
 #### envVars
 
 Type: `object`<br>
-Default: `{}`
+Default: -
 
 Used to declare environment variables per describe. Environment variables are also picked up from shadow files as e.g. `test.spec.js.env.yml`.
 
@@ -50,7 +50,7 @@ To allow overwriting of environment variables prefix the name of the environment
 #### timestamp
 
 Type: `number`<br>
-Default: `null`
+Default: -
 
 Set timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
 
@@ -60,3 +60,10 @@ Type: `boolean`<br>
 Default: `false`
 
 When set to true, console logging calls are recorded and can be accessed by calling `getLogs()` from within the test.
+
+#### seed
+
+Type: `string`<br>
+Default: -
+
+When set, randomization is overwritten and consistent per test using the provided seed.
