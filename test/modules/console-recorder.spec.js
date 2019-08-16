@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const expect = require('chai').expect;
-const ConsoleRecorder = require('../../src/util/console-recorder');
+const ConsoleRecorder = require('../../src/modules/console-recorder');
 
 const testConsole = (verbose) => {
   const logs = [];
@@ -19,9 +19,11 @@ const testConsole = (verbose) => {
   console.error('test-log3');
   consoleRecorder.release();
   const result = consoleRecorder.get();
-  expect(result.logs).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
-  expect(result.defaultLogs).to.deep.equal(['test-log1', 'test-log2']);
-  expect(result.errorLogs).to.deep.equal(['test-log3']);
+  expect(result).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
+  expect(result.log).to.deep.equal(['test-log1', 'test-log2']);
+  expect(result.error).to.deep.equal(['test-log3']);
+  expect(result.warn).to.deep.equal([]);
+  expect(result.info).to.deep.equal([]);
   if (verbose === true) {
     expect(logs).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
   } else {

@@ -1,14 +1,17 @@
 const path = require('path');
 const fs = require('smart-fs');
-const callsite = require('callsite');
+const callsites = require('callsites');
 const get = require('lodash.get');
 const tmp = require('tmp');
 const Joi = require('joi-strict');
-const RequestRecorder = require('./request-recorder');
-const EnvManager = require('./env-manager');
-const TimeKeeper = require('./time-keeper');
-const ConsoleRecorder = require('./console-recorder');
-const RandomSeeder = require('./random-seeder');
+const RequestRecorder = require('../modules/request-recorder');
+const EnvManager = require('../modules/env-manager');
+const TimeKeeper = require('../modules/time-keeper');
+const ConsoleRecorder = require('../modules/console-recorder');
+const RandomSeeder = require('../modules/random-seeder');
+const MochaCensor = require('./mocha-censor');
+
+const { mocha } = MochaCensor;
 
 const getParents = (test) => {
   const names = [];
@@ -33,7 +36,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   const opts = testsOrNull === null ? {} : optsOrTests;
   const tests = testsOrNull === null ? optsOrTests : testsOrNull;
 
-  const testFile = path.resolve(callsite()[1].getFileName());
+  const testFile = path.resolve(callsites()[1].getFileName());
   const envVarFile = `${testFile}.env.yml`;
 
   Joi.assert(opts, Joi.object().keys({
@@ -59,15 +62,22 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   let consoleRecorder = null;
   let randomSeeder = null;
 
-  const getArgs = () => ({ dir, ...(consoleRecorder === null ? {} : { getLogs: consoleRecorder.get }) });
+  const getArgs = () => ({
+    dir,
+    ...(consoleRecorder === null ? {} : { getConsoleOutput: consoleRecorder.get })
+  });
   let beforeCb = () => {};
   let afterCb = () => {};
   let beforeEachCb = () => {};
   let afterEachCb = () => {};
 
-  describe(suiteName, () => {
+  const censor = MochaCensor();
+
+  mocha.describe(suiteName, () => {
+    censor.apply();
+
     // eslint-disable-next-line func-names
-    before(function () {
+    mocha.before(function () {
       return (async () => {
         if (getParents(this.test).length === 3 && fs.existsSync(envVarFile)) {
           envManagerFile = EnvManager(fs.smartRead(envVarFile), false);
@@ -89,7 +99,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       })();
     });
 
-    after(async () => {
+    mocha.after(async () => {
       if (randomSeeder !== null) {
         randomSeeder.release();
         randomSeeder = null;
@@ -110,7 +120,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
     });
 
     // eslint-disable-next-line func-names
-    beforeEach(function () {
+    mocha.beforeEach(function () {
       return (async () => {
         if (useTmpDir === true) {
           tmp.setGracefulCleanup();
@@ -128,7 +138,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       })();
     });
 
-    afterEach(async () => {
+    mocha.afterEach(async () => {
       if (consoleRecorder !== null) {
         consoleRecorder.release();
         consoleRecorder = null;
@@ -156,7 +166,8 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       afterEach: (fn) => {
         afterEachCb = fn;
       },
-      t: (testName, fn) => it(testName, () => fn(getArgs()))
+      it: (testName, fn) => mocha.it(testName, () => fn(getArgs()))
     });
+    censor.unapply();
   });
 };
