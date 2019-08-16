@@ -197,3 +197,18 @@ desc('Prevent Build-in Mocha Functions', ({ it: itCustom }) => {
     expect(error.message).to.equal('Please use method "it" provided by node-tdd.');
   });
 });
+
+desc('Prevent Grandparent Function Usage', ({ it: itOuter }) => {
+  desc('Prevent Inner Describe Uses Outer it', ({ it: itInner }) => {
+    let error;
+    try {
+      itOuter();
+    } catch (e) {
+      error = e;
+    }
+
+    itInner('Testing Outer it throws when used in inner desc', () => {
+      expect(error.message).to.equal('Please use "it" from parent "desc".');
+    });
+  });
+});

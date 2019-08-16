@@ -32,6 +32,8 @@ const genCassetteName = (test) => getParents(test)
   .concat(['recording.json'])
   .join('_');
 
+const descCbArgsStack = [];
+
 module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   const opts = testsOrNull === null ? {} : optsOrTests;
   const tests = testsOrNull === null ? optsOrTests : testsOrNull;
@@ -153,7 +155,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       await afterEachCb(getArgs());
     });
 
-    tests({
+    const kwargs = Object.entries({
       before: (fn) => {
         beforeCb = fn;
       },
@@ -167,7 +169,18 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
         afterEachCb = fn;
       },
       it: (testName, fn) => mocha.it(testName, () => fn(getArgs()))
-    });
+    })
+      .reduce((p, [name, fn]) => Object.assign(p, {
+        [name]: (...args) => {
+          if (descCbArgsStack[descCbArgsStack.length - 1] !== kwargs) {
+            throw new Error(`Please use "${name}" from parent "desc".`);
+          }
+          return fn(...args);
+        }
+      }), {});
+    descCbArgsStack.push(kwargs);
+    tests(kwargs);
+    descCbArgsStack.pop();
     censor.unapply();
   });
 };
