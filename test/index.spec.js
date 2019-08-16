@@ -6,7 +6,7 @@ describe('Testing index.js', () => {
     expect(Object.keys(index)).to.deep.equal([
       'desc',
       'EnvManager',
-      'timeKeeper',
+      'TimeKeeper',
       'ConsoleRecorder',
       'RandomSeeder'
     ]);

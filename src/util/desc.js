@@ -6,7 +6,7 @@ const tmp = require('tmp');
 const nockBack = require('nock').back;
 const Joi = require('joi-strict');
 const EnvManager = require('./env-manager');
-const timeKeeper = require('./time-keeper');
+const TimeKeeper = require('./time-keeper');
 const ConsoleRecorder = require('./console-recorder');
 const RandomSeeder = require('./random-seeder');
 
@@ -55,6 +55,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   let nockDone = null;
   let envManagerFile = null;
   let envManagerDesc = null;
+  let timeKeeper = null;
   let consoleRecorder = null;
   let randomSeeder = null;
 
@@ -77,6 +78,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
           envManagerDesc.apply();
         }
         if (timestamp !== null) {
+          timeKeeper = TimeKeeper();
           timeKeeper.freeze(timestamp);
         }
         if (seed !== null) {
@@ -92,8 +94,9 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
         randomSeeder.release();
         randomSeeder = null;
       }
-      if (timeKeeper.isFrozen()) {
+      if (timeKeeper !== null) {
         timeKeeper.unfreeze();
+        timeKeeper = null;
       }
       if (envManagerDesc !== null) {
         envManagerDesc.unapply();
