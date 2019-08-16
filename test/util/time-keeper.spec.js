@@ -1,7 +1,6 @@
 const expect = require('chai').expect;
 const TimeKeeper = require('../../src/util/time-keeper');
 
-
 describe('Testing TimeKeeper', () => {
   it('Testing Basic freeze', () => {
     const iso = '1970-01-01T00:00:00.000Z';
