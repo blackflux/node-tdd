@@ -38,7 +38,7 @@ const genCassetteName = (test) => getParents(test)
   .concat(['recording.json'])
   .join('_');
 
-module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
+const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const opts = testsOrNull === null ? {} : optsOrTests;
   const tests = testsOrNull === null ? optsOrTests : testsOrNull;
 
@@ -155,6 +155,8 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       await afterEachCb(getArgs());
     });
 
+    global.it = (testName, fn) => mocha.it(testName, () => fn(getArgs()));
+    global.describe = desc;
     global.before = (fn) => {
       beforeCb = fn;
     };
@@ -167,10 +169,10 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
     global.afterEach = (fn) => {
       afterEachCb = fn;
     };
-    global.it = (testName, fn) => mocha.it(testName, () => fn(getArgs()));
     tests();
     Object.entries(mocha).forEach(([k, v]) => {
       global[k] = v;
     });
   });
 };
+module.exports = desc;
