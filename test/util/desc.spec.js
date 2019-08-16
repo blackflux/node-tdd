@@ -120,6 +120,36 @@ desc('Testing freezing time', { timestamp: 123456789 }, ({ it, before, after }) 
   });
 });
 
+desc('Testing console recording', { recordConsole: true }, ({ it }) => {
+  const logger = ['log', 'info', 'error', 'warn'].reduce((p, c) => Object.assign(p, {
+    // eslint-disable-next-line no-console
+    [c]: (...args) => console[c](...args)
+  }), {});
+
+  it('Testing recorded logs', ({ getLogs }) => {
+    expect(getLogs()).to.deep.equal({
+      defaultLogs: [],
+      errorLogs: [],
+      logs: []
+    });
+    logger.log('log');
+    logger.warn('warn');
+    logger.error('error');
+    logger.info('info');
+    expect(getLogs()).to.deep.equal({
+      defaultLogs: ['log', 'info'],
+      errorLogs: ['warn', 'error'],
+      logs: ['log', 'warn', 'error', 'info']
+    });
+  });
+
+  it('Testing recording resets', ({ getLogs }) => {
+    expect(getLogs().logs).to.deep.equal([]);
+    logger.log('log');
+    expect(getLogs().logs).to.deep.equal(['log']);
+  });
+});
+
 desc('Testing Before/After', ({
   before, after, beforeEach, afterEach, it
 }) => {
