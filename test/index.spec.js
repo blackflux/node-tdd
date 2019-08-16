@@ -5,7 +5,8 @@ describe('Testing index.js', () => {
   it('Testing exports', () => {
     expect(Object.keys(index)).to.deep.equal([
       'desc',
-      'EnvManager'
+      'EnvManager',
+      'timeKeeper'
     ]);
   });
 });
