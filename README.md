@@ -53,3 +53,10 @@ Type: `number`<br>
 Default: `null`
 
 Set timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
+
+#### recordConsole
+
+Type: `boolean`<br>
+Default: `false`
+
+When set to true, console logging calls are recorded and can be accessed by calling `getLogs()` from within the test.
