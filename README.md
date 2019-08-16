@@ -52,7 +52,7 @@ To allow overwriting of environment variables prefix the name of the environment
 Type: `number`<br>
 Default: -
 
-Set timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
+Set unix timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
 
 #### recordConsole
 
@@ -61,7 +61,7 @@ Default: `false`
 
 When set to true, console logging calls are recorded and can be accessed by calling `getLogs()` from within the test.
 
-#### seed
+#### cryptoSeed
 
 Type: `string`<br>
 Default: -
