@@ -59,7 +59,10 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   let consoleRecorder = null;
   let randomSeeder = null;
 
-  const getArgs = () => ({ dir, ...(consoleRecorder === null ? {} : { getLogs: consoleRecorder.get }) });
+  const getArgs = () => ({
+    dir,
+    ...(consoleRecorder === null ? {} : { getConsoleOutput: consoleRecorder.get })
+  });
   let beforeCb = () => {};
   let afterCb = () => {};
   let beforeEachCb = () => {};
