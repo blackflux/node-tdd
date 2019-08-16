@@ -1,4 +1,4 @@
-module.exports.desc = require('./util/desc');
+module.exports.describe = require('./util/desc');
 module.exports.RequestRecorder = require('./modules/request-recorder');
 module.exports.EnvManager = require('./modules/env-manager');
 module.exports.TimeKeeper = require('./modules/time-keeper');
