@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('smart-fs');
-const callsite = require('callsite');
+const callsites = require('callsites');
 const get = require('lodash.get');
 const tmp = require('tmp');
 const Joi = require('joi-strict');
@@ -33,7 +33,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   const opts = testsOrNull === null ? {} : optsOrTests;
   const tests = testsOrNull === null ? optsOrTests : testsOrNull;
 
-  const testFile = path.resolve(callsite()[1].getFileName());
+  const testFile = path.resolve(callsites()[1].getFileName());
   const envVarFile = `${testFile}.env.yml`;
 
   Joi.assert(opts, Joi.object().keys({
