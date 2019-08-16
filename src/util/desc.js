@@ -6,6 +6,7 @@ const tmp = require('tmp');
 const nockBack = require('nock').back;
 const Joi = require('joi-strict');
 const EnvManager = require('./env-manager');
+const timeKeeper = require('./time-keeper');
 
 const getParents = (test) => {
   const names = [];
@@ -36,11 +37,13 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
   Joi.assert(opts, Joi.object().keys({
     useTmpDir: Joi.boolean().optional(),
     useNock: Joi.boolean().optional(),
-    envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string())
+    envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
+    timestamp: Joi.number().optional().min(0)
   }), 'Bad Options Provided');
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
   const envVars = get(opts, 'envVars', null);
+  const timestamp = get(opts, 'timestamp', null);
 
   let dir = null;
   let nockDone = null;
@@ -65,11 +68,17 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
           envManagerDesc = EnvManager(envVars, false);
           envManagerDesc.apply();
         }
+        if (timestamp !== null) {
+          timeKeeper.freeze(timestamp);
+        }
         await beforeCb();
       })();
     });
 
     after(async () => {
+      if (timeKeeper.isFrozen()) {
+        timeKeeper.unfreeze();
+      }
       if (envManagerDesc !== null) {
         envManagerDesc.unapply();
         envManagerDesc = null;

@@ -106,6 +106,20 @@ desc('Testing environment variables', ({
   });
 });
 
+desc('Testing freezing time', { timestamp: 123456789 }, ({ it, before, after }) => {
+  before(() => {
+    assert(Math.floor(new Date() / 1000) === 123456789);
+  });
+
+  after(() => {
+    assert(Math.floor(new Date() / 1000) > 123456789);
+  });
+
+  it('Testing time is frozen', () => {
+    expect(Math.floor(new Date() / 1000)).to.equal(123456789);
+  });
+});
+
 desc('Testing Before/After', ({
   before, after, beforeEach, afterEach, it
 }) => {
