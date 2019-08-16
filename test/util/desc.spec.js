@@ -9,7 +9,7 @@ const desc = require('../../src/util/desc');
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
 
 desc('Testing useTmpDir', () => {
-  desc('Testing Custom Before/After', { useTmpDir: true }, ({ beforeEach, afterEach, it }) => {
+  desc('Testing Custom Before/After', { useTmpDir: true }, () => {
     let beforeDir;
 
     beforeEach(({ dir }) => {
@@ -26,20 +26,20 @@ desc('Testing useTmpDir', () => {
     });
   });
 
-  desc('Testing Defaults', { useTmpDir: true }, ({ it }) => {
+  desc('Testing Defaults', { useTmpDir: true }, () => {
     it('Testing dir stars with prefix', ({ dir }) => {
       expect(dir.startsWith(dirPrefix)).to.equal(true);
     });
   });
 
-  desc('Testing useTmpDir not set', ({ it }) => {
+  desc('Testing useTmpDir not set', () => {
     it('Testing dir is null', ({ dir }) => {
       expect(dir).to.equal(null);
     });
   });
 });
 
-desc('Testing useNock', { useNock: true }, ({ it }) => {
+desc('Testing useNock', { useNock: true }, () => {
   it('Testing useNock empty recording', () => {});
 
   it('Testing useNock record request', async () => {
@@ -53,9 +53,7 @@ desc('Testing useNock', { useNock: true }, ({ it }) => {
   });
 });
 
-desc('Testing environment variables', ({
-  before, after, beforeEach, afterEach, it
-}) => {
+desc('Testing environment variables', () => {
   before(() => {
     assert(process.env.VAR === 'VALUE');
   });
@@ -78,36 +76,30 @@ desc('Testing environment variables', ({
 
   desc('Testing environment variable overwrite', {
     envVars: { '^VAR': 'OTHER' }
-  }, ({
-    before: beforeInner,
-    after: afterInner,
-    beforeEach: beforeEachInner,
-    afterEach: afterEachInner,
-    it: itInner
-  }) => {
-    beforeInner(() => {
+  }, () => {
+    before(() => {
       assert(process.env.VAR === 'OTHER');
     });
 
-    afterInner(() => {
+    after(() => {
       assert(process.env.VAR === 'VALUE');
     });
 
-    beforeEachInner(() => {
+    beforeEach(() => {
       assert(process.env.VAR === 'OTHER');
     });
 
-    afterEachInner(() => {
+    afterEach(() => {
       assert(process.env.VAR === 'OTHER');
     });
 
-    itInner('Testing environment variable overwritten', () => {
+    it('Testing environment variable overwritten', () => {
       expect(process.env.VAR).to.equal('OTHER');
     });
   });
 });
 
-desc('Testing freezing time', { timestamp: 123456789 }, ({ it, before, after }) => {
+desc('Testing freezing time', { timestamp: 123456789 }, () => {
   before(() => {
     assert(Math.floor(new Date() / 1000) === 123456789);
   });
@@ -121,7 +113,7 @@ desc('Testing freezing time', { timestamp: 123456789 }, ({ it, before, after }) 
   });
 });
 
-desc('Testing console recording', { recordConsole: true }, ({ it }) => {
+desc('Testing console recording', { recordConsole: true }, () => {
   const logger = ['log', 'info', 'error', 'warn'].reduce((p, c) => Object.assign(p, {
     // eslint-disable-next-line no-console
     [c]: (...args) => console[c](...args)
@@ -147,16 +139,14 @@ desc('Testing console recording', { recordConsole: true }, ({ it }) => {
   });
 });
 
-desc('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, ({ it }) => {
+desc('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, () => {
   it('Testing random is mocked', () => {
     expect(uuid4()).to.deep.equal('f052644d-e485-4693-aef0-76267f1499ea');
     expect(uuid4()).to.deep.equal('ba8e46ec-d63d-4fb8-9189-23e2454f7172');
   });
 });
 
-desc('Testing Before/After', ({
-  before, after, beforeEach, afterEach, it
-}) => {
+desc('Testing Before/After', () => {
   const state = [];
 
   before(() => {
@@ -182,33 +172,5 @@ desc('Testing Before/After', ({
 
   it('Test two', () => {
     state.push('testTwo');
-  });
-});
-
-desc('Prevent Build-in Mocha Functions', ({ it: itCustom }) => {
-  let error;
-  try {
-    it();
-  } catch (e) {
-    error = e;
-  }
-
-  itCustom('Testing Build-in Mocha throws', () => {
-    expect(error.message).to.equal('Please use method "it" provided by node-tdd.');
-  });
-});
-
-desc('Prevent Grandparent Function Usage', ({ it: itOuter }) => {
-  desc('Prevent Inner Describe Uses Outer it', ({ it: itInner }) => {
-    let error;
-    try {
-      itOuter();
-    } catch (e) {
-      error = e;
-    }
-
-    itInner('Testing Outer it throws when used in inner desc', () => {
-      expect(error.message).to.equal('Please use "it" from parent "desc".');
-    });
   });
 });
