@@ -42,14 +42,14 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     timestamp: Joi.number().optional().min(0),
     recordConsole: Joi.boolean().optional(),
-    seed: Joi.string().optional()
+    cryptoSeed: Joi.string().optional()
   }), 'Bad Options Provided');
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
   const recordConsole = get(opts, 'recordConsole', false);
-  const seed = get(opts, 'seed', null);
+  const cryptoSeed = get(opts, 'cryptoSeed', null);
 
   let dir = null;
   let requestRecorder = null;
@@ -81,9 +81,9 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
           timeKeeper = TimeKeeper();
           timeKeeper.freeze(timestamp);
         }
-        if (seed !== null) {
+        if (cryptoSeed !== null) {
           randomSeeder = RandomSeeder();
-          randomSeeder.seed(seed);
+          randomSeeder.seed(cryptoSeed);
         }
         await beforeCb();
       })();

@@ -2,9 +2,9 @@ const assert = require('assert');
 const tk = require('timekeeper');
 
 module.exports = () => ({
-  freeze: (timestamp) => {
+  freeze: (unix) => {
     assert(tk.isKeepingTime() === false);
-    tk.freeze(new Date(timestamp * 1000));
+    tk.freeze(new Date(unix * 1000));
   },
   unfreeze: () => {
     assert(tk.isKeepingTime());

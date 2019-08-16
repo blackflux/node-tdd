@@ -151,7 +151,7 @@ desc('Testing console recording', { recordConsole: true }, ({ t }) => {
   });
 });
 
-desc('Testing random mocking', { seed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, ({ t }) => {
+desc('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, ({ t }) => {
   t('Testing random is mocked', () => {
     expect(uuid4()).to.deep.equal('f052644d-e485-4693-aef0-76267f1499ea');
     expect(uuid4()).to.deep.equal('ba8e46ec-d63d-4fb8-9189-23e2454f7172');
