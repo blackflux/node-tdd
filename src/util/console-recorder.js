@@ -1,13 +1,16 @@
 /* eslint-disable no-console */
+const assert = require('assert');
 
 module.exports = (verbose) => {
-  const consoleOriginal = ['log', 'info', 'error', 'warn']
-    .reduce((p, c) => Object.assign(p, { [c]: console[c] }), {});
+  let consoleOriginal = null;
   const logs = [];
   const defaultLogs = [];
   const errorLogs = [];
   return {
     inject: () => {
+      assert(consoleOriginal === null);
+      consoleOriginal = ['log', 'info', 'error', 'warn']
+        .reduce((p, c) => Object.assign(p, { [c]: console[c] }), {});
       logs.length = 0;
       defaultLogs.length = 0;
       errorLogs.length = 0;
@@ -22,7 +25,9 @@ module.exports = (verbose) => {
       });
     },
     release: () => {
+      assert(consoleOriginal !== null);
       Object.assign(console, consoleOriginal);
+      consoleOriginal = null;
     },
     get: () => ({
       logs: logs.slice(),
