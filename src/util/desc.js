@@ -159,7 +159,7 @@ module.exports = (suiteName, optsOrTests, testsOrNull = null) => {
       afterEach: (fn) => {
         afterEachCb = fn;
       },
-      t: (testName, fn) => it(testName, () => fn(getArgs()))
+      it: (testName, fn) => it(testName, () => fn(getArgs()))
     });
   });
 };
