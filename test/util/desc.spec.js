@@ -184,3 +184,16 @@ desc('Testing Before/After', ({
     state.push('testTwo');
   });
 });
+
+desc('Prevent Build-in Mocha Functions', ({ it: itCustom }) => {
+  let error;
+  try {
+    it();
+  } catch (e) {
+    error = e;
+  }
+
+  itCustom('Testing Build-in Mocha throws', () => {
+    expect(error.message).to.equal('Please use method "it" provided by node-tdd.');
+  });
+});
