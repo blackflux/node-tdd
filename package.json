@@ -1,7 +1,7 @@
 {
   "name": "node-tdd",
   "version": "0.0.0-development",
-  "description": "Test wrapper to abstract commonly used test setups",
+  "description": "Drop in replacement for mocha to abstract commonly used test setups",
   "main": "lib/index.js",
   "scripts": {
     "test": "npm run clean && npm run gardener && npm run test-simple",
@@ -29,7 +29,9 @@
     "framwork",
     "abstraction",
     "tdd",
-    "test framework"
+    "test framework",
+    "mocha",
+    "drop-in"
   ],
   "author": "Lukas Siemon",
   "license": "MIT",
