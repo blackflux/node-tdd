@@ -9,7 +9,7 @@ const desc = require('../../src/util/desc');
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
 
 desc('Testing useTmpDir', () => {
-  desc('Testing Custom Before/After', { useTmpDir: true }, ({ beforeEach, afterEach, t }) => {
+  desc('Testing Custom Before/After', { useTmpDir: true }, ({ beforeEach, afterEach, it }) => {
     let beforeDir;
 
     beforeEach(({ dir }) => {
@@ -21,28 +21,28 @@ desc('Testing useTmpDir', () => {
       assert(dir === null);
     });
 
-    t('Testing dir matched beforeEach dir', ({ dir }) => {
+    it('Testing dir matched beforeEach dir', ({ dir }) => {
       expect(dir).to.equal(beforeDir);
     });
   });
 
-  desc('Testing Defaults', { useTmpDir: true }, ({ t }) => {
-    t('Testing dir stars with prefix', ({ dir }) => {
+  desc('Testing Defaults', { useTmpDir: true }, ({ it }) => {
+    it('Testing dir stars with prefix', ({ dir }) => {
       expect(dir.startsWith(dirPrefix)).to.equal(true);
     });
   });
 
-  desc('Testing useTmpDir not set', ({ t }) => {
-    t('Testing dir is null', ({ dir }) => {
+  desc('Testing useTmpDir not set', ({ it }) => {
+    it('Testing dir is null', ({ dir }) => {
       expect(dir).to.equal(null);
     });
   });
 });
 
-desc('Testing useNock', { useNock: true }, ({ t }) => {
-  t('Testing useNock empty recording', () => {});
+desc('Testing useNock', { useNock: true }, ({ it }) => {
+  it('Testing useNock empty recording', () => {});
 
-  t('Testing useNock record request', async () => {
+  it('Testing useNock record request', async () => {
     const result = await request({
       uri: 'http://ip-api.com/json',
       method: 'GET',
@@ -54,7 +54,7 @@ desc('Testing useNock', { useNock: true }, ({ t }) => {
 });
 
 desc('Testing environment variables', ({
-  before, after, beforeEach, afterEach, t
+  before, after, beforeEach, afterEach, it
 }) => {
   before(() => {
     assert(process.env.VAR === 'VALUE');
@@ -72,7 +72,7 @@ desc('Testing environment variables', ({
     assert(['VALUE', 'OTHER'].includes(process.env.VAR));
   });
 
-  t('Testing environment variable set', () => {
+  it('Testing environment variable set', () => {
     expect(process.env.VAR).to.equal('VALUE');
   });
 
@@ -83,7 +83,7 @@ desc('Testing environment variables', ({
     after: afterInner,
     beforeEach: beforeEachInner,
     afterEach: afterEachInner,
-    t: tInner
+    it: itInner
   }) => {
     beforeInner(() => {
       assert(process.env.VAR === 'OTHER');
@@ -101,13 +101,13 @@ desc('Testing environment variables', ({
       assert(process.env.VAR === 'OTHER');
     });
 
-    tInner('Testing environment variable overwritten', () => {
+    itInner('Testing environment variable overwritten', () => {
       expect(process.env.VAR).to.equal('OTHER');
     });
   });
 });
 
-desc('Testing freezing time', { timestamp: 123456789 }, ({ t, before, after }) => {
+desc('Testing freezing time', { timestamp: 123456789 }, ({ it, before, after }) => {
   before(() => {
     assert(Math.floor(new Date() / 1000) === 123456789);
   });
@@ -116,18 +116,18 @@ desc('Testing freezing time', { timestamp: 123456789 }, ({ t, before, after }) =
     assert(Math.floor(new Date() / 1000) > 123456789);
   });
 
-  t('Testing time is frozen', () => {
+  it('Testing time is frozen', () => {
     expect(Math.floor(new Date() / 1000)).to.equal(123456789);
   });
 });
 
-desc('Testing console recording', { recordConsole: true }, ({ t }) => {
+desc('Testing console recording', { recordConsole: true }, ({ it }) => {
   const logger = ['log', 'info', 'error', 'warn'].reduce((p, c) => Object.assign(p, {
     // eslint-disable-next-line no-console
     [c]: (...args) => console[c](...args)
   }), {});
 
-  t('Testing recorded logs', ({ getConsoleOutput }) => {
+  it('Testing recorded logs', ({ getConsoleOutput }) => {
     expect(getConsoleOutput()).to.deep.equal([]);
     ['log', 'warn', 'error', 'info'].forEach((level) => {
       logger[level](level);
@@ -139,7 +139,7 @@ desc('Testing console recording', { recordConsole: true }, ({ t }) => {
     });
   });
 
-  t('Testing recording resets', ({ getConsoleOutput }) => {
+  it('Testing recording resets', ({ getConsoleOutput }) => {
     expect(getConsoleOutput()).to.deep.equal([]);
     logger.log('log');
     expect(getConsoleOutput()).to.deep.equal(['log']);
@@ -147,15 +147,15 @@ desc('Testing console recording', { recordConsole: true }, ({ t }) => {
   });
 });
 
-desc('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, ({ t }) => {
-  t('Testing random is mocked', () => {
+desc('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, ({ it }) => {
+  it('Testing random is mocked', () => {
     expect(uuid4()).to.deep.equal('f052644d-e485-4693-aef0-76267f1499ea');
     expect(uuid4()).to.deep.equal('ba8e46ec-d63d-4fb8-9189-23e2454f7172');
   });
 });
 
 desc('Testing Before/After', ({
-  before, after, beforeEach, afterEach, t
+  before, after, beforeEach, afterEach, it
 }) => {
   const state = [];
 
@@ -176,11 +176,24 @@ desc('Testing Before/After', ({
     state.push('afterEach');
   });
 
-  t('Test one', () => {
+  it('Test one', () => {
     state.push('testOne');
   });
 
-  t('Test two', () => {
+  it('Test two', () => {
     state.push('testTwo');
+  });
+});
+
+desc('Prevent Build-in Mocha Functions', ({ it: itCustom }) => {
+  let error;
+  try {
+    it();
+  } catch (e) {
+    error = e;
+  }
+
+  itCustom('Testing Build-in Mocha throws', () => {
+    expect(error.message).to.equal('Please use method "it" provided by node-tdd.');
   });
 });

@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const TimeKeeper = require('../../src/util/time-keeper');
+const TimeKeeper = require('../../src/modules/time-keeper');
 
 describe('Testing TimeKeeper', () => {
   it('Testing Basic freeze', () => {
