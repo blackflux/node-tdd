@@ -1,4 +1,5 @@
 const expect = require('chai').expect;
+const { describe } = require('../../src/index');
 const TimeKeeper = require('../../src/modules/time-keeper');
 
 describe('Testing TimeKeeper', () => {

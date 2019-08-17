@@ -129,7 +129,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           dir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
         }
         if (useNock === true) {
-          requestRecorder = RequestRecorder(`${testFile}__cassettes/`);
+          requestRecorder = RequestRecorder(`${testFile}__cassettes/`, false);
           await requestRecorder.inject(genCassetteName(this.currentTest));
         }
         if (recordConsole === true) {
@@ -146,7 +146,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
         consoleRecorder = null;
       }
       if (requestRecorder !== null) {
-        requestRecorder.release();
+        requestRecorder.release(true);
         requestRecorder = null;
       }
       if (dir !== null) {
