@@ -18,7 +18,7 @@ describe('Testing useTmpDir', () => {
     });
 
     afterEach(({ dir }) => {
-      assert(dir === null);
+      assert(dir === undefined);
     });
 
     it('Testing dir matched beforeEach dir', ({ dir }) => {
@@ -34,7 +34,7 @@ describe('Testing useTmpDir', () => {
 
   describe('Testing useTmpDir not set', () => {
     it('Testing dir is null', ({ dir }) => {
-      expect(dir).to.equal(null);
+      expect(dir).to.equal(undefined);
     });
   });
 });
@@ -143,6 +143,13 @@ describe('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0
   it('Testing random is mocked', () => {
     expect(uuid4()).to.deep.equal('f052644d-e485-4693-aef0-76267f1499ea');
     expect(uuid4()).to.deep.equal('ba8e46ec-d63d-4fb8-9189-23e2454f7172');
+  });
+});
+
+describe('Testing async done callback', () => {
+  it('Test done is a function', (done) => {
+    expect(typeof done).to.equal('function');
+    done();
   });
 });
 

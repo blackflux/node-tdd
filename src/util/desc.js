@@ -71,7 +71,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   let randomSeeder = null;
 
   const getArgs = () => ({
-    dir,
+    ...(dir === null ? {} : { dir }),
     ...(consoleRecorder === null ? {} : { getConsoleOutput: consoleRecorder.get })
   });
   let beforeCb = () => {};
@@ -157,7 +157,12 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       await afterEachCb(getArgs());
     });
 
-    global.it = (testName, fn) => mocha.it(testName, () => fn(getArgs()));
+    global.it = (testName, fn) => mocha.it(
+      testName,
+      fn.length === 0 || fn.toString().includes('({')
+        ? () => fn(getArgs())
+        : (done) => fn(done)
+    );
     global.specify = global.it;
     global.describe = desc;
     global.context = global.describe;
