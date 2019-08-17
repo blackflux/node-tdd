@@ -4,12 +4,12 @@ const path = require('path');
 const expect = require('chai').expect;
 const request = require('request-promise');
 const uuid4 = require('uuid/v4');
-const desc = require('../../src/util/desc');
+const describe = require('../../src/util/desc');
 
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
 
-desc('Testing useTmpDir', () => {
-  desc('Testing Custom Before/After', { useTmpDir: true }, () => {
+describe('Testing useTmpDir', () => {
+  describe('Testing Custom Before/After', { useTmpDir: true }, () => {
     let beforeDir;
 
     beforeEach(({ dir }) => {
@@ -26,20 +26,20 @@ desc('Testing useTmpDir', () => {
     });
   });
 
-  desc('Testing Defaults', { useTmpDir: true }, () => {
+  describe('Testing Defaults', { useTmpDir: true }, () => {
     it('Testing dir stars with prefix', ({ dir }) => {
       expect(dir.startsWith(dirPrefix)).to.equal(true);
     });
   });
 
-  desc('Testing useTmpDir not set', () => {
+  describe('Testing useTmpDir not set', () => {
     it('Testing dir is null', ({ dir }) => {
       expect(dir).to.equal(null);
     });
   });
 });
 
-desc('Testing useNock', { useNock: true }, () => {
+describe('Testing useNock', { useNock: true }, () => {
   it('Testing useNock empty recording', () => {});
 
   it('Testing useNock record request', async () => {
@@ -53,7 +53,7 @@ desc('Testing useNock', { useNock: true }, () => {
   });
 });
 
-desc('Testing environment variables', () => {
+describe('Testing environment variables', () => {
   before(() => {
     assert(process.env.VAR === 'VALUE');
   });
@@ -74,7 +74,7 @@ desc('Testing environment variables', () => {
     expect(process.env.VAR).to.equal('VALUE');
   });
 
-  desc('Testing environment variable overwrite', {
+  describe('Testing environment variable overwrite', {
     envVars: { '^VAR': 'OTHER' }
   }, () => {
     before(() => {
@@ -99,7 +99,7 @@ desc('Testing environment variables', () => {
   });
 });
 
-desc('Testing freezing time', { timestamp: 123456789 }, () => {
+describe('Testing freezing time', { timestamp: 123456789 }, () => {
   before(() => {
     assert(Math.floor(new Date() / 1000) === 123456789);
   });
@@ -113,7 +113,7 @@ desc('Testing freezing time', { timestamp: 123456789 }, () => {
   });
 });
 
-desc('Testing console recording', { recordConsole: true }, () => {
+describe('Testing console recording', { recordConsole: true }, () => {
   const logger = ['log', 'info', 'error', 'warn'].reduce((p, c) => Object.assign(p, {
     // eslint-disable-next-line no-console
     [c]: (...args) => console[c](...args)
@@ -139,14 +139,14 @@ desc('Testing console recording', { recordConsole: true }, () => {
   });
 });
 
-desc('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, () => {
+describe('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, () => {
   it('Testing random is mocked', () => {
     expect(uuid4()).to.deep.equal('f052644d-e485-4693-aef0-76267f1499ea');
     expect(uuid4()).to.deep.equal('ba8e46ec-d63d-4fb8-9189-23e2454f7172');
   });
 });
 
-desc('Testing Before/After', () => {
+describe('Testing Before/After', () => {
   const state = [];
 
   before(() => {
