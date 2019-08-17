@@ -20,7 +20,21 @@ Install with [npm](https://www.npmjs.com/):
 
 ## Usage
 
-Please see tests for usage examples.
+Drop-in replacement for mocha by simply importing `describe` as below.
+
+<!-- eslint-disable import/no-unresolved, import/no-extraneous-dependencies -->
+```js
+const expect = require('chai').expect;
+const { describe } = require('node-tdd');
+
+describe('Testing some stuff', /* { ...options }, */ () => {
+  it('Testing a thing', () => {
+    expect(3 * 7).to.equal(21);
+  });
+});
+```
+
+Please see tests for further usage examples.
 
 ### Options
 
