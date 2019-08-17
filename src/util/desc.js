@@ -12,7 +12,9 @@ const RandomSeeder = require('../modules/random-seeder');
 
 const mocha = {
   it,
+  specify,
   describe,
+  context,
   before,
   after,
   beforeEach,
@@ -156,7 +158,9 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     });
 
     global.it = (testName, fn) => mocha.it(testName, () => fn(getArgs()));
+    global.specify = global.it;
     global.describe = desc;
+    global.context = global.describe;
     global.before = (fn) => {
       beforeCb = fn;
     };
