@@ -2,6 +2,7 @@ const assert = require('assert');
 const expect = require('chai').expect;
 const crypto = require('crypto');
 const uuid4 = require('uuid/v4');
+const { describe } = require('../../src/index');
 const RandomSeeder = require('../../src/modules/random-seeder');
 
 describe('Testing RandomSeeder', () => {
@@ -30,7 +31,7 @@ describe('Testing RandomSeeder', () => {
   it('Testing Callback', (done) => {
     crypto.randomBytes(8, (err, resp) => {
       expect(err).to.equal(null);
-      expect(resp.toString('hex')).to.equal('616b5d6ef0994787');
+      expect(resp.toString('hex')).to.equal('06146e9ba205aae7');
       done();
     });
   });
@@ -40,15 +41,15 @@ describe('Testing RandomSeeder', () => {
       expect(err).to.equal(null);
       expect(resp.length).to.equal(456);
       expect(resp.toString('hex')).to.equal(
-        '7818444aa3c3ba1f94562742e973554bd1f53ad9fc484a434f92f6efde85f61642c2551525cb0a46878d6aadf177ecc3efbb197a2bff13'
-        + '1544730af0e598347479297e6deb493d4ca91907160790000a652b3ea623067ef1e8286a456a1bfd598ae85e26d82d201921b718e852'
-        + 'd394146f6955f91a9fd265fb08028a8119eed7d5d47c9f91d27dfcf383a99b168a74206dcdf1bcc3c2961d423d44eea81f6233d36533'
-        + 'd8afff2aca4c48bcf0828c30f67f0788e4b005f33b64ae08dd88cc41e5487f10974160bc1c97ef51229731ab138bc5899ef6e43dcbf1'
-        + 'aa31d1bdac1234ff83700243175adaa2fe4ac8bfd840b1e28325df52b45cc02e500ef9e1d967ca75232f711659e1ce2c4106f9bce8fc'
-        + 'a5708fc15f228cdfb0854ddbb80896e2edebc503e1acb051553e6c72eb916c2ada63f7a1483da3ef191083bdbcc174a8e1fc4833279f'
-        + 'ce919638c55c88f949cb6a2b639e6b512d8cbdd33bf27d1ff59b3efc4db0918f7c41e07f9aa7d697bc65e39497cc6b196ad9a2f490cd'
-        + '8840a9c1bf9e40951e9af02c94e71211dd035b0d9f6434341021268fc8ec9ffc31102c65c3efa903614165742f7c2cfe10ab88cb7ac6'
-        + '312f9d4cae93cfdfacb95f39710e429f96d36b98a7f397'
+        '53d2261938c5fa990ca7f754bb6bc5d4fae96ba417200fe629b133e971c26d95b03bea12dd19c6467c52ef594b772a4f5773a5a5536648'
+        + '95cffcf710660c1121ef93fd1f85a6fc9206bc8cdc758a7bd999ddb3b62348316d6012ebccd41da63ed69ef4f2fdf7fe0650c3c8ee43'
+        + 'aa932db3139effc04fc48d85dc38193aaa8f76948fe454b3ff7489d912a497aa30a52b6662c81a7fb5c72e4312c56c0b027486e779f2'
+        + '76daecf86cec380c3ce1550d944226c433a3059932d1cb031256fec498b6c48b8024ff65812b834ef37341493c252fc72ae4f780f329'
+        + '4be685a31b0f5c89ae3b1c6381a0f38b04b3bafcda2966a790005d287dd98cb0719dd7a6dbca9c15609f1aeff56b5455e07b5abcdffd'
+        + '2ad710112ea6864250a26617e1b94c53c17fd9b8192482dc60ef87d3207b707aaa944366283a6a81f6096dd59b7cc05960663474bffd'
+        + '071cf79e5d914a3c3814a3fec33ae3754c6bd5ac574801244327e18e49872e7e8e9c3c8e20f4e746dfa5c7fae4c25abc32031fbfdbf5'
+        + '0c2e5d04934b64a4062ee0e3fb2667b6cceddd6a03ade2f08c84381314d77773ce75a6addf677acd4c4ec305b190458461d78f65df1c'
+        + '582a11e360723d3f4a93efd9f9f86c809a40ed0d45a445'
       );
       done();
     });

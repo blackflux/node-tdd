@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const expect = require('chai').expect;
+const { describe } = require('../../src/index');
 const ConsoleRecorder = require('../../src/modules/console-recorder');
 
 const testConsole = (verbose) => {
