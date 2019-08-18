@@ -21,10 +21,10 @@ module.exports = (cassetteFolder, stripHeaders) => {
       expectedCassette.length = 0;
       pendingMocks.length = 0;
 
-      const cassetteFileAbs = path.join(cassetteFolder, cassetteFile);
-      const hasCassette = fs.existsSync(cassetteFileAbs);
+      const cassetteFilePath = path.join(cassetteFolder, cassetteFile);
+      const hasCassette = fs.existsSync(cassetteFilePath);
       if (hasCassette) {
-        const cassetteContent = fs.smartRead(cassetteFileAbs);
+        const cassetteContent = fs.smartRead(cassetteFilePath);
         pendingMocks.push(...nock
           .define(cassetteContent)
           .map((e, idx) => ({
