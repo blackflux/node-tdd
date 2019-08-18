@@ -9,6 +9,7 @@ const EnvManager = require('../modules/env-manager');
 const TimeKeeper = require('../modules/time-keeper');
 const ConsoleRecorder = require('../modules/console-recorder');
 const RandomSeeder = require('../modules/random-seeder');
+const { getParents, genCassetteName } = require('./mocha-test');
 
 const mocha = {
   it,
@@ -20,25 +21,6 @@ const mocha = {
   beforeEach,
   afterEach
 };
-
-const getParents = (test) => {
-  const names = [];
-  let cTest = test;
-  while (cTest !== undefined) {
-    names.splice(0, 0, cTest.title);
-    cTest = cTest.parent;
-  }
-  return names;
-};
-
-const genCassetteName = (test) => getParents(test)
-  .filter((e) => !!e)
-  .map((e) => e
-    .replace(/[^a-zA-Z0-9]+/g, '-')
-    .replace(/^\w/, (c) => c.toLowerCase())
-    .replace(/-([a-zA-Z])/g, (_, char) => char.toUpperCase()))
-  .concat(['recording.json'])
-  .join('_');
 
 const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const opts = testsOrNull === null ? {} : optsOrTests;
