@@ -21,6 +21,7 @@ const spawnServer = async () => {
 };
 
 describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
+  const cassetteFile = 'file1.json';
   let tmpDir;
   let server;
 
@@ -36,7 +37,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   });
 
   const runTest = async ({ stripHeaders = false, strict = false, qs = [1] } = {}) => {
-    const filePath = path.join(tmpDir, 'file.json');
+    const filePath = path.join(tmpDir, cassetteFile);
 
     const requestRecorder = RequestRecorder(tmpDir, stripHeaders);
     await requestRecorder.inject(path.basename(filePath));
@@ -69,7 +70,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   it('Testing recorder output', async () => {
     await runTest({ qs: [1, 2] });
     const {
-      cassette, records, outOfOrderErrors, unmatchedRecordings, expectedCassette
+      cassette,
+      records,
+      outOfOrderErrors,
+      unmatchedRecordings,
+      expectedCassette,
+      cassetteFilePath
     } = await runTest({ qs: [2] });
     expect(cassette.length).to.equal(2);
     expect(cassette).to.deep.equal(records);
@@ -80,6 +86,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       `GET ${server.uri}/?q=1`
     ]);
     expect(expectedCassette.map((e) => e.path)).to.deep.equal(['/?q=2']);
+    expect(cassetteFilePath).to.equal(path.join(tmpDir, cassetteFile));
   });
 
   describe('Testing strict mode', () => {

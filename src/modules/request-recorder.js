@@ -1,13 +1,15 @@
 const assert = require('assert');
 const path = require('path');
 const fs = require('smart-fs');
-const get = require('lodash.get');
 const nock = require('nock');
 
 const nockBack = nock.back;
 
+const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
+
 module.exports = (cassetteFolder, stripHeaders) => {
   let nockDone = null;
+  let cassetteFilePath = null;
   const records = [];
   const outOfOrderErrors = [];
   const expectedCassette = [];
@@ -21,14 +23,14 @@ module.exports = (cassetteFolder, stripHeaders) => {
       expectedCassette.length = 0;
       pendingMocks.length = 0;
 
-      const cassetteFilePath = path.join(cassetteFolder, cassetteFile);
+      cassetteFilePath = path.join(cassetteFolder, cassetteFile);
       const hasCassette = fs.existsSync(cassetteFilePath);
       if (hasCassette) {
         const cassetteContent = fs.smartRead(cassetteFilePath);
         pendingMocks.push(...nock
           .define(cassetteContent)
           .map((e, idx) => ({
-            key: get(e, ['interceptors', 0, '_key']),
+            key: buildKey(e.interceptors[0]),
             record: cassetteContent[idx]
           })));
       }
@@ -42,7 +44,7 @@ module.exports = (cassetteFolder, stripHeaders) => {
         },
         after: (scope) => {
           scope.on('request', (req, interceptor) => {
-            const matchedKey = get(interceptor, ['_key']);
+            const matchedKey = buildKey(interceptor);
             const idx = pendingMocks.findIndex((e) => e.key === matchedKey);
             expectedCassette.push(pendingMocks[idx].record);
             pendingMocks.splice(idx, 1);
@@ -76,7 +78,8 @@ module.exports = (cassetteFolder, stripHeaders) => {
       records: records.slice(),
       outOfOrderErrors: outOfOrderErrors.slice(),
       unmatchedRecordings: pendingMocks.map((e) => e.key).slice(),
-      expectedCassette: expectedCassette.slice()
+      expectedCassette: expectedCassette.slice(),
+      cassetteFilePath
     })
   });
 };
