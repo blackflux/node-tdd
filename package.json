@@ -104,7 +104,7 @@
     "callsites": "3.1.0",
     "joi-strict": "1.0.5",
     "lodash.get": "4.4.2",
-    "nock": "10.0.6",
+    "nock": "11.0.0",
     "smart-fs": "1.9.5",
     "timekeeper": "2.2.0",
     "tmp": "0.1.0"
