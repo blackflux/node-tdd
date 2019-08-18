@@ -69,7 +69,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   it('Testing recorder output', async () => {
     await runTest({ qs: [1, 2] });
     const {
-      cassette, records, outOfOrderErrors, unmatchedRecordings
+      cassette, records, outOfOrderErrors, unmatchedRecordings, expectedCassette
     } = await runTest({ qs: [2] });
     expect(cassette.length).to.equal(2);
     expect(cassette).to.deep.equal(records);
@@ -79,6 +79,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     expect(unmatchedRecordings).to.deep.equal([
       `GET ${server.uri}/?q=1`
     ]);
+    expect(expectedCassette.map((e) => e.path)).to.deep.equal(['/?q=2']);
   });
 
   describe('Testing strict mode', () => {
