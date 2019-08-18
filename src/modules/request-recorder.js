@@ -32,7 +32,7 @@ module.exports = (cassetteFolder, stripHeaders) => {
         },
         after: (scope) => {
           scope.on('request', (req, interceptor) => {
-            const matchedKey = get(interceptor, ['scope', 'interceptors', 0, '_key']);
+            const matchedKey = get(interceptor, ['_key']);
             if (matchedKey === pendingMocks[0]) {
               pendingMocks.splice(0, 1);
             } else {
