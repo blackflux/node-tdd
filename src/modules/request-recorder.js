@@ -10,6 +10,7 @@ module.exports = (cassetteFolder, stripHeaders) => {
   let nockDone = null;
   const records = [];
   const outOfOrderErrors = [];
+  const expectedCassette = [];
   const pendingMocks = [];
 
   return ({
@@ -17,11 +18,20 @@ module.exports = (cassetteFolder, stripHeaders) => {
       assert(nockDone === null);
       records.length = 0;
       outOfOrderErrors.length = 0;
+      expectedCassette.length = 0;
 
       const cassetteFileAbs = path.join(cassetteFolder, cassetteFile);
       const hasCassette = fs.existsSync(cassetteFileAbs);
-      pendingMocks.splice(0, pendingMocks.length, ...(hasCassette
-        ? nock.load(cassetteFileAbs).map((e) => get(e, ['interceptors', 0, '_key'])) : []));
+      pendingMocks.length = 0;
+      if (hasCassette) {
+        const rawRecordings = fs.smartRead(cassetteFileAbs);
+        pendingMocks.push(...nock
+          .define(rawRecordings)
+          .map((e, idx) => ({
+            key: get(e, ['interceptors', 0, '_key']),
+            record: rawRecordings[idx]
+          })));
+      }
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = cassetteFolder;
@@ -33,10 +43,10 @@ module.exports = (cassetteFolder, stripHeaders) => {
         after: (scope) => {
           scope.on('request', (req, interceptor) => {
             const matchedKey = get(interceptor, ['_key']);
-            if (matchedKey === pendingMocks[0]) {
-              pendingMocks.splice(0, 1);
-            } else {
-              pendingMocks.splice(pendingMocks.indexOf(matchedKey), 1);
+            const idx = pendingMocks.findIndex((e) => e.key === matchedKey);
+            expectedCassette.push(pendingMocks[idx].record);
+            pendingMocks.splice(idx, 1);
+            if (idx !== 0) {
               outOfOrderErrors.push(matchedKey);
             }
           });
@@ -58,14 +68,15 @@ module.exports = (cassetteFolder, stripHeaders) => {
           throw new Error(`Out of Error Recordings: ${outOfOrderErrors.join(', ')}`);
         }
         if (pendingMocks.length !== 0) {
-          throw new Error(`Unmatched Recordings: ${pendingMocks.join(', ')}`);
+          throw new Error(`Unmatched Recordings: ${pendingMocks.map((e) => e.key).join(', ')}`);
         }
       }
     },
     get: () => ({
       records: records.slice(),
       outOfOrderErrors: outOfOrderErrors.slice(),
-      unmatchedRecordings: pendingMocks.slice()
+      unmatchedRecordings: pendingMocks.map((e) => e.key).slice(),
+      expectedCassette: expectedCassette.slice()
     })
   });
 };
