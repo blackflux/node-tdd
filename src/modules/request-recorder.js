@@ -19,17 +19,17 @@ module.exports = (cassetteFolder, stripHeaders) => {
       records.length = 0;
       outOfOrderErrors.length = 0;
       expectedCassette.length = 0;
+      pendingMocks.length = 0;
 
       const cassetteFileAbs = path.join(cassetteFolder, cassetteFile);
       const hasCassette = fs.existsSync(cassetteFileAbs);
-      pendingMocks.length = 0;
       if (hasCassette) {
-        const rawRecordings = fs.smartRead(cassetteFileAbs);
+        const cassetteContent = fs.smartRead(cassetteFileAbs);
         pendingMocks.push(...nock
-          .define(rawRecordings)
+          .define(cassetteContent)
           .map((e, idx) => ({
             key: get(e, ['interceptors', 0, '_key']),
-            record: rawRecordings[idx]
+            record: cassetteContent[idx]
           })));
       }
 
