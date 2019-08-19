@@ -81,11 +81,18 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           randomSeeder = RandomSeeder();
           randomSeeder.seed(cryptoSeed);
         }
+        if (useNock === true) {
+          requestRecorder = RequestRecorder(`${testFile}__cassettes/`, false);
+        }
         await beforeCb();
       })();
     });
 
     mocha.after(async () => {
+      if (requestRecorder !== null) {
+        requestRecorder.shutdown();
+        requestRecorder = null;
+      }
       if (randomSeeder !== null) {
         randomSeeder.release();
         randomSeeder = null;
@@ -113,7 +120,6 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           dir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
         }
         if (useNock === true) {
-          requestRecorder = RequestRecorder(`${testFile}__cassettes/`, false);
           await requestRecorder.inject(genCassetteName(this.currentTest));
         }
         if (recordConsole === true) {
@@ -131,7 +137,6 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       }
       if (requestRecorder !== null) {
         requestRecorder.release(true);
-        requestRecorder = null;
       }
       if (dir !== null) {
         dir = null;

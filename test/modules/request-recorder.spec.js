@@ -49,6 +49,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     }
 
     requestRecorder.release(strict);
+    requestRecorder.shutdown();
 
     return { cassette: fs.smartRead(filePath), ...requestRecorder.get() };
   };
@@ -107,5 +108,14 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         expect(e.message).to.equal(`Unmatched Recordings: GET ${server.uri}/?q=2`);
       }
     });
+  });
+
+  it('Testing shutdown finds unexpected file', async () => {
+    fs.smartWrite(path.join(tmpDir, `${cassetteFile}_other.json`), []);
+    try {
+      await runTest();
+    } catch (e) {
+      expect(e.message).to.equal('Unexpected file(s) in cassette folder: file1.json_other.json');
+    }
   });
 });
