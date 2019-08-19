@@ -10,6 +10,7 @@ const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}
 module.exports = (cassetteFolder, stripHeaders) => {
   let nockDone = null;
   let cassetteFilePath = null;
+  const knownCassetteNames = [];
   const records = [];
   const outOfOrderErrors = [];
   const expectedCassette = [];
@@ -18,6 +19,7 @@ module.exports = (cassetteFolder, stripHeaders) => {
   return ({
     inject: async (cassetteFile) => {
       assert(nockDone === null);
+      knownCassetteNames.push(cassetteFile);
       records.length = 0;
       outOfOrderErrors.length = 0;
       expectedCassette.length = 0;
@@ -72,6 +74,12 @@ module.exports = (cassetteFolder, stripHeaders) => {
         if (pendingMocks.length !== 0) {
           throw new Error(`Unmatched Recordings: ${pendingMocks.map((e) => e.key).join(', ')}`);
         }
+      }
+    },
+    shutdown: () => {
+      const unexpectedFiles = fs.walkDir(cassetteFolder).filter((f) => !knownCassetteNames.includes(f));
+      if (unexpectedFiles.length !== 0) {
+        throw new Error(`Unexpected file(s) in cassette folder: ${unexpectedFiles.join(', ')}`);
       }
     },
     get: () => ({
