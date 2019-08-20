@@ -61,11 +61,12 @@ module.exports = (opts) => {
             }
           });
         },
-        afterRecord: (recordings) => (opts.stripHeaders === true ? recordings.map((r) => {
-          const res = { ...r };
-          delete res.rawHeaders;
-          return res;
-        }) : recordings)
+        afterRecord: (recordings) => JSON
+          .stringify(opts.stripHeaders === true ? recordings.map((r) => {
+            const res = { ...r };
+            delete res.rawHeaders;
+            return res;
+          }) : recordings, null, 2)
       }, resolve));
     },
     release: () => {
