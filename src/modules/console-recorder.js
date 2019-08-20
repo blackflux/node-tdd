@@ -1,9 +1,13 @@
 /* eslint-disable no-console */
 const assert = require('assert');
+const Joi = require('joi-strict');
 
 const logLevels = ['log', 'info', 'error', 'warn'];
 
-module.exports = (verbose) => {
+module.exports = (opts) => {
+  Joi.assert(opts, Joi.object().keys({
+    verbose: Joi.boolean()
+  }), 'Invalid Options Provided');
   let consoleOriginal = null;
   let logs;
   return {
@@ -17,7 +21,7 @@ module.exports = (verbose) => {
       });
       Object.keys(consoleOriginal).forEach((logLevel) => {
         console[logLevel] = (...args) => {
-          if (verbose === true) {
+          if (opts.verbose === true) {
             consoleOriginal[logLevel](...args);
           }
           logs.push(...args);

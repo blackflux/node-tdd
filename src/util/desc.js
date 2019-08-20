@@ -66,23 +66,27 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     mocha.before(function () {
       return (async () => {
         if (getParents(this.test).length === 3 && fs.existsSync(envVarFile)) {
-          envManagerFile = EnvManager(fs.smartRead(envVarFile), false);
+          envManagerFile = EnvManager({ envVars: fs.smartRead(envVarFile), allowOverwrite: false });
           envManagerFile.apply();
         }
         if (envVars !== null) {
-          envManagerDesc = EnvManager(envVars, false);
+          envManagerDesc = EnvManager({ envVars, allowOverwrite: false });
           envManagerDesc.apply();
         }
         if (timestamp !== null) {
-          timeKeeper = TimeKeeper();
-          timeKeeper.freeze(timestamp);
+          timeKeeper = TimeKeeper({ unix: timestamp });
+          timeKeeper.inject();
         }
         if (cryptoSeed !== null) {
-          randomSeeder = RandomSeeder();
-          randomSeeder.seed(cryptoSeed);
+          randomSeeder = RandomSeeder({ seed: cryptoSeed, reseed: false });
+          randomSeeder.inject();
         }
         if (useNock === true) {
-          requestRecorder = RequestRecorder(`${testFile}__cassettes/`, false);
+          requestRecorder = RequestRecorder({
+            cassetteFolder: `${testFile}__cassettes/`,
+            stripHeaders: false,
+            strict: true
+          });
         }
         await beforeCb();
       })();
@@ -98,7 +102,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
         randomSeeder = null;
       }
       if (timeKeeper !== null) {
-        timeKeeper.unfreeze();
+        timeKeeper.release();
         timeKeeper = null;
       }
       if (envManagerDesc !== null) {
@@ -123,7 +127,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           await requestRecorder.inject(genCassetteName(this.currentTest));
         }
         if (recordConsole === true) {
-          consoleRecorder = ConsoleRecorder(true);
+          consoleRecorder = ConsoleRecorder({ verbose: true });
           consoleRecorder.inject();
         }
         await beforeEachCb(getArgs());
@@ -136,7 +140,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
         consoleRecorder = null;
       }
       if (requestRecorder !== null) {
-        requestRecorder.release(true);
+        requestRecorder.release();
       }
       if (dir !== null) {
         dir = null;
