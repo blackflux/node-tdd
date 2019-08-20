@@ -8,8 +8,8 @@ const RandomSeeder = require('../../src/modules/random-seeder');
 describe('Testing RandomSeeder', () => {
   let seeder;
   beforeEach(() => {
-    seeder = RandomSeeder();
-    seeder.seed('test');
+    seeder = RandomSeeder({ seed: 'test', reseed: false });
+    seeder.inject();
   });
 
   afterEach(() => {
@@ -60,16 +60,16 @@ describe('Testing RandomSeeder', () => {
 describe('Testing RandomSeeder Reseeded', () => {
   let seeder;
   beforeEach(() => {
-    seeder = RandomSeeder();
-    assert(seeder.isApplied() === false);
-    seeder.seed('test', true);
-    assert(seeder.isApplied() === true);
+    seeder = RandomSeeder({ seed: 'test', reseed: true });
+    assert(seeder.isInjected() === false);
+    seeder.inject();
+    assert(seeder.isInjected() === true);
   });
 
   afterEach(() => {
-    assert(seeder.isApplied() === true);
+    assert(seeder.isInjected() === true);
     seeder.release();
-    assert(seeder.isApplied() === false);
+    assert(seeder.isInjected() === false);
   });
 
   it('Testing Random Consistent Reseeded', () => {

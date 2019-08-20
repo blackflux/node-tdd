@@ -5,14 +5,14 @@ const TimeKeeper = require('../../src/modules/time-keeper');
 describe('Testing TimeKeeper', () => {
   it('Testing Basic freeze', () => {
     const iso = '1970-01-01T00:00:00.000Z';
-    const timeKeeper = TimeKeeper();
-    expect(timeKeeper.isFrozen()).to.equal(false);
+    const timeKeeper = TimeKeeper({ unix: 0 });
+    expect(timeKeeper.isInjected()).to.equal(false);
     expect(new Date().toISOString()).to.not.equal(iso);
-    timeKeeper.freeze(0);
-    expect(timeKeeper.isFrozen()).to.equal(true);
+    timeKeeper.inject();
+    expect(timeKeeper.isInjected()).to.equal(true);
     expect(new Date().toISOString()).to.equal(iso);
-    timeKeeper.unfreeze();
-    expect(timeKeeper.isFrozen()).to.equal(false);
+    timeKeeper.release();
+    expect(timeKeeper.isInjected()).to.equal(false);
     expect(new Date().toISOString()).to.not.equal(iso);
   });
 });

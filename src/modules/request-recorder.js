@@ -1,13 +1,19 @@
 const assert = require('assert');
 const path = require('path');
 const fs = require('smart-fs');
+const Joi = require('joi-strict');
 const nock = require('nock');
 
 const nockBack = nock.back;
 
 const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
 
-module.exports = (cassetteFolder, stripHeaders) => {
+module.exports = (opts) => {
+  Joi.assert(opts, Joi.object().keys({
+    cassetteFolder: Joi.string(),
+    stripHeaders: Joi.boolean(),
+    strict: Joi.boolean()
+  }), 'Invalid Options Provided');
   let nockDone = null;
   let cassetteFilePath = null;
   const knownCassetteNames = [];
@@ -25,7 +31,7 @@ module.exports = (cassetteFolder, stripHeaders) => {
       expectedCassette.length = 0;
       pendingMocks.length = 0;
 
-      cassetteFilePath = path.join(cassetteFolder, cassetteFile);
+      cassetteFilePath = path.join(opts.cassetteFolder, cassetteFile);
       const hasCassette = fs.existsSync(cassetteFilePath);
       if (hasCassette) {
         const cassetteContent = fs.smartRead(cassetteFilePath);
@@ -38,7 +44,7 @@ module.exports = (cassetteFolder, stripHeaders) => {
       }
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
-      nockBack.fixtures = cassetteFolder;
+      nockBack.fixtures = opts.cassetteFolder;
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (r) => {
           records.push(r);
@@ -55,19 +61,18 @@ module.exports = (cassetteFolder, stripHeaders) => {
             }
           });
         },
-        afterRecord: (recordings) => (stripHeaders === true ? recordings.map((r) => {
+        afterRecord: (recordings) => (opts.stripHeaders === true ? recordings.map((r) => {
           const res = { ...r };
           delete res.rawHeaders;
           return res;
         }) : recordings)
       }, resolve));
     },
-    release: (strict) => {
-      assert(typeof strict === 'boolean');
+    release: () => {
       assert(nockDone !== null);
       nockDone();
       nockDone = null;
-      if (strict !== false) {
+      if (opts.strict !== false) {
         if (outOfOrderErrors.length !== 0) {
           throw new Error(`Out of Error Recordings: ${outOfOrderErrors.join(', ')}`);
         }
@@ -77,7 +82,7 @@ module.exports = (cassetteFolder, stripHeaders) => {
       }
     },
     shutdown: () => {
-      const unexpectedFiles = fs.walkDir(cassetteFolder).filter((f) => !knownCassetteNames.includes(f));
+      const unexpectedFiles = fs.walkDir(opts.cassetteFolder).filter((f) => !knownCassetteNames.includes(f));
       if (unexpectedFiles.length !== 0) {
         throw new Error(`Unexpected file(s) in cassette folder: ${unexpectedFiles.join(', ')}`);
       }

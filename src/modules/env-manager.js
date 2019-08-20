@@ -1,4 +1,5 @@
 const assert = require('assert');
+const Joi = require('joi-strict');
 
 const setEnvVar = (key, value) => {
   if ([null, undefined].includes(value)) {
@@ -9,14 +10,18 @@ const setEnvVar = (key, value) => {
   }
 };
 
-module.exports = (envVars, allowOverwrite) => {
+module.exports = (opts) => {
+  Joi.assert(opts, Joi.object().keys({
+    envVars: Joi.object().pattern(Joi.string(), Joi.string()),
+    allowOverwrite: Joi.boolean()
+  }), 'Invalid Options Provided');
   const envVarsOverwritten = {};
   return {
     apply: () => {
       envVarsOverwritten.length = 0;
-      Object.entries(envVars).forEach(([key, value]) => {
+      Object.entries(opts.envVars).forEach(([key, value]) => {
         const envVar = key.replace(/^\^/, '');
-        if (allowOverwrite === true || key.startsWith('^')) {
+        if (opts.allowOverwrite === true || key.startsWith('^')) {
           envVarsOverwritten[envVar] = process.env[envVar];
         } else {
           assert(process.env[envVar] === undefined, `Environment Variable Set: ${envVar}`);
@@ -25,7 +30,7 @@ module.exports = (envVars, allowOverwrite) => {
       });
     },
     unapply: () => {
-      Object.keys(envVars).forEach((key) => {
+      Object.keys(opts.envVars).forEach((key) => {
         const envVar = key.replace(/^\^/, '');
         assert(typeof process.env[envVar] === 'string', `Environment Variable Set: ${envVar}`);
         setEnvVar(envVar, envVarsOverwritten[envVar]);

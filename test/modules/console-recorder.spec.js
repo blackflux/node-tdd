@@ -13,7 +13,7 @@ const testConsole = (verbose) => {
   console.error = (...args) => {
     logs.push(...args);
   };
-  const consoleRecorder = ConsoleRecorder(verbose);
+  const consoleRecorder = ConsoleRecorder({ verbose });
   consoleRecorder.inject();
   console.log('test-log1');
   console.log('test-log2');
