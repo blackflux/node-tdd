@@ -39,7 +39,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   const runTest = async ({ stripHeaders = false, strict = false, qs = [1] } = {}) => {
     const filePath = path.join(tmpDir, cassetteFile);
 
-    const requestRecorder = RequestRecorder(tmpDir, stripHeaders);
+    const requestRecorder = RequestRecorder({ cassetteFolder: tmpDir, stripHeaders, strict });
     await requestRecorder.inject(path.basename(filePath));
 
     for (let idx = 0; idx < qs.length; idx += 1) {
@@ -48,7 +48,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         .to.deep.equal({ data: String(qs[idx]) });
     }
 
-    requestRecorder.release(strict);
+    requestRecorder.release();
     requestRecorder.shutdown();
 
     return { cassette: fs.smartRead(filePath), ...requestRecorder.get() };

@@ -1,14 +1,17 @@
 const assert = require('assert');
 const crypto = require('crypto');
 const get = require('lodash.get');
+const Joi = require('joi-strict');
 
-module.exports = () => {
+module.exports = (opts) => {
+  Joi.assert(opts, Joi.object().keys({
+    seed: Joi.string(),
+    reseed: Joi.boolean()
+  }), 'Invalid Options Provided');
   let original = null;
 
   return {
-    seed: (seed, reseed = false) => {
-      assert(typeof seed === 'string');
-      assert(typeof reseed === 'boolean');
+    inject: () => {
       assert(original === null);
 
       original = crypto.randomBytes;
@@ -22,10 +25,10 @@ module.exports = () => {
         const originFile = get(stackOrigin.match(/^.*?\([^)]+?\/node_modules\/([^)]+):\d+:\d+\)$/), [1], '');
         const key = `${originFile}@${size}`;
 
-        executionCounts[key] = reseed === true ? null : (executionCounts[key] || 0) + 1;
+        executionCounts[key] = opts.reseed === true ? null : (executionCounts[key] || 0) + 1;
         let result = crypto
           .createHash('sha256')
-          .update(seed)
+          .update(opts.seed)
           .update(key)
           .update(String(executionCounts[key]))
           .digest();
@@ -42,6 +45,6 @@ module.exports = () => {
       crypto.randomBytes = original;
       original = null;
     },
-    isApplied: () => original !== null
+    isInjected: () => original !== null
   };
 };
