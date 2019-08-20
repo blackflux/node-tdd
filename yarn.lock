@@ -175,10 +175,10 @@
   dependencies:
     smart-fs "1.9.7"
 
-"@blackflux/robo-config-plugin@2.5.8":
-  version "2.5.8"
-  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-2.5.8.tgz#54b5bf029a5aa0be9dc3c0a6b46a8bee0b4358c4"
-  integrity sha512-zKmvfImrneCxJLMz2Aam5qr6617W/jtLm48eKaFSDMIqw03WM9n2HXRsACdLZZurZwOUz47hNFvU1xLzLRz4kQ==
+"@blackflux/robo-config-plugin@2.5.9":
+  version "2.5.9"
+  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-2.5.9.tgz#4f8be38608825a8323cc346f83fe247f928c5c20"
+  integrity sha512-QMXqBp9C9+exG9zjTN5rAc+WAzT3VS9C0eqv7lGGT77OmNoMkuaTJ1m7U6GpuNsoq4vhaJJsVNNSMZSSJU2Z2A==
 
 "@hapi/address@2.x.x":
   version "2.0.0"
@@ -404,9 +404,9 @@ abbrev@1, abbrev@~1.1.1:
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
 acorn-jsx@^5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.0.1.tgz#32a064fd925429216a09b141102bfdd185fae40e"
-  integrity sha512-HJ7CfNHrfJLlNTzIEUTj43LNWGkqpRLxm3YjAlcD0ACydk9XynzYsCBHxut+iqt+1aBXkx9UP/w/ZqMr13XIzg==
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.0.2.tgz#84b68ea44b373c4f8686023a551f61a21b7c4a4f"
+  integrity sha512-tiNTrP1MP0QrChmD2DdupCr6HWSFeKVw5d/dHTu4Y7rkAkRhU/Dt7dphAfIUyxtHpl/eBVip5uTNSpQJHylpAw==
 
 acorn@^7.0.0:
   version "7.0.0"
@@ -3591,10 +3591,10 @@ joi-strict@1.0.8:
   resolved "https://registry.yarnpkg.com/joi-strict/-/joi-strict-1.0.8.tgz#c2a0c56274780a8ca8beff22253a0bc8634dd6e9"
   integrity sha512-HltgaAoeKPoVWU/XE00MoCm4CHEHMudSWUd+RJkujrmm+Ms2U04PHa0lJWX+IQJ1UPz4S0Z06Pos4IsNdupklg==
 
-js-gardener@2.0.70:
-  version "2.0.70"
-  resolved "https://registry.yarnpkg.com/js-gardener/-/js-gardener-2.0.70.tgz#0230b9e519ee0d161fb6ade029ae12021a332805"
-  integrity sha512-5XIPx4FxGJ4Yqn3L+3xwEVazIDxadWhaf2tvFvwnUenceQhwZxAThYPiq7KQJ34ws3qCw6yUDhXhoriB1XsZ5A==
+js-gardener@2.0.71:
+  version "2.0.71"
+  resolved "https://registry.yarnpkg.com/js-gardener/-/js-gardener-2.0.71.tgz#cd489b728aec6804e352ac2c326006f7ad311282"
+  integrity sha512-PMHXZIwoIAlr0Lv3bn1ZvGH9ni5hvO2qM6Nfi0QrCjy/4P9gp8vGpyCAcUgyctn/A1BVXZCWmRyDZfnCJDrd+g==
   dependencies:
     "@hapi/joi" "15.1.1"
     chalk "2.4.2"
@@ -7363,9 +7363,9 @@ vscode-json-languageservice@^3.2.1:
     vscode-uri "^2.0.3"
 
 vscode-languageserver-types@^3.15.0-next.2:
-  version "3.15.0-next.2"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.15.0-next.2.tgz#a0601332cdaafac21931f497bb080cfb8d73f254"
-  integrity sha512-2JkrMWWUi2rlVLSo9OFR2PIGUzdiowEM8NgNYiwLKnXTjpwpjjIrJbNNxDik7Rv4oo9KtikcFQZKXbrKilL/MQ==
+  version "3.15.0-next.3"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.15.0-next.3.tgz#2335aceb7060bfdad136dd7c584f0740143e99b2"
+  integrity sha512-4iNTN//DhDu7qlRkwRfBEU294N1hbCPThv41AQbqt3m9f6X3+x0TfdSu9g8rqgCyfWdChYUhBoqrKYzZxnuuBg==
 
 vscode-nls@^4.1.1:
   version "4.1.1"
