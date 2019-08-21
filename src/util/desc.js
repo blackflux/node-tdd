@@ -150,7 +150,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
 
     global.it = (testName, fn) => mocha.it(
       testName,
-      fn.length === 0 || /^[^(]*\({/.test(fn.toString())
+      fn.length === 0 || /^[^(=]*\({/.test(fn.toString())
         ? () => fn(getArgs())
         : (done) => fn(done)
     );
