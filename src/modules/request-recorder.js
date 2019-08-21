@@ -75,7 +75,7 @@ module.exports = (opts) => {
       nockDone = null;
       if (opts.strict !== false) {
         if (outOfOrderErrors.length !== 0) {
-          throw new Error(`Out of Error Recordings: ${outOfOrderErrors.join(', ')}`);
+          throw new Error(`Out of Order Recordings: ${outOfOrderErrors.join(', ')}`);
         }
         if (pendingMocks.length !== 0) {
           throw new Error(`Unmatched Recordings: ${pendingMocks.map((e) => e.key).join(', ')}`);
