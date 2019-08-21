@@ -96,7 +96,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       try {
         await runTest({ strict: true, qs: [2, 1] });
       } catch (e) {
-        expect(e.message).to.equal(`Out of Error Recordings: GET ${server.uri}/?q=2`);
+        expect(e.message).to.equal(`Out of Order Recordings: GET ${server.uri}/?q=2`);
       }
     });
 
