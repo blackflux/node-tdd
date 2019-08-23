@@ -36,7 +36,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     timestamp: Joi.number().optional().min(0),
     recordConsole: Joi.boolean().optional(),
-    cryptoSeed: Joi.string().optional()
+    cryptoSeed: Joi.string().optional(),
+    timeout: Joi.number().optional().min(0)
   }), 'Bad Options Provided');
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
@@ -44,6 +45,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const timestamp = get(opts, 'timestamp', null);
   const recordConsole = get(opts, 'recordConsole', false);
   const cryptoSeed = get(opts, 'cryptoSeed', null);
+  const timeout = get(opts, 'timeout', null);
 
   let dir = null;
   let requestRecorder = null;
@@ -159,12 +161,24 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
 
     const globalsPrev = Object.keys(mocha)
       .reduce((p, key) => Object.assign(p, { [key]: global[key] }));
-    global.it = (testName, fn) => mocha.it(
-      testName,
-      fn.length === 0 || /^[^(=]*\({/.test(fn.toString())
-        ? () => fn(getArgs())
-        : (done) => fn(done)
-    );
+    global.it = (testName, fn) => {
+      const test = mocha.it(
+        testName,
+        fn.length === 0 || /^[^(=]*\({/.test(fn.toString())
+          // eslint-disable-next-line func-names
+          ? function () {
+            return fn.call(this, getArgs());
+          }
+          // eslint-disable-next-line func-names
+          : function (done) {
+            return fn.call(this, done);
+          }
+      );
+      if (timeout !== null) {
+        test.timeout(timeout);
+      }
+      return test;
+    };
     global.specify = global.it;
     global.describe = desc;
     global.context = global.describe;

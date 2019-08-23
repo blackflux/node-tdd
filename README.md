@@ -101,3 +101,10 @@ Type: `string`<br>
 Default: -
 
 When set, randomization is overwritten and consistent per test using the provided seed.
+
+#### timeout
+
+Type: `number`<br>
+Default: -
+
+Set the timeout for all tests in the suite.
