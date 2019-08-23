@@ -1,3 +1,4 @@
+const assert = require('assert');
 const path = require('path');
 const fs = require('smart-fs');
 const callsites = require('callsites');
@@ -53,6 +54,14 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   let randomSeeder = null;
 
   const getArgs = () => ({
+    capture: async (fn) => {
+      try {
+        await fn();
+      } catch (e) {
+        return e;
+      }
+      throw new assert.AssertionError({ message: 'expected [Function] to throw an error' });
+    },
     ...(dir === null ? {} : { dir }),
     ...(consoleRecorder === null ? {} : { getConsoleOutput: consoleRecorder.get })
   });

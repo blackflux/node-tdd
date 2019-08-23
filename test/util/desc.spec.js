@@ -153,6 +153,24 @@ describe('Testing async done callback', () => {
   });
 });
 
+describe('Testing capture', () => {
+  it('Test capture captures error', async ({ capture }) => {
+    const error = new Error();
+    const e = await capture(() => {
+      throw error;
+    });
+    expect(e).to.equal(error);
+  });
+
+  it('Test capture throws when no error captured', async ({ capture }) => {
+    try {
+      await capture(() => {});
+    } catch (e) {
+      expect(String(e)).to.equal('AssertionError [ERR_ASSERTION]: expected [Function] to throw an error');
+    }
+  });
+});
+
 describe('Testing Before/After', () => {
   const state = [];
 
