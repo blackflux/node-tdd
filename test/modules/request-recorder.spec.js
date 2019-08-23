@@ -91,31 +91,22 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   });
 
   describe('Testing strict mode', () => {
-    it('Testing incorrect recording ordering error', async () => {
+    it('Testing incorrect recording ordering error', async ({ capture }) => {
       await runTest({ qs: [1, 2] });
-      try {
-        await runTest({ strict: true, qs: [2, 1] });
-      } catch (e) {
-        expect(e.message).to.equal(`Out of Order Recordings: GET ${server.uri}/?q=2`);
-      }
+      const e = await capture(() => runTest({ strict: true, qs: [2, 1] }));
+      expect(e.message).to.equal(`Out of Order Recordings: GET ${server.uri}/?q=2`);
     });
 
-    it('Testing unmatched recording error', async () => {
+    it('Testing unmatched recording error', async ({ capture }) => {
       await runTest({ qs: [1, 2] });
-      try {
-        await runTest({ strict: true, qs: [1] });
-      } catch (e) {
-        expect(e.message).to.equal(`Unmatched Recordings: GET ${server.uri}/?q=2`);
-      }
+      const e = await capture(() => runTest({ strict: true, qs: [1] }));
+      expect(e.message).to.equal(`Unmatched Recordings: GET ${server.uri}/?q=2`);
     });
   });
 
-  it('Testing shutdown finds unexpected file', async () => {
+  it('Testing shutdown finds unexpected file', async ({ capture }) => {
     fs.smartWrite(path.join(tmpDir, `${cassetteFile}_other.json`), []);
-    try {
-      await runTest();
-    } catch (e) {
-      expect(e.message).to.equal('Unexpected file(s) in cassette folder: file1.json_other.json');
-    }
+    const e = await capture(() => runTest());
+    expect(e.message).to.equal('Unexpected file(s) in cassette folder: file1.json_other.json');
   });
 });

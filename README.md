@@ -36,6 +36,26 @@ describe('Testing some stuff', /* { ...options }, */ () => {
 
 Please see tests for further usage examples.
 
+### Function Kwargs
+
+#### dir
+
+Type: `string`
+
+The tmp directory for this test. Only available when `useTmpDir` is set.
+
+#### getConsoleOutput
+
+Type: `function`
+
+Can be called to access the currently captured logs. Returns array of logs. Can access different types of logs by accessing the properties `log`, `info`, `error`, `warn`. Only available when `recordConsole` is set.
+
+#### capture
+
+Type: `function`
+
+Utility function that takes a function as an argument, calls it and expects it to raise an error. The raised error is returned. If not error is raised an assertion error is thrown instead.
+
 ### Options
 
 #### useTmpDir
