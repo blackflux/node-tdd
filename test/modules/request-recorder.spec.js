@@ -94,7 +94,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     it('Testing incorrect recording ordering error', async ({ capture }) => {
       await runTest({ qs: [1, 2] });
       const e = await capture(() => runTest({ strict: true, qs: [2, 1] }));
-      expect(e.message).to.equal(`Out of Error Recordings: GET ${server.uri}/?q=2`);
+      expect(e.message).to.equal(`Out of Order Recordings: GET ${server.uri}/?q=2`);
     });
 
     it('Testing unmatched recording error', async ({ capture }) => {
