@@ -200,7 +200,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       global.afterEach = (fn) => {
         afterEachCb = fn;
       };
-      tests.call(this);
+      await tests.call(this);
       Object.entries(globalsPrev).forEach(([k, v]) => {
         global[k] = v;
       });
