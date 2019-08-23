@@ -1,3 +1,4 @@
+const assert = require('assert');
 const path = require('path');
 const fs = require('smart-fs');
 const callsites = require('callsites');
@@ -53,6 +54,14 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   let randomSeeder = null;
 
   const getArgs = () => ({
+    capture: async (fn) => {
+      try {
+        await fn();
+      } catch (e) {
+        return e;
+      }
+      throw new assert.AssertionError({ message: 'expected [Function] to throw an error' });
+    },
     ...(dir === null ? {} : { dir }),
     ...(consoleRecorder === null ? {} : { getConsoleOutput: consoleRecorder.get })
   });
@@ -148,6 +157,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       await afterEachCb(getArgs());
     });
 
+    const globalsPrev = Object.keys(mocha)
+      .reduce((p, key) => Object.assign(p, { [key]: global[key] }));
     global.it = (testName, fn) => mocha.it(
       testName,
       fn.length === 0 || /^[^(=]*\({/.test(fn.toString())
@@ -170,7 +181,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       afterEachCb = fn;
     };
     tests();
-    Object.entries(mocha).forEach(([k, v]) => {
+    Object.entries(globalsPrev).forEach(([k, v]) => {
       global[k] = v;
     });
   });
