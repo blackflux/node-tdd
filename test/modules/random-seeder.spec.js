@@ -6,74 +6,75 @@ const { describe } = require('../../src/index');
 const RandomSeeder = require('../../src/modules/random-seeder');
 
 describe('Testing RandomSeeder', () => {
-  let seeder;
-  beforeEach(() => {
-    seeder = RandomSeeder({ seed: 'test', reseed: false });
-    seeder.inject();
-  });
-
-  afterEach(() => {
-    seeder.release();
-  });
-
-  describe('Testing Random Consistent', () => {
-    it('Testing First', () => {
-      expect(uuid4()).to.deep.equal('afff0cf7-a373-4b2c-9184-d02b35c4b970');
-      expect(uuid4()).to.deep.equal('864c731c-49f5-41c8-aca6-5cfee343c576');
+  describe('Testing RandomSeeder Not Reseeded', () => {
+    let seeder;
+    beforeEach(() => {
+      seeder = RandomSeeder({ seed: 'test', reseed: false });
+      seeder.inject();
     });
 
-    it('Testing Second', () => {
-      expect(uuid4()).to.deep.equal('afff0cf7-a373-4b2c-9184-d02b35c4b970');
-      expect(uuid4()).to.deep.equal('864c731c-49f5-41c8-aca6-5cfee343c576');
+    afterEach(() => {
+      seeder.release();
+    });
+
+    describe('Testing Random Consistent', () => {
+      it('Testing First', () => {
+        expect(uuid4()).to.deep.equal('afff0cf7-a373-4b2c-9184-d02b35c4b970');
+        expect(uuid4()).to.deep.equal('864c731c-49f5-41c8-aca6-5cfee343c576');
+      });
+
+      it('Testing Second', () => {
+        expect(uuid4()).to.deep.equal('afff0cf7-a373-4b2c-9184-d02b35c4b970');
+        expect(uuid4()).to.deep.equal('864c731c-49f5-41c8-aca6-5cfee343c576');
+      });
+    });
+
+    it('Testing Callback', (done) => {
+      crypto.randomBytes(8, (err, resp) => {
+        expect(err).to.equal(null);
+        expect(resp.toString('hex')).to.equal('06146e9ba205aae7');
+        done();
+      });
+    });
+
+    it('Testing Long Random', (done) => {
+      crypto.randomBytes(456, (err, resp) => {
+        expect(err).to.equal(null);
+        expect(resp.length).to.equal(456);
+        expect(resp.toString('hex')).to.equal(
+          '53d2261938c5fa990ca7f754bb6bc5d4fae96ba417200fe629b133e971c26d95b03bea12dd19c6467c52ef594b772a4f5773a5a55366'
+          + '4895cffcf710660c1121ef93fd1f85a6fc9206bc8cdc758a7bd999ddb3b62348316d6012ebccd41da63ed69ef4f2fdf7fe0650c3c8'
+          + 'ee43aa932db3139effc04fc48d85dc38193aaa8f76948fe454b3ff7489d912a497aa30a52b6662c81a7fb5c72e4312c56c0b027486'
+          + 'e779f276daecf86cec380c3ce1550d944226c433a3059932d1cb031256fec498b6c48b8024ff65812b834ef37341493c252fc72ae4'
+          + 'f780f3294be685a31b0f5c89ae3b1c6381a0f38b04b3bafcda2966a790005d287dd98cb0719dd7a6dbca9c15609f1aeff56b5455e0'
+          + '7b5abcdffd2ad710112ea6864250a26617e1b94c53c17fd9b8192482dc60ef87d3207b707aaa944366283a6a81f6096dd59b7cc059'
+          + '60663474bffd071cf79e5d914a3c3814a3fec33ae3754c6bd5ac574801244327e18e49872e7e8e9c3c8e20f4e746dfa5c7fae4c25a'
+          + 'bc32031fbfdbf50c2e5d04934b64a4062ee0e3fb2667b6cceddd6a03ade2f08c84381314d77773ce75a6addf677acd4c4ec305b190'
+          + '458461d78f65df1c582a11e360723d3f4a93efd9f9f86c809a40ed0d45a445'
+        );
+        done();
+      });
     });
   });
 
-  it('Testing Callback', (done) => {
-    crypto.randomBytes(8, (err, resp) => {
-      expect(err).to.equal(null);
-      expect(resp.toString('hex')).to.equal('06146e9ba205aae7');
-      done();
+  describe('Testing RandomSeeder Reseeded', () => {
+    let seeder;
+    beforeEach(() => {
+      seeder = RandomSeeder({ seed: 'test', reseed: true });
+      assert(seeder.isInjected() === false);
+      seeder.inject();
+      assert(seeder.isInjected() === true);
     });
-  });
 
-  it('Testing Long Random', (done) => {
-    crypto.randomBytes(456, (err, resp) => {
-      expect(err).to.equal(null);
-      expect(resp.length).to.equal(456);
-      expect(resp.toString('hex')).to.equal(
-        '53d2261938c5fa990ca7f754bb6bc5d4fae96ba417200fe629b133e971c26d95b03bea12dd19c6467c52ef594b772a4f5773a5a5536648'
-        + '95cffcf710660c1121ef93fd1f85a6fc9206bc8cdc758a7bd999ddb3b62348316d6012ebccd41da63ed69ef4f2fdf7fe0650c3c8ee43'
-        + 'aa932db3139effc04fc48d85dc38193aaa8f76948fe454b3ff7489d912a497aa30a52b6662c81a7fb5c72e4312c56c0b027486e779f2'
-        + '76daecf86cec380c3ce1550d944226c433a3059932d1cb031256fec498b6c48b8024ff65812b834ef37341493c252fc72ae4f780f329'
-        + '4be685a31b0f5c89ae3b1c6381a0f38b04b3bafcda2966a790005d287dd98cb0719dd7a6dbca9c15609f1aeff56b5455e07b5abcdffd'
-        + '2ad710112ea6864250a26617e1b94c53c17fd9b8192482dc60ef87d3207b707aaa944366283a6a81f6096dd59b7cc05960663474bffd'
-        + '071cf79e5d914a3c3814a3fec33ae3754c6bd5ac574801244327e18e49872e7e8e9c3c8e20f4e746dfa5c7fae4c25abc32031fbfdbf5'
-        + '0c2e5d04934b64a4062ee0e3fb2667b6cceddd6a03ade2f08c84381314d77773ce75a6addf677acd4c4ec305b190458461d78f65df1c'
-        + '582a11e360723d3f4a93efd9f9f86c809a40ed0d45a445'
-      );
-      done();
+    afterEach(() => {
+      assert(seeder.isInjected() === true);
+      seeder.release();
+      assert(seeder.isInjected() === false);
     });
-  });
-});
 
-
-describe('Testing RandomSeeder Reseeded', () => {
-  let seeder;
-  beforeEach(() => {
-    seeder = RandomSeeder({ seed: 'test', reseed: true });
-    assert(seeder.isInjected() === false);
-    seeder.inject();
-    assert(seeder.isInjected() === true);
-  });
-
-  afterEach(() => {
-    assert(seeder.isInjected() === true);
-    seeder.release();
-    assert(seeder.isInjected() === false);
-  });
-
-  it('Testing Random Consistent Reseeded', () => {
-    expect(uuid4()).to.deep.equal('198acafb-fddd-47c2-adda-6e4e735b529e');
-    expect(uuid4()).to.deep.equal('198acafb-fddd-47c2-adda-6e4e735b529e');
+    it('Testing Random Consistent Reseeded', () => {
+      expect(uuid4()).to.deep.equal('198acafb-fddd-47c2-adda-6e4e735b529e');
+      expect(uuid4()).to.deep.equal('198acafb-fddd-47c2-adda-6e4e735b529e');
+    });
   });
 });
