@@ -173,6 +173,13 @@ describe('Testing { describe }', () => {
     });
   });
 
+  describe('Testing timeout', { timeout: 2345 }, () => {
+    // eslint-disable-next-line func-names
+    it('Test timeout is set', function () {
+      expect(this.timeout()).to.equal(2345);
+    });
+  });
+
   describe('Testing Before/After', () => {
     const state = [];
 
