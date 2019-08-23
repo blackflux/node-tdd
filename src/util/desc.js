@@ -148,6 +148,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       await afterEachCb(getArgs());
     });
 
+    const globalsPrev = Object.keys(mocha)
+      .reduce((p, key) => Object.assign(p, { [key]: global[key] }));
     global.it = (testName, fn) => mocha.it(
       testName,
       fn.length === 0 || /^[^(=]*\({/.test(fn.toString())
@@ -170,7 +172,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       afterEachCb = fn;
     };
     tests();
-    Object.entries(mocha).forEach(([k, v]) => {
+    Object.entries(globalsPrev).forEach(([k, v]) => {
       global[k] = v;
     });
   });
