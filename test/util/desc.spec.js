@@ -173,9 +173,40 @@ describe('Testing { describe }', () => {
     });
   });
 
-  describe('Testing timeout', { timeout: 2345 }, () => {
+  // eslint-disable-next-line func-names
+  describe('Testing timeout', { timeout: 2345 }, function () {
+    // eslint-disable-next-line mocha/no-setup-in-describe
+    assert(typeof this.timeout === 'function');
+    // eslint-disable-next-line mocha/no-setup-in-describe
+    assert(this.timeout() === 2345);
+
+    // eslint-disable-next-line func-names
+    before(function () {
+      assert(typeof this.timeout === 'function');
+      assert(this.timeout() === 2345);
+    });
+
+    // eslint-disable-next-line func-names
+    after(function () {
+      assert(typeof this.timeout === 'function');
+      assert(this.timeout() === 2345);
+    });
+
+    // eslint-disable-next-line func-names
+    beforeEach(function () {
+      assert(typeof this.timeout === 'function');
+      assert(this.timeout() === 2345);
+    });
+
+    // eslint-disable-next-line func-names
+    afterEach(function () {
+      assert(typeof this.timeout === 'function');
+      assert(this.timeout() === 2345);
+    });
+
     // eslint-disable-next-line func-names
     it('Test timeout is set', function () {
+      assert(typeof this.timeout === 'function');
       expect(this.timeout()).to.equal(2345);
     });
   });

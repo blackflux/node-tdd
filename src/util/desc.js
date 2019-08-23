@@ -72,97 +72,108 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   let beforeEachCb = () => {};
   let afterEachCb = () => {};
 
-  mocha.describe(suiteName, () => {
-    // eslint-disable-next-line func-names
-    mocha.before(function () {
-      return (async () => {
-        if (getParents(this.test).length === 3 && fs.existsSync(envVarFile)) {
-          envManagerFile = EnvManager({ envVars: fs.smartRead(envVarFile), allowOverwrite: false });
-          envManagerFile.apply();
-        }
-        if (envVars !== null) {
-          envManagerDesc = EnvManager({ envVars, allowOverwrite: false });
-          envManagerDesc.apply();
-        }
-        if (timestamp !== null) {
-          timeKeeper = TimeKeeper({ unix: timestamp });
-          timeKeeper.inject();
-        }
-        if (cryptoSeed !== null) {
-          randomSeeder = RandomSeeder({ seed: cryptoSeed, reseed: false });
-          randomSeeder.inject();
-        }
-        if (useNock === true) {
-          requestRecorder = RequestRecorder({
-            cassetteFolder: `${testFile}__cassettes/`,
-            stripHeaders: false,
-            strict: true
-          });
-        }
-        await beforeCb();
-      })();
-    });
+  // eslint-disable-next-line func-names
+  mocha.describe(suiteName, function () {
+    return (async () => {
+      if (timeout !== null) {
+        this.timeout(timeout);
+      }
 
-    mocha.after(async () => {
-      if (requestRecorder !== null) {
-        requestRecorder.shutdown();
-        requestRecorder = null;
-      }
-      if (randomSeeder !== null) {
-        randomSeeder.release();
-        randomSeeder = null;
-      }
-      if (timeKeeper !== null) {
-        timeKeeper.release();
-        timeKeeper = null;
-      }
-      if (envManagerDesc !== null) {
-        envManagerDesc.unapply();
-        envManagerDesc = null;
-      }
-      if (envManagerFile !== null) {
-        envManagerFile.unapply();
-        envManagerFile = null;
-      }
-      await afterCb();
-    });
+      // eslint-disable-next-line func-names
+      mocha.before(function () {
+        return (async () => {
+          if (getParents(this.test).length === 3 && fs.existsSync(envVarFile)) {
+            envManagerFile = EnvManager({ envVars: fs.smartRead(envVarFile), allowOverwrite: false });
+            envManagerFile.apply();
+          }
+          if (envVars !== null) {
+            envManagerDesc = EnvManager({ envVars, allowOverwrite: false });
+            envManagerDesc.apply();
+          }
+          if (timestamp !== null) {
+            timeKeeper = TimeKeeper({ unix: timestamp });
+            timeKeeper.inject();
+          }
+          if (cryptoSeed !== null) {
+            randomSeeder = RandomSeeder({ seed: cryptoSeed, reseed: false });
+            randomSeeder.inject();
+          }
+          if (useNock === true) {
+            requestRecorder = RequestRecorder({
+              cassetteFolder: `${testFile}__cassettes/`,
+              stripHeaders: false,
+              strict: true
+            });
+          }
+          await beforeCb.call(this);
+        })();
+      });
 
-    // eslint-disable-next-line func-names
-    mocha.beforeEach(function () {
-      return (async () => {
-        if (useTmpDir === true) {
-          tmp.setGracefulCleanup();
-          dir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
-        }
-        if (useNock === true) {
-          await requestRecorder.inject(genCassetteName(this.currentTest));
-        }
-        if (recordConsole === true) {
-          consoleRecorder = ConsoleRecorder({ verbose: true });
-          consoleRecorder.inject();
-        }
-        await beforeEachCb(getArgs());
-      })();
-    });
+      // eslint-disable-next-line func-names
+      mocha.after(function () {
+        return (async () => {
+          if (requestRecorder !== null) {
+            requestRecorder.shutdown();
+            requestRecorder = null;
+          }
+          if (randomSeeder !== null) {
+            randomSeeder.release();
+            randomSeeder = null;
+          }
+          if (timeKeeper !== null) {
+            timeKeeper.release();
+            timeKeeper = null;
+          }
+          if (envManagerDesc !== null) {
+            envManagerDesc.unapply();
+            envManagerDesc = null;
+          }
+          if (envManagerFile !== null) {
+            envManagerFile.unapply();
+            envManagerFile = null;
+          }
+          await afterCb.call(this);
+        })();
+      });
 
-    mocha.afterEach(async () => {
-      if (consoleRecorder !== null) {
-        consoleRecorder.release();
-        consoleRecorder = null;
-      }
-      if (requestRecorder !== null) {
-        requestRecorder.release();
-      }
-      if (dir !== null) {
-        dir = null;
-      }
-      await afterEachCb(getArgs());
-    });
+      // eslint-disable-next-line func-names
+      mocha.beforeEach(function () {
+        return (async () => {
+          if (useTmpDir === true) {
+            tmp.setGracefulCleanup();
+            dir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
+          }
+          if (useNock === true) {
+            await requestRecorder.inject(genCassetteName(this.currentTest));
+          }
+          if (recordConsole === true) {
+            consoleRecorder = ConsoleRecorder({ verbose: true });
+            consoleRecorder.inject();
+          }
+          await beforeEachCb.call(this, getArgs());
+        })();
+      });
 
-    const globalsPrev = Object.keys(mocha)
-      .reduce((p, key) => Object.assign(p, { [key]: global[key] }));
-    global.it = (testName, fn) => {
-      const test = mocha.it(
+      // eslint-disable-next-line func-names
+      mocha.afterEach(function () {
+        return (async () => {
+          if (consoleRecorder !== null) {
+            consoleRecorder.release();
+            consoleRecorder = null;
+          }
+          if (requestRecorder !== null) {
+            requestRecorder.release();
+          }
+          if (dir !== null) {
+            dir = null;
+          }
+          await afterEachCb.call(this, getArgs());
+        })();
+      });
+
+      const globalsPrev = Object.keys(mocha)
+        .reduce((p, key) => Object.assign(p, { [key]: global[key] }));
+      global.it = (testName, fn) => mocha.it(
         testName,
         fn.length === 0 || /^[^(=]*\({/.test(fn.toString())
           // eslint-disable-next-line func-names
@@ -174,30 +185,26 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
             return fn.call(this, done);
           }
       );
-      if (timeout !== null) {
-        test.timeout(timeout);
-      }
-      return test;
-    };
-    global.specify = global.it;
-    global.describe = desc;
-    global.context = global.describe;
-    global.before = (fn) => {
-      beforeCb = fn;
-    };
-    global.after = (fn) => {
-      afterCb = fn;
-    };
-    global.beforeEach = (fn) => {
-      beforeEachCb = fn;
-    };
-    global.afterEach = (fn) => {
-      afterEachCb = fn;
-    };
-    tests();
-    Object.entries(globalsPrev).forEach(([k, v]) => {
-      global[k] = v;
-    });
+      global.specify = global.it;
+      global.describe = desc;
+      global.context = global.describe;
+      global.before = (fn) => {
+        beforeCb = fn;
+      };
+      global.after = (fn) => {
+        afterCb = fn;
+      };
+      global.beforeEach = (fn) => {
+        beforeEachCb = fn;
+      };
+      global.afterEach = (fn) => {
+        afterEachCb = fn;
+      };
+      tests.call(this);
+      Object.entries(globalsPrev).forEach(([k, v]) => {
+        global[k] = v;
+      });
+    })();
   });
 };
 module.exports = desc;
