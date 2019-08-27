@@ -44,11 +44,16 @@ Type: `string`
 
 The tmp directory for this test. Only available when `useTmpDir` is set.
 
-#### getConsoleOutput
+#### recorder
 
-Type: `function`
+Type: `object`
 
-Can be called to access the currently captured logs. Returns array of logs. Can access different types of logs by accessing the properties `log`, `info`, `error`, `warn`. Only available when `recordConsole` is set.
+Can be called to interact with the currently captured console logs. Exposes the following functions:
+- `get(level = null)`:  Returns array of recorded console logs. Can be restricted to level by passing one of `log`, `info`, `error`, `warn`. 
+- `reset()`: Reset currently captured logs
+- `verbose(flag: boolean)`: Set verbosity mode of capture
+ 
+ Only available when `recordConsole` is set.
 
 #### capture
 
@@ -93,7 +98,7 @@ Set unix timestamp to freeze time to. Will modify the result of e.g. `new Date()
 Type: `boolean`<br>
 Default: `false`
 
-When set to true, console logging calls are recorded and can be accessed by calling `getConsoleOutput()` from within the test.
+When set to true, console logging calls are recorded and can be accessed by using `recorder` from within the test.
 
 #### cryptoSeed
 

@@ -65,7 +65,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       throw new assert.AssertionError({ message: 'expected [Function] to throw an error' });
     },
     ...(dir === null ? {} : { dir }),
-    ...(consoleRecorder === null ? {} : { getConsoleOutput: consoleRecorder.get })
+    ...(consoleRecorder === null ? {} : { recorder: consoleRecorder.recorder })
   });
   let beforeCb = () => {};
   let afterCb = () => {};

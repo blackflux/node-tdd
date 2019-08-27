@@ -15,18 +15,20 @@ const testConsole = (verbose) => {
   };
   const consoleRecorder = ConsoleRecorder({ verbose });
   consoleRecorder.inject();
+  const recorder = consoleRecorder.recorder;
+  recorder.verbose(false);
   console.log('test-log1');
+  recorder.verbose(verbose);
   console.log('test-log2');
   console.error('test-log3');
   consoleRecorder.release();
-  const result = consoleRecorder.get();
-  expect(result).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
-  expect(result.log).to.deep.equal(['test-log1', 'test-log2']);
-  expect(result.error).to.deep.equal(['test-log3']);
-  expect(result.warn).to.deep.equal([]);
-  expect(result.info).to.deep.equal([]);
+  expect(recorder.get()).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
+  expect(recorder.get('log')).to.deep.equal(['test-log1', 'test-log2']);
+  expect(recorder.get('error')).to.deep.equal(['test-log3']);
+  expect(recorder.get('warn')).to.deep.equal([]);
+  expect(recorder.get('info')).to.deep.equal([]);
   if (verbose === true) {
-    expect(logs).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
+    expect(logs).to.deep.equal(['test-log2', 'test-log3']);
   } else {
     expect(logs).to.deep.equal([]);
   }

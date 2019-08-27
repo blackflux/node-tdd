@@ -8,20 +8,27 @@ module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
     verbose: Joi.boolean()
   }), 'Invalid Options Provided');
+  let verbose = opts.verbose;
   let consoleOriginal = null;
+
   let logs;
+  const reset = () => {
+    logs = [];
+    logLevels.forEach((level) => {
+      logs[level] = [];
+    });
+  };
+
   return {
     inject: () => {
       assert(consoleOriginal === null);
-      consoleOriginal = ['log', 'info', 'error', 'warn']
+      verbose = opts.verbose;
+      consoleOriginal = logLevels
         .reduce((p, c) => Object.assign(p, { [c]: console[c] }), {});
-      logs = [];
-      logLevels.forEach((level) => {
-        logs[level] = [];
-      });
+      reset();
       Object.keys(consoleOriginal).forEach((logLevel) => {
         console[logLevel] = (...args) => {
-          if (opts.verbose === true) {
+          if (verbose === true) {
             consoleOriginal[logLevel](...args);
           }
           logs.push(...args);
@@ -34,12 +41,21 @@ module.exports = (opts) => {
       Object.assign(console, consoleOriginal);
       consoleOriginal = null;
     },
-    get: () => {
-      const result = logs.slice();
-      logLevels.forEach((level) => {
-        result[level] = logs[level].slice();
-      });
-      return result;
+    recorder: {
+      verbose: (state) => {
+        assert(consoleOriginal !== null);
+        assert(typeof state === 'boolean');
+        verbose = state;
+      },
+      get: (level = null) => {
+        assert(consoleOriginal !== null);
+        assert(level === null || logLevels.includes(level));
+        return (level === null ? logs : logs[level]).slice();
+      },
+      reset: () => {
+        assert(consoleOriginal !== null);
+        reset();
+      }
     }
   };
 };
