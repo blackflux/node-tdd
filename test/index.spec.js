@@ -8,7 +8,7 @@ describe('Testing index.js', () => {
       'RequestRecorder',
       'EnvManager',
       'TimeKeeper',
-      'ConsoleRecorder',
+      'LogRecorder',
       'RandomSeeder'
     ]);
   });
