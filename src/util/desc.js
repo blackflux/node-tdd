@@ -147,7 +147,9 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
             await requestRecorder.inject(genCassetteName(this.currentTest));
           }
           if (recordConsole === true) {
-            consoleRecorder = ConsoleRecorder({ verbose: true });
+            consoleRecorder = ConsoleRecorder({
+              verbose: process.argv.slice(2).includes('--verbose')
+            });
             consoleRecorder.inject();
           }
           await beforeEachCb.call(this, getArgs());
