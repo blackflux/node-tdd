@@ -43,19 +43,14 @@ module.exports = (opts) => {
     },
     recorder: {
       verbose: (state) => {
-        assert(consoleOriginal !== null);
         assert(typeof state === 'boolean');
         verbose = state;
       },
       get: (level = null) => {
-        assert(consoleOriginal !== null);
         assert(level === null || logLevels.includes(level));
         return (level === null ? logs : logs[level]).slice();
       },
-      reset: () => {
-        assert(consoleOriginal !== null);
-        reset();
-      }
+      reset
     }
   };
 };
