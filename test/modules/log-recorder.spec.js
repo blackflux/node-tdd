@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const expect = require('chai').expect;
 const { describe } = require('../../src/index');
-const ConsoleRecorder = require('../../src/modules/console-recorder');
+const LogRecorder = require('../../src/modules/log-recorder');
 
 const testConsole = (verbose) => {
   const logs = [];
@@ -13,20 +13,19 @@ const testConsole = (verbose) => {
   console.error = (...args) => {
     logs.push(...args);
   };
-  const consoleRecorder = ConsoleRecorder({ verbose });
-  consoleRecorder.inject();
-  const recorder = consoleRecorder.recorder;
-  recorder.verbose(false);
+  const logRecorder = LogRecorder({ verbose, logger: console });
+  logRecorder.inject();
+  logRecorder.verbose(false);
   console.log('test-log1');
-  recorder.verbose(verbose);
+  logRecorder.verbose(verbose);
   console.log('test-log2');
   console.error('test-log3');
-  consoleRecorder.release();
-  expect(recorder.get()).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
-  expect(recorder.get('log')).to.deep.equal(['test-log1', 'test-log2']);
-  expect(recorder.get('error')).to.deep.equal(['test-log3']);
-  expect(recorder.get('warn')).to.deep.equal([]);
-  expect(recorder.get('info')).to.deep.equal([]);
+  logRecorder.release();
+  expect(logRecorder.get()).to.deep.equal(['test-log1', 'test-log2', 'test-log3']);
+  expect(logRecorder.get('log')).to.deep.equal(['test-log1', 'test-log2']);
+  expect(logRecorder.get('error')).to.deep.equal(['test-log3']);
+  expect(logRecorder.get('warn')).to.deep.equal([]);
+  expect(logRecorder.get('info')).to.deep.equal([]);
   if (verbose === true) {
     expect(logs).to.deep.equal(['test-log2', 'test-log3']);
   } else {

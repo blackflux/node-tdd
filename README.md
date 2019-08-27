@@ -48,10 +48,10 @@ The tmp directory for this test. Only available when `useTmpDir` is set.
 
 Type: `object`
 
-Can be called to interact with the currently captured console logs. Exposes the following functions:
-- `get(level = null)`:  Returns array of recorded console logs. Can be restricted to level by passing one of `log`, `info`, `error`, `warn`. 
+Can be called to interact with the currently captured logs. Exposes the following functions:
+- `get(level = null)`:  Returns array of recorded logs. Can be restricted by passing in the log level. 
 - `reset()`: Reset currently captured logs
-- `verbose(flag: boolean)`: Set verbosity mode of capture
+- `verbose(flag: boolean)`: Set verbosity mode of capture (if the original logger function is called)
  
  Only available when `recordConsole` is set.
 
@@ -93,12 +93,13 @@ Default: -
 
 Set unix timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
 
-#### recordConsole
+#### record
 
-Type: `boolean`<br>
-Default: `false`
+Type: `object`<br>
+Default: -
 
-When set to true, console logging calls are recorded and can be accessed by using `recorder` from within the test.
+Expects logger (e.g. `console`) to be passed in and captures input,
+which can be accessed by using `recorder` from within the test.
 
 #### cryptoSeed
 
