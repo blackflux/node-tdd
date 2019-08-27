@@ -114,34 +114,26 @@ describe('Testing { describe }', () => {
   });
 
   describe('Testing logger recording', { record: fancyLog }, () => {
-    let levels;
-    let logger;
-    before(() => {
-      levels = Object.keys(fancyLog);
-      logger = levels.reduce((p, c) => Object.assign(p, {
-        [c]: (...args) => fancyLog[c](...args)
-      }), {});
-    });
-
     it('Testing recorded logs', ({ recorder }) => {
+      const logLevels = Object.keys(fancyLog);
       expect(recorder.get()).to.deep.equal([]);
-      levels.forEach((level) => {
-        logger[level](level);
+      logLevels.forEach((level) => {
+        fancyLog[level](level);
       });
-      expect(recorder.get()).to.deep.equal(levels);
-      levels.forEach((level) => {
+      expect(recorder.get()).to.deep.equal(logLevels);
+      logLevels.forEach((level) => {
         expect(recorder.get(level)).to.deep.equal([level]);
       });
       recorder.reset();
       expect(recorder.get()).to.deep.equal([]);
-      levels.forEach((level) => {
+      logLevels.forEach((level) => {
         expect(recorder.get(level)).to.deep.equal([]);
       });
     });
 
     it('Testing recording resets', ({ recorder }) => {
       expect(recorder.get()).to.deep.equal([]);
-      logger.info('info');
+      fancyLog.info('info');
       expect(recorder.get()).to.deep.equal(['info']);
       expect(recorder.get('error')).to.deep.equal([]);
     });
