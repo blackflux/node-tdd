@@ -14,6 +14,8 @@ const testConsole = (verbose) => {
     logs.push(...args);
   };
   const logRecorder = LogRecorder({ verbose, logger: console });
+  expect(logRecorder.levels())
+    .to.contain.members(['log', 'debug', 'info', 'warn', 'error', 'dir']);
   logRecorder.inject();
   logRecorder.verbose(false);
   console.log('test-log1');

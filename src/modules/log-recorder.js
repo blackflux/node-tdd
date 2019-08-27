@@ -50,6 +50,7 @@ module.exports = (opts) => {
       assert(typeof state === 'boolean');
       verbose = state;
     },
+    levels: () => logLevels.slice(),
     get: (level = null) => {
       assert(level === null || logLevels.includes(level));
       return (level === null ? logs : logs[level]).slice();
