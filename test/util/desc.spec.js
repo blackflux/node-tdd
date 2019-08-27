@@ -120,9 +120,6 @@ describe('Testing { describe }', () => {
         [c]: (...args) => console[c](...args)
       }), {});
     });
-    beforeEach(({ recorder }) => {
-      recorder.verbose(false);
-    });
 
     it('Testing recorded logs', ({ recorder }) => {
       expect(recorder.get()).to.deep.equal([]);
