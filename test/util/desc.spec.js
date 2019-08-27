@@ -2,8 +2,9 @@ const assert = require('assert');
 const os = require('os');
 const path = require('path');
 const expect = require('chai').expect;
-const request = require('request-promise');
 const uuid4 = require('uuid/v4');
+const request = require('request-promise');
+const fancyLog = require('fancy-log');
 const describe = require('../../src/util/desc');
 
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
@@ -112,35 +113,28 @@ describe('Testing { describe }', () => {
     });
   });
 
-  describe('Testing console recording', { recordConsole: true }, () => {
-    let logger;
-    before(() => {
-      logger = ['log', 'info', 'error', 'warn'].reduce((p, c) => Object.assign(p, {
-        // eslint-disable-next-line no-console
-        [c]: (...args) => console[c](...args)
-      }), {});
-    });
-
+  describe('Testing logger recording', { record: fancyLog }, () => {
     it('Testing recorded logs', ({ recorder }) => {
+      const logLevels = Object.keys(fancyLog);
       expect(recorder.get()).to.deep.equal([]);
-      ['log', 'warn', 'error', 'info'].forEach((level) => {
-        logger[level](level);
+      logLevels.forEach((level) => {
+        fancyLog[level](level);
       });
-      expect(recorder.get()).to.deep.equal(['log', 'warn', 'error', 'info']);
-      ['log', 'warn', 'error', 'info'].forEach((level) => {
+      expect(recorder.get()).to.deep.equal(logLevels);
+      logLevels.forEach((level) => {
         expect(recorder.get(level)).to.deep.equal([level]);
       });
       recorder.reset();
       expect(recorder.get()).to.deep.equal([]);
-      ['log', 'warn', 'error', 'info'].forEach((level) => {
+      logLevels.forEach((level) => {
         expect(recorder.get(level)).to.deep.equal([]);
       });
     });
 
     it('Testing recording resets', ({ recorder }) => {
       expect(recorder.get()).to.deep.equal([]);
-      logger.log('log');
-      expect(recorder.get()).to.deep.equal(['log']);
+      fancyLog.info('info');
+      expect(recorder.get()).to.deep.equal(['info']);
       expect(recorder.get('error')).to.deep.equal([]);
     });
   });

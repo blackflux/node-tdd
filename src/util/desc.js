@@ -8,7 +8,7 @@ const Joi = require('joi-strict');
 const RequestRecorder = require('../modules/request-recorder');
 const EnvManager = require('../modules/env-manager');
 const TimeKeeper = require('../modules/time-keeper');
-const ConsoleRecorder = require('../modules/console-recorder');
+const LogRecorder = require('../modules/log-recorder');
 const RandomSeeder = require('../modules/random-seeder');
 const { getParents, genCassetteName } = require('./mocha-test');
 
@@ -35,7 +35,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     useNock: Joi.boolean().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     timestamp: Joi.number().optional().min(0),
-    recordConsole: Joi.boolean().optional(),
+    record: Joi.any().optional(),
     cryptoSeed: Joi.string().optional(),
     timeout: Joi.number().optional().min(0)
   }), 'Bad Options Provided');
@@ -43,7 +43,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const useNock = get(opts, 'useNock', false);
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
-  const recordConsole = get(opts, 'recordConsole', false);
+  const record = get(opts, 'record', false);
   const cryptoSeed = get(opts, 'cryptoSeed', null);
   const timeout = get(opts, 'timeout', null);
 
@@ -52,7 +52,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   let envManagerFile = null;
   let envManagerDesc = null;
   let timeKeeper = null;
-  let consoleRecorder = null;
+  let logRecorder = null;
   let randomSeeder = null;
 
   const getArgs = () => ({
@@ -65,7 +65,13 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       throw new assert.AssertionError({ message: 'expected [Function] to throw an error' });
     },
     ...(dir === null ? {} : { dir }),
-    ...(consoleRecorder === null ? {} : { recorder: consoleRecorder.recorder })
+    ...(logRecorder === null ? {} : {
+      recorder: {
+        verbose: logRecorder.verbose,
+        get: logRecorder.get,
+        reset: logRecorder.reset
+      }
+    })
   });
   let beforeCb = () => {};
   let afterCb = () => {};
@@ -146,11 +152,12 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           if (useNock === true) {
             await requestRecorder.inject(genCassetteName(this.currentTest));
           }
-          if (recordConsole === true) {
-            consoleRecorder = ConsoleRecorder({
-              verbose: process.argv.slice(2).includes('--verbose')
+          if (record !== false) {
+            logRecorder = LogRecorder({
+              verbose: process.argv.slice(2).includes('--verbose'),
+              logger: record
             });
-            consoleRecorder.inject();
+            logRecorder.inject();
           }
           await beforeEachCb.call(this, getArgs());
         })();
@@ -159,9 +166,9 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       // eslint-disable-next-line func-names
       mocha.afterEach(function () {
         return (async () => {
-          if (consoleRecorder !== null) {
-            consoleRecorder.release();
-            consoleRecorder = null;
+          if (logRecorder !== null) {
+            logRecorder.release();
+            logRecorder = null;
           }
           if (requestRecorder !== null) {
             requestRecorder.release();
