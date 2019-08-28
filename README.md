@@ -20,7 +20,7 @@ Install with [npm](https://www.npmjs.com/):
 
 ## Usage
 
-Drop-in replacement for mocha by simply importing `describe` as below.
+Drop-in extension for mocha by simply importing `describe` as below.
 
 <!-- eslint-disable import/no-unresolved, import/no-extraneous-dependencies -->
 ```js
@@ -59,7 +59,7 @@ Can be called to interact with the currently captured logs. Exposes the followin
 
 Type: `function`
 
-Utility function that takes a function as an argument, calls it and expects it to raise an error. The raised error is returned. If not error is raised an assertion error is thrown instead.
+Utility function that takes a function as an argument, calls it and expects it to raise an error. The raised error is returned. If no error is raised an assertion error is thrown instead.
 
 ### Options
 

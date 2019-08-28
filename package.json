@@ -1,7 +1,7 @@
 {
   "name": "node-tdd",
   "version": "0.0.0-development",
-  "description": "Drop in replacement for mocha to abstract commonly used test setups",
+  "description": "Drop in extension for mocha to abstract commonly used test setups",
   "main": "lib/index.js",
   "scripts": {
     "test": "npm run clean && npm run gardener && npm run test-simple",
