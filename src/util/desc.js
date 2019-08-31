@@ -33,6 +33,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   Joi.assert(opts, Joi.object().keys({
     useTmpDir: Joi.boolean().optional(),
     useNock: Joi.boolean().optional(),
+    nockFolder: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     timestamp: Joi.number().optional().min(0),
     record: Joi.any().optional(),
@@ -41,6 +42,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   }), 'Bad Options Provided');
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
+  const nockFolder = get(opts, 'nockFolder', '$FILENAME__cassettes');
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
   const record = get(opts, 'record', false);
@@ -106,7 +108,11 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           }
           if (useNock === true) {
             requestRecorder = RequestRecorder({
-              cassetteFolder: `${testFile}__cassettes/`,
+              cassetteFolder: `${
+                path.dirname(testFile)
+              }/${
+                nockFolder.replace(/\$FILENAME/g, path.basename(testFile))
+              }/`,
               stripHeaders: false,
               strict: true
             });

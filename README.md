@@ -77,6 +77,14 @@ Default: `false`
 
 When set to true, all requests are automatically nocked. The recording files are automatically created relative to the current test file.
 
+#### nockFolder
+
+Type: `string`<br>
+Default: `$FILENAME__cassettes`
+
+Used to customize the folder that contains the nock cassettes. This can be useful when multiple describe in
+the same file use nock.
+
 #### envVars
 
 Type: `object`<br>
