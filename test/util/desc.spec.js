@@ -153,6 +153,17 @@ describe('Testing { describe }', () => {
     });
   });
 
+  describe('Testing fixture', () => {
+    it('Test fixture loaded', ({ fixture }) => {
+      expect(fixture('data')).to.deep.equal({});
+    });
+
+    it('Test fixture not found', async ({ fixture, capture }) => {
+      const e = await capture(() => fixture('unknown'));
+      expect(String(e)).to.equal('AssertionError [ERR_ASSERTION]: fixture "unknown" not found or ambiguous');
+    });
+  });
+
   describe('Testing capture', () => {
     it('Test capture captures error', async ({ capture }) => {
       const error = new Error();

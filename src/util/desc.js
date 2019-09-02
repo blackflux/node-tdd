@@ -34,6 +34,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     useTmpDir: Joi.boolean().optional(),
     useNock: Joi.boolean().optional(),
     nockFolder: Joi.string().optional(),
+    fixtureFolder: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     timestamp: Joi.number().optional().min(0),
     record: Joi.any().optional(),
@@ -43,6 +44,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
   const nockFolder = get(opts, 'nockFolder', '$FILENAME__cassettes');
+  const fixtureFolder = get(opts, 'fixtureFolder', '$FILENAME__fixtures');
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
   const record = get(opts, 'record', false);
@@ -65,6 +67,17 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
         return e;
       }
       throw new assert.AssertionError({ message: 'expected [Function] to throw an error' });
+    },
+    fixture: (name) => {
+      const filepath = fs.guessFile(path.join(
+        path.dirname(testFile),
+        fixtureFolder.replace(/\$FILENAME/g, path.basename(testFile)),
+        name
+      ));
+      if (filepath === null) {
+        throw new assert.AssertionError({ message: `fixture "${name}" not found or ambiguous` });
+      }
+      return fs.smartRead(filepath);
     },
     ...(dir === null ? {} : { dir }),
     ...(logRecorder === null ? {} : {
@@ -108,11 +121,10 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           }
           if (useNock === true) {
             requestRecorder = RequestRecorder({
-              cassetteFolder: `${
-                path.dirname(testFile)
-              }/${
+              cassetteFolder: `${path.join(
+                path.dirname(testFile),
                 nockFolder.replace(/\$FILENAME/g, path.basename(testFile))
-              }/`,
+              )}/`,
               stripHeaders: false,
               strict: true
             });
