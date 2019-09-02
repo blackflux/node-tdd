@@ -67,7 +67,7 @@ Type: `function`
 
 Utility function that can be used to load test fixtures from the `fixtureFolder`.
 
-Internally this uses [smart-fs](https://www.npmjs.com/package/smart-fs) to determine how an extension is loaded.
+Internally this uses [smart-fs](https://www.npmjs.com/package/smart-fs) to determine how a file extension is loaded.
 
 If the fixture is unique, the file extensions is not required.
 
@@ -92,7 +92,7 @@ When set to true, all requests are automatically nocked. The recording files are
 Type: `string`<br>
 Default: `$FILENAME__cassettes`
 
-Used to customize the folder that contains the nock cassettes. This can be useful when multiple describe in
+Used to customize the folder name that contains the nock cassettes. This can be useful when multiple describe in
 the same file use nock.
 
 #### fixtureFolder
@@ -100,7 +100,7 @@ the same file use nock.
 Type: `string`<br>
 Default: `$FILENAME__fixtures`
 
-Used to customize the folder that contains test fixtures.
+Used to customize the folder name that contains the test fixtures.
 Fixtures can be loaded by calling `fixture(FIXTURE_NAME)`.
 
 #### envVars
