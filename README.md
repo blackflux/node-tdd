@@ -108,7 +108,7 @@ Fixtures can be loaded by calling `fixture(FIXTURE_NAME)`.
 Type: `string`<br>
 Default: `$FILENAME.env.yml`
 
-Used to customize the name of the file that environment variables are loaded from if it exists.
+Used to customize the name of the file that environment variables are loaded from, if it exists.
 
 To allow overwriting of environment variables, prefix the name of the environment variable with `^`.
 
