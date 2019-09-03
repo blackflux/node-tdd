@@ -103,14 +103,24 @@ Default: `$FILENAME__fixtures`
 Used to customize the folder name that contains the test fixtures.
 Fixtures can be loaded by calling `fixture(FIXTURE_NAME)`.
 
+#### envVarsFile
+
+Type: `string`<br>
+Default: `$FILENAME.env.yml`
+
+Used to customize the name of the file that environment variables are loaded from, if it exists.
+
+To allow overwriting of environment variables, prefix the name of the environment variable with `^`.
+
 #### envVars
 
 Type: `object`<br>
 Default: -
 
-Used to declare environment variables per describe. Environment variables are also picked up from shadow files as e.g. `test.spec.js.env.yml`.
+Used to declare environment variables per describe. Overwrites environment variables 
+loaded from `envVarsFile` (if allowed).
 
-To allow overwriting of environment variables prefix the name of the environment variable with `^`.
+To allow overwriting of environment variables, prefix the name of the environment variable with `^`.
 
 #### timestamp
 
