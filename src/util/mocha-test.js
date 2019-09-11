@@ -13,6 +13,7 @@ const genCassetteName = (test) => getParents(test)
   .filter((e) => !!e)
   .map((e) => e
     .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
     .replace(/^./, (c) => c.toLowerCase())
     .replace(/-(.)/g, (_, char) => char.toUpperCase()))
   .concat(['recording.json'])
