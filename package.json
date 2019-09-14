@@ -106,7 +106,6 @@
     "lib"
   ],
   "dependencies": {
-    "@hapi/joi": "16.0.1",
     "callsites": "3.1.0",
     "joi-strict": "1.1.0",
     "lodash.get": "4.4.2",
