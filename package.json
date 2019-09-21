@@ -107,7 +107,7 @@
   ],
   "dependencies": {
     "callsites": "3.1.0",
-    "joi-strict": "1.1.5",
+    "joi-strict": "1.1.6",
     "lodash.get": "4.4.2",
     "nock": "11.3.5",
     "smart-fs": "1.9.14",
