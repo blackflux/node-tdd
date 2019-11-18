@@ -60,7 +60,7 @@
     "nyc": "14.1.1",
     "request": "2.88.0",
     "request-promise": "4.2.5",
-    "semantic-release": "15.13.30",
+    "semantic-release": "15.13.31",
     "uuid": "3.3.3"
   },
   "licenses": [
@@ -107,7 +107,7 @@
   ],
   "dependencies": {
     "callsites": "3.1.0",
-    "joi-strict": "1.1.7",
+    "joi-strict": "1.1.8",
     "lodash.get": "4.4.2",
     "nock": "11.7.0",
     "smart-fs": "1.11.0",
