@@ -110,7 +110,7 @@
     "joi-strict": "1.1.10",
     "lodash.get": "4.4.2",
     "nock": "11.7.0",
-    "smart-fs": "1.11.3",
+    "smart-fs": "1.11.4",
     "timekeeper": "2.2.0",
     "tmp": "0.1.0"
   }
