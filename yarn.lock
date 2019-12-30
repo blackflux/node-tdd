@@ -179,10 +179,10 @@
   dependencies:
     smart-fs "1.11.5"
 
-"@blackflux/robo-config-plugin@3.0.4":
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-3.0.4.tgz#eca21e6d07e494073ca8fb3a2ffac9ec14a7634b"
-  integrity sha512-jggX+YF/p19xCnFamBHJTZlAErOopjb3nblvhH4/IcrLq22YUP5ndUBl8NvmVytNus/nQA9YZjExB7npybl9Pw==
+"@blackflux/robo-config-plugin@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-3.0.5.tgz#826dc7d8304fd28bf8c143785bc7bfe7b7a5f1a9"
+  integrity sha512-P0sf5gq7fbBr+5qW4BIFc5KGjFhq8VV+mUoiolFxFvOaeq9uCGnr4zX3z+7YfwBrqOv14LDfSKsY2uSfsLuNTw==
 
 "@hapi/address@^2.1.2":
   version "2.1.2"
@@ -3738,6 +3738,13 @@ joi-strict@1.1.10:
   dependencies:
     "@hapi/joi" "16.1.8"
 
+joi-strict@1.1.11:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/joi-strict/-/joi-strict-1.1.11.tgz#4a08c14772f10f1ef06ec1a9dbabc1b8aedc5753"
+  integrity sha512-CxN0zLwlKPVjWFFDTvAv8rdmjdsFhAkWNCM1kYMqVwG3zCWG+akyO6bufMA4ovKsm9IYaOklTGi+OKLj3mHg5w==
+  dependencies:
+    "@hapi/joi" "16.1.8"
+
 js-gardener@2.0.123:
   version "2.0.123"
   resolved "https://registry.yarnpkg.com/js-gardener/-/js-gardener-2.0.123.tgz#7504d7f0cde2f4130aab29ff09e65edd5e087f0c"
@@ -6644,6 +6651,20 @@ smart-fs@1.11.5:
   version "1.11.5"
   resolved "https://registry.yarnpkg.com/smart-fs/-/smart-fs-1.11.5.tgz#01c0f7a073c9937266ae51045870c9878eb1b4b6"
   integrity sha512-lcBoa8tclM4ySLOR3wZ/IjDptw5AQWRzNuBtTl8QPmxCSsBo6jz/AtepopBYKWCjtMBXOZc/F/ksxPJQP89beA==
+  dependencies:
+    fs-extra "8.1.0"
+    js-yaml "3.13.1"
+    json-stringify-pretty-compact "2.0.0"
+    lodash.clonedeep "4.5.0"
+    lodash.isequal "4.5.0"
+    object-align "1.0.10"
+    xml-js "1.6.11"
+    yaml-boost "1.9.19"
+
+smart-fs@1.11.6:
+  version "1.11.6"
+  resolved "https://registry.yarnpkg.com/smart-fs/-/smart-fs-1.11.6.tgz#4ee36801a5027c48fabb23a235c148ec841ac207"
+  integrity sha512-0VHRbqP9YQazvwej4z7DfXMgv38/UuwA9BvWInoUitaZCzTro5nNg9fLcwGyUlX72cVKame2Fc0l63MEopmpXw==
   dependencies:
     fs-extra "8.1.0"
     js-yaml "3.13.1"
