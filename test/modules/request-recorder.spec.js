@@ -40,7 +40,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     stripHeaders = false,
     strict = false,
     qs = [1],
-    argv = undefined
+    heal = false
   } = {}) => {
     const filePath = path.join(tmpDir, cassetteFile);
 
@@ -48,7 +48,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       cassetteFolder: tmpDir,
       stripHeaders,
       strict,
-      argv
+      heal
     });
     await requestRecorder.inject(path.basename(filePath));
 
@@ -133,7 +133,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     let runner;
 
     beforeEach(({ capture }) => {
-      runner = async (nockHeal, heals, method = 'GET') => {
+      runner = async (heal, heals, method = 'GET') => {
         const cassetteContent = [{
           scope: server.uri,
           method,
@@ -148,7 +148,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         }];
         const cassettePath = path.join(tmpDir, cassetteFile);
         fs.smartWrite(cassettePath, cassetteContent);
-        const e = await capture(() => runTest({ argv: { 'nock-heal': nockHeal } }));
+        const e = await capture(() => runTest({ heal }));
         expect(e.message).to.match(/^Error: Nock: No match for request/);
         const content = fs.smartRead(cassettePath);
         if (heals) {
@@ -175,7 +175,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     });
 
     it('Testing without healing', async ({ capture }) => {
-      await runner(undefined, false);
+      await runner(false, false);
     });
   });
 });

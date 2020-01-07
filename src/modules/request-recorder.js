@@ -4,7 +4,6 @@ const get = require('lodash.get');
 const isEqual = require('lodash.isequal');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
-const minimist = require('minimist');
 const nock = require('nock');
 const nockListener = require('./request-recorder/nock-listener');
 
@@ -17,7 +16,7 @@ module.exports = (opts) => {
     cassetteFolder: Joi.string(),
     stripHeaders: Joi.boolean(),
     strict: Joi.boolean(),
-    argv: Joi.object().optional()
+    heal: Joi.alternatives(Joi.boolean().allow(true), Joi.string())
   }), 'Invalid Options Provided');
   let nockDone = null;
   let cassetteFilePath = null;
@@ -26,7 +25,6 @@ module.exports = (opts) => {
   const outOfOrderErrors = [];
   const expectedCassette = [];
   const pendingMocks = [];
-  const argv = get(opts, 'argv', minimist(process.argv.slice(2)));
 
   return ({
     inject: async (cassetteFile) => {
@@ -53,8 +51,8 @@ module.exports = (opts) => {
       nockBack.fixtures = opts.cassetteFolder;
       nockListener.subscribe('no match', (_, req) => {
         assert(hasCassette === true);
-        if (argv['nock-heal'] !== undefined) {
-          const identifierPath = argv['nock-heal'];
+        if (opts.heal !== false) {
+          const identifierPath = opts.heal;
           const requestBody = get(req, ['_rp_options', 'body']);
           const requestIdentifier = get(requestBody, identifierPath);
           const matchedKey = `${req.method} ${req.href}`;
@@ -63,7 +61,7 @@ module.exports = (opts) => {
             const recordingBody = get(pendingMocks[idx], ['record', 'body']);
             const recordingIdentifier = get(recordingBody, identifierPath);
             if (
-              identifierPath === true
+              opts.heal === true
               || (recordingIdentifier !== undefined && isEqual(recordingIdentifier, requestIdentifier))
             ) {
               expectedCassette.push({ ...pendingMocks[idx].record, body: requestBody });
@@ -101,7 +99,7 @@ module.exports = (opts) => {
       nockDone();
       nockDone = null;
       nockListener.unsubscribeAll('no match');
-      if (argv['nock-heal'] !== undefined) {
+      if (opts.heal !== false) {
         fs.smartWrite(cassetteFilePath, expectedCassette);
       }
       if (opts.strict !== false) {
