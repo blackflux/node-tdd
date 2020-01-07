@@ -53,24 +53,27 @@ module.exports = (opts) => {
         assert(hasCassette === true);
         if (opts.heal !== false) {
           const reqKey = `${req.method} ${req.href}`;
-          const idx = pendingMocks.findIndex((e) => e.key === reqKey);
-          if (idx !== -1) {
-            const requestBody = get(req, ['_rp_options', 'body']);
-            if (
-              opts.heal === true
-              || (() => {
-                const identifierPath = opts.heal;
-                const requestIdentifier = get(requestBody, identifierPath);
-                if (requestIdentifier === undefined) {
-                  return false;
-                }
-                const recordingBody = get(pendingMocks[idx], ['record', 'body']);
-                const recordingIdentifier = get(recordingBody, identifierPath);
-                return isEqual(recordingIdentifier, requestIdentifier);
-              })()
-            ) {
-              expectedCassette.push({ ...pendingMocks[idx].record, body: requestBody });
-              pendingMocks.splice(idx, 1);
+          const requestBody = get(req, ['_rp_options', 'body']);
+          for (let idx = 0; idx < pendingMocks.length; idx += 1) {
+            const mock = pendingMocks[idx];
+            if (mock.key === reqKey) {
+              if (
+                opts.heal === true
+                || (() => {
+                  const identifierPath = opts.heal;
+                  const requestIdentifier = get(requestBody, identifierPath);
+                  if (requestIdentifier === undefined) {
+                    return false;
+                  }
+                  const recordingBody = get(mock, ['record', 'body']);
+                  const recordingIdentifier = get(recordingBody, identifierPath);
+                  return isEqual(recordingIdentifier, requestIdentifier);
+                })()
+              ) {
+                expectedCassette.push({ ...mock.record, body: requestBody });
+                pendingMocks.splice(idx, 1);
+                break;
+              }
             }
           }
         }
