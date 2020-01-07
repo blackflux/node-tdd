@@ -109,6 +109,8 @@
     "callsites": "3.1.0",
     "joi-strict": "1.1.11",
     "lodash.get": "4.4.2",
+    "lodash.isequal": "4.5.0",
+    "minimist": "1.2.0",
     "nock": "11.7.1",
     "smart-fs": "1.11.8",
     "timekeeper": "2.2.0",

@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('smart-fs');
 const callsites = require('callsites');
 const get = require('lodash.get');
+const minimist = require('minimist');
 const tmp = require('tmp');
 const Joi = require('joi-strict');
 const RequestRecorder = require('../modules/request-recorder');
@@ -55,6 +56,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const record = get(opts, 'record', false);
   const cryptoSeed = get(opts, 'cryptoSeed', null);
   const timeout = get(opts, 'timeout', null);
+  const nockHeal = get(minimist(process.argv.slice(2)), 'nock-heal', false);
 
   let dir = null;
   let requestRecorder = null;
@@ -124,7 +126,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
             requestRecorder = RequestRecorder({
               cassetteFolder: `${nockFolder}/`,
               stripHeaders: false,
-              strict: true
+              strict: true,
+              heal: nockHeal
             });
           }
           await beforeCb.call(this);

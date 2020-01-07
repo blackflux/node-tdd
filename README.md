@@ -49,10 +49,10 @@ The tmp directory for this test. Only available when `useTmpDir` is set.
 Type: `object`
 
 Can be called to interact with the currently captured logs. Exposes the following functions:
-- `get(level = null)`:  Returns array of recorded logs. Can be restricted by passing in the log level. 
+- `get(level = null)`:  Returns array of recorded logs. Can be restricted by passing in the log level.
 - `reset()`: Reset currently captured logs
 - `verbose(flag: boolean)`: Set verbosity mode of capture (if the original logger function is called)
- 
+
  Only available when `recordConsole` is set.
 
 #### capture
@@ -70,6 +70,16 @@ Utility function that can be used to load test fixtures from the `fixtureFolder`
 Internally this uses [smart-fs](https://www.npmjs.com/package/smart-fs) to determine how a file extension is loaded.
 
 If the fixture is unique, the file extensions is not required.
+
+### CLI Args
+
+#### nock-heal
+
+Used to heal nock recordings. This is useful when the body of (some) recordings is outdated or the recording order is invalid.
+Can be used in two ways:
+
+- `--nock-heal`: Will ignore the body entirely and try to heal the recordings. Useful when the method-url combinations are all distinct in the cassette file.
+- `--nock-heal some.path.in-body`: Allows more control over how recordings are healed. The provided path is used to match the correct recordings with the new requests. Useful when the method-url combinations are not unique, but an identifier in the body can be used to distinguish recordings.
 
 ### Options
 
@@ -117,7 +127,7 @@ To allow overwriting of environment variables, prefix the name of the environmen
 Type: `object`<br>
 Default: -
 
-Used to declare environment variables per describe. Overwrites environment variables 
+Used to declare environment variables per describe. Overwrites environment variables
 loaded from `envVarsFile` (if allowed).
 
 To allow overwriting of environment variables, prefix the name of the environment variable with `^`.
