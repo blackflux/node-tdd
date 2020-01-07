@@ -52,8 +52,8 @@ module.exports = (opts) => {
       nockListener.subscribe('no match', (_, req) => {
         assert(hasCassette === true);
         if (opts.heal !== false) {
-          const matchedKey = `${req.method} ${req.href}`;
-          const idx = pendingMocks.findIndex((e) => e.key === matchedKey);
+          const reqKey = `${req.method} ${req.href}`;
+          const idx = pendingMocks.findIndex((e) => e.key === reqKey);
           if (idx !== -1) {
             const requestBody = get(req, ['_rp_options', 'body']);
             if (
