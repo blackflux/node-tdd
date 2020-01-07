@@ -133,10 +133,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     let runner;
 
     beforeEach(({ capture }) => {
-      runner = async (nockHeal, heals) => {
+      runner = async (nockHeal, heals, method = 'GET') => {
         const cassetteContent = [{
           scope: server.uri,
-          method: 'GET',
+          method,
           path: '/?q=1',
           body: {
             id: 123,
@@ -154,8 +154,6 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         if (heals) {
           expect(content[0].body.payload).to.not.equal(null);
           await runTest();
-        } else {
-          expect(content[0].body.payload).to.equal(null);
         }
       };
     });
@@ -166,6 +164,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
 
     it('Testing healing with body matching', async () => {
       await runner('id', true);
+    });
+
+    it('Testing healing with unknown recording', async () => {
+      await runner('id', false, 'POST');
     });
 
     it('Testing healing with undefined body matching', async () => {

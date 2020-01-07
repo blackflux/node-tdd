@@ -75,7 +75,8 @@ If the fixture is unique, the file extensions is not required.
 
 #### nock-heal
 
-Used to heal nock recordings. This is useful when the body of (some) recordings is outdated. Can be used in two ways:
+Used to heal nock recordings. This is useful when the body of (some) recordings is outdated or the recording order is invalid.
+Can be used in two ways:
 
 - `--nock-heal`: Will ignore the body entirely and try to heal the recordings. Useful when the method-url combinations are all distinct in the cassette file.
 - `--nock-heal some.path.in-body`: Allows more control over how recordings are healed. The provided path is used to match the correct recordings with the new requests. Useful when the method-url combinations are not unique, but an identifier in the body can be used to distinguish recordings.
