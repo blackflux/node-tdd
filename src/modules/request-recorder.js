@@ -16,7 +16,7 @@ module.exports = (opts) => {
     cassetteFolder: Joi.string(),
     stripHeaders: Joi.boolean(),
     strict: Joi.boolean(),
-    heal: Joi.alternatives(Joi.boolean().allow(true), Joi.string())
+    heal: Joi.alternatives(Joi.boolean(), Joi.string())
   }), 'Invalid Options Provided');
   let nockDone = null;
   let cassetteFilePath = null;
