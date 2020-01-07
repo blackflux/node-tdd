@@ -52,17 +52,22 @@ module.exports = (opts) => {
       nockListener.subscribe('no match', (_, req) => {
         assert(hasCassette === true);
         if (opts.heal !== false) {
-          const identifierPath = opts.heal;
-          const requestBody = get(req, ['_rp_options', 'body']);
-          const requestIdentifier = get(requestBody, identifierPath);
           const matchedKey = `${req.method} ${req.href}`;
           const idx = pendingMocks.findIndex((e) => e.key === matchedKey);
           if (idx !== -1) {
-            const recordingBody = get(pendingMocks[idx], ['record', 'body']);
-            const recordingIdentifier = get(recordingBody, identifierPath);
+            const requestBody = get(req, ['_rp_options', 'body']);
             if (
               opts.heal === true
-              || (recordingIdentifier !== undefined && isEqual(recordingIdentifier, requestIdentifier))
+              || (() => {
+                const identifierPath = opts.heal;
+                const requestIdentifier = get(requestBody, identifierPath);
+                if (requestIdentifier === undefined) {
+                  return false;
+                }
+                const recordingBody = get(pendingMocks[idx], ['record', 'body']);
+                const recordingIdentifier = get(recordingBody, identifierPath);
+                return isEqual(recordingIdentifier, requestIdentifier);
+              })()
             ) {
               expectedCassette.push({ ...pendingMocks[idx].record, body: requestBody });
               pendingMocks.splice(idx, 1);
