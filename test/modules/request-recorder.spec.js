@@ -36,20 +36,39 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     tmpDir = dir;
   });
 
-  const runTest = async ({ stripHeaders = false, strict = false, qs = [1] } = {}) => {
+  const runTest = async ({
+    stripHeaders = false,
+    strict = false,
+    qs = [1],
+    argv = undefined
+  } = {}) => {
     const filePath = path.join(tmpDir, cassetteFile);
 
-    const requestRecorder = RequestRecorder({ cassetteFolder: tmpDir, stripHeaders, strict });
+    const requestRecorder = RequestRecorder({
+      cassetteFolder: tmpDir,
+      stripHeaders,
+      strict,
+      argv
+    });
     await requestRecorder.inject(path.basename(filePath));
 
-    for (let idx = 0; idx < qs.length; idx += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      expect(await request({ uri: `${server.uri}?q=${qs[idx]}`, json: true }))
-        .to.deep.equal({ data: String(qs[idx]) });
+    try {
+      for (let idx = 0; idx < qs.length; idx += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        expect(await request({
+          uri: `${server.uri}?q=${qs[idx]}`,
+          body: {
+            id: 123,
+            payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6'
+          },
+          json: true
+        }))
+          .to.deep.equal({ data: String(qs[idx]) });
+      }
+    } finally {
+      requestRecorder.release();
+      requestRecorder.shutdown();
     }
-
-    requestRecorder.release();
-    requestRecorder.shutdown();
 
     return { cassette: fs.smartRead(filePath), ...requestRecorder.get() };
   };
@@ -108,5 +127,53 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     fs.smartWrite(path.join(tmpDir, `${cassetteFile}_other.json`), []);
     const e = await capture(() => runTest());
     expect(e.message).to.equal('Unexpected file(s) in cassette folder: file1.json_other.json');
+  });
+
+  describe('Testing healing of recording', () => {
+    let runner;
+
+    beforeEach(({ capture }) => {
+      runner = async (nockHeal, heals) => {
+        const cassetteContent = [{
+          scope: server.uri,
+          method: 'GET',
+          path: '/?q=1',
+          body: {
+            id: 123,
+            payload: null
+          },
+          status: 200,
+          response: { data: '1' },
+          responseIsBinary: false
+        }];
+        const cassettePath = path.join(tmpDir, cassetteFile);
+        fs.smartWrite(cassettePath, cassetteContent);
+        const e = await capture(() => runTest({ argv: { 'nock-heal': nockHeal } }));
+        expect(e.message).to.match(/^Error: Nock: No match for request/);
+        const content = fs.smartRead(cassettePath);
+        if (heals) {
+          expect(content[0].body.payload).to.not.equal(null);
+          await runTest();
+        } else {
+          expect(content[0].body.payload).to.equal(null);
+        }
+      };
+    });
+
+    it('Testing healing without body matching', async () => {
+      await runner(true, true);
+    });
+
+    it('Testing healing with body matching', async () => {
+      await runner('id', true);
+    });
+
+    it('Testing healing with undefined body matching', async () => {
+      await runner('id.unknown', false);
+    });
+
+    it('Testing without healing', async ({ capture }) => {
+      await runner(undefined, false);
+    });
   });
 });

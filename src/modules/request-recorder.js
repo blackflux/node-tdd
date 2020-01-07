@@ -1,8 +1,12 @@
 const assert = require('assert');
 const path = require('path');
+const get = require('lodash.get');
+const isEqual = require('lodash.isequal');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
+const minimist = require('minimist');
 const nock = require('nock');
+const nockListener = require('./request-recorder/nock-listener');
 
 const nockBack = nock.back;
 
@@ -12,10 +16,14 @@ module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
     cassetteFolder: Joi.string(),
     stripHeaders: Joi.boolean(),
-    strict: Joi.boolean()
+    strict: Joi.boolean(),
+    argv: Joi.object().optional()
   }), 'Invalid Options Provided');
   let nockDone = null;
   let cassetteFilePath = null;
+  let cassetteContent;
+  let cassetteContentParsed;
+  let isCassetteAltered = false;
   const knownCassetteNames = [];
   const records = [];
   const outOfOrderErrors = [];
@@ -32,19 +40,46 @@ module.exports = (opts) => {
       pendingMocks.length = 0;
 
       cassetteFilePath = path.join(opts.cassetteFolder, cassetteFile);
+      cassetteContent = undefined;
+      cassetteContentParsed = undefined;
+      isCassetteAltered = false;
       const hasCassette = fs.existsSync(cassetteFilePath);
       if (hasCassette) {
-        const cassetteContent = fs.smartRead(cassetteFilePath);
-        pendingMocks.push(...nock
+        cassetteContent = fs.smartRead(cassetteFilePath);
+        cassetteContentParsed = nock
           .define(cassetteContent)
           .map((e, idx) => ({
             key: buildKey(e.interceptors[0]),
             record: cassetteContent[idx]
-          })));
+          }));
+        pendingMocks.push(...cassetteContentParsed);
       }
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
+      nockListener.subscribe('no match', ({ interceptors }, req) => {
+        assert(hasCassette === true);
+        const argv = get(opts, 'argv', minimist(process.argv.slice(2)));
+        if (argv['nock-heal'] !== undefined) {
+          const identifierPath = argv['nock-heal'];
+          const requestBody = get(req, ['_rp_options', 'body']);
+          const requestIdentifier = get(requestBody, identifierPath);
+          const keys = interceptors.map((interceptor) => buildKey(interceptor));
+          cassetteContent
+            .filter((rec, idx) => keys.includes(cassetteContentParsed[idx].key))
+            .forEach((e) => {
+              const recordingBody = get(e, 'body');
+              const recordingIdentifier = get(recordingBody, identifierPath);
+              if (
+                identifierPath === true
+                || (recordingIdentifier !== undefined && isEqual(recordingIdentifier, requestIdentifier))
+              ) {
+                e.body = requestBody;
+                isCassetteAltered = true;
+              }
+            });
+        }
+      });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (r) => {
           records.push(r);
@@ -73,6 +108,10 @@ module.exports = (opts) => {
       assert(nockDone !== null);
       nockDone();
       nockDone = null;
+      nockListener.unsubscribeAll('no match');
+      if (isCassetteAltered === true) {
+        fs.smartWrite(cassetteFilePath, cassetteContent);
+      }
       if (opts.strict !== false) {
         if (outOfOrderErrors.length !== 0) {
           throw new Error(`Out of Order Recordings: ${outOfOrderErrors.join(', ')}`);
