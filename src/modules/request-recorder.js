@@ -49,11 +49,14 @@ module.exports = (opts) => {
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
-      nockListener.subscribe('no match', (_, req) => {
+      nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
         if (opts.heal !== false) {
-          const reqKey = `${req.method} ${req.href}`;
-          const requestBody = get(req, ['_rp_options', 'body']);
+          const reqKey = `${req.method} ${req.proto}://${req.hostname}:${req.port}${req.path}`;
+          let requestBody = body;
+          try {
+            requestBody = JSON.parse(body);
+          } finally { /* */ }
           for (let idx = 0; idx < pendingMocks.length; idx += 1) {
             const mock = pendingMocks[idx];
             if (mock.key === reqKey) {
