@@ -1,11 +1,8 @@
 const assert = require('assert');
 const path = require('path');
-const get = require('lodash.get');
-const isEqual = require('lodash.isequal');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
 const nock = require('nock');
-const nockListener = require('./request-recorder/nock-listener');
 
 const nockBack = nock.back;
 
@@ -50,42 +47,26 @@ module.exports = (opts) => {
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
-      nockListener.subscribe('no match', (_, req, body) => {
-        assert(hasCassette === true);
-        if (opts.heal !== false) {
-          const reqKey = `${req.method} ${req.proto}://${req.hostname}:${req.port}${req.path}`;
-          let requestBody = body;
-          try {
-            requestBody = JSON.parse(body);
-          } finally { /* */ }
-          for (let idx = 0; idx < pendingMocks.length; idx += 1) {
-            const mock = pendingMocks[idx];
-            if (mock.key === reqKey) {
-              if (
-                opts.heal === true
-                || (() => {
-                  const identifierPath = opts.heal;
-                  const requestIdentifier = get(requestBody, identifierPath);
-                  if (requestIdentifier === undefined) {
-                    return false;
-                  }
-                  const recordingBody = get(mock, ['record', 'body']);
-                  const recordingIdentifier = get(recordingBody, identifierPath);
-                  return isEqual(recordingIdentifier, requestIdentifier);
-                })()
-              ) {
-                expectedCassette.push({ ...mock.record, body: requestBody });
-                pendingMocks.splice(idx, 1);
-                break;
-              }
-            }
-          }
-        }
-      });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
-        before: (r) => {
-          records.push(r);
-          return r;
+        before: (scope, scopeIdx) => {
+          records.push({ ...scope });
+          // eslint-disable-next-line no-param-reassign
+          scope.filteringRequestBody = (body) => {
+            if (opts.heal === 'body') {
+              const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
+              assert(idx === 0);
+              let requestBody = body;
+              try {
+                requestBody = JSON.parse(requestBody);
+              } catch (e) {
+                /* */
+              }
+              pendingMocks[idx].record.body = requestBody === null ? 'null' : requestBody;
+              return scope.body;
+            }
+            return body;
+          };
+          return scope;
         },
         after: (scope, scopeIdx) => {
           scope.on('request', () => {
@@ -109,7 +90,6 @@ module.exports = (opts) => {
       assert(nockDone !== null);
       nockDone();
       nockDone = null;
-      nockListener.unsubscribeAll('no match');
       if (opts.heal !== false) {
         fs.smartWrite(cassetteFilePath, expectedCassette);
       }
