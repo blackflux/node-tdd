@@ -40,7 +40,11 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     stripHeaders = false,
     strict = false,
     qs = [1],
-    heal = false
+    heal = false,
+    body = {
+      id: 123,
+      payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6'
+    }
   } = {}) => {
     const filePath = path.join(tmpDir, cassetteFile);
 
@@ -57,10 +61,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         // eslint-disable-next-line no-await-in-loop
         expect(await request({
           uri: `${server.uri}?q=${qs[idx]}`,
-          body: {
-            id: 123,
-            payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6'
-          },
+          body,
           json: true
         }))
           .to.deep.equal({ data: String(qs[idx]) });
@@ -133,7 +134,11 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     let runner;
 
     beforeEach(({ capture }) => {
-      runner = async (heal, heals, method = 'GET') => {
+      runner = async (heal, heals, {
+        method = 'GET',
+        raises = true,
+        body = undefined
+      } = {}) => {
         const cassetteContent = [{
           scope: server.uri,
           method,
@@ -148,33 +153,41 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         }];
         const cassettePath = path.join(tmpDir, cassetteFile);
         fs.smartWrite(cassettePath, cassetteContent);
-        const e = await capture(() => runTest({ heal }));
-        expect(e.message).to.match(/^Error: Nock: No match for request/);
+        if (raises) {
+          const e = await capture(() => runTest({ heal, body }));
+          expect(e.message).to.match(/^Error: Nock: No match for request/);
+        } else {
+          await runTest({ heal, body });
+        }
         const content = fs.smartRead(cassettePath);
         if (heals) {
           expect(content[0].body.payload).to.not.equal(null);
-          await runTest();
+          await runTest({ body });
         }
       };
     });
 
     it('Testing healing without body matching', async () => {
-      await runner(true, true);
+      await runner(true, false);
     });
 
     it('Testing healing with body matching', async () => {
-      await runner('id', true);
+      await runner('body', true, { raises: false });
+    });
+
+    it('Testing healing with body matching and null', async () => {
+      await runner('body', true, { raises: false, body: null });
     });
 
     it('Testing healing with unknown recording', async () => {
-      await runner('id', false, 'POST');
+      await runner('body', false, { method: 'POST' });
     });
 
     it('Testing healing with undefined body matching', async () => {
-      await runner('id.unknown', false);
+      await runner('body', false, { raises: false });
     });
 
-    it('Testing without healing', async ({ capture }) => {
+    it('Testing without healing', async () => {
       await runner(false, false);
     });
   });
