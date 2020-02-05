@@ -88,13 +88,13 @@ module.exports = (opts) => {
           return r;
         },
         after: (scope, scopeIdx) => {
-          scope.on('request', (req, interceptor) => {
+          scope.on('request', () => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
             expectedCassette.push(pendingMocks[idx].record);
-            pendingMocks.splice(idx, 1);
             if (idx !== 0) {
-              outOfOrderErrors.push(buildKey(interceptor));
+              outOfOrderErrors.push(pendingMocks[idx].key);
             }
+            pendingMocks.splice(idx, 1);
           });
         },
         afterRecord: (recordings) => JSON
