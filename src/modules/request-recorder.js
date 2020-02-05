@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
 const nock = require('nock');
+const nockListener = require('./request-recorder/nock-listener');
 
 const nockBack = nock.back;
 
@@ -47,6 +48,9 @@ module.exports = (opts) => {
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
+      nockListener.subscribe('no match', (_, req, body) => {
+        assert(hasCassette === true);
+      });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
           records.push({ ...scope });
@@ -90,6 +94,7 @@ module.exports = (opts) => {
       assert(nockDone !== null);
       nockDone();
       nockDone = null;
+      nockListener.unsubscribeAll('no match');
       if (opts.heal !== false) {
         fs.smartWrite(cassetteFilePath, expectedCassette);
       }
