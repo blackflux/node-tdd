@@ -42,6 +42,7 @@ module.exports = (opts) => {
         pendingMocks.push(...nock
           .define(cassetteContent)
           .map((e, idx) => ({
+            idx,
             key: buildKey(e.interceptors[0]),
             record: cassetteContent[idx]
           })));
@@ -86,14 +87,13 @@ module.exports = (opts) => {
           records.push(r);
           return r;
         },
-        after: (scope) => {
+        after: (scope, scopeIdx) => {
           scope.on('request', (req, interceptor) => {
-            const matchedKey = buildKey(interceptor);
-            const idx = pendingMocks.findIndex((e) => e.key === matchedKey);
+            const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
             expectedCassette.push(pendingMocks[idx].record);
             pendingMocks.splice(idx, 1);
             if (idx !== 0) {
-              outOfOrderErrors.push(matchedKey);
+              outOfOrderErrors.push(buildKey(interceptor));
             }
           });
         },
