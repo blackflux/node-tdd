@@ -56,9 +56,8 @@ module.exports = (opts) => {
           records.push({ ...scope });
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
-            if (opts.heal === 'body') {
+            if (['path', 'body'].includes(opts.heal)) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-              assert(idx === 0);
               let requestBody = body;
               try {
                 requestBody = JSON.parse(requestBody);
@@ -69,6 +68,15 @@ module.exports = (opts) => {
               return scope.body;
             }
             return body;
+          };
+          // eslint-disable-next-line no-param-reassign
+          scope.filteringPath = (requestPath) => {
+            if (['path'].includes(opts.heal)) {
+              const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
+              pendingMocks[idx].record.path = requestPath;
+              return scope.path;
+            }
+            return requestPath;
           };
           return scope;
         },
