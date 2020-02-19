@@ -2,6 +2,7 @@ const path = require('path');
 const http = require('http');
 const fs = require('smart-fs');
 const expect = require('chai').expect;
+const get = require('lodash.get');
 const request = require('request-promise');
 const { describe } = require('../../src/index');
 const RequestRecorder = require('../../src/modules/request-recorder');
@@ -134,10 +135,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     let runner;
 
     beforeEach(({ capture }) => {
-      runner = async (heal, heals, {
+      runner = async (heal, {
         method = 'GET',
-        raises = true,
-        body = undefined
+        qs = [1],
+        body = undefined,
+        raises = false,
+        heals = true
       } = {}) => {
         const cassetteContent = [{
           scope: server.uri,
@@ -148,47 +151,54 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             payload: null
           },
           status: 200,
-          response: { data: '1' },
+          response: { data: String(qs[0]) },
           responseIsBinary: false
         }];
         const cassettePath = path.join(tmpDir, cassetteFile);
         fs.smartWrite(cassettePath, cassetteContent);
         if (raises) {
-          const e = await capture(() => runTest({ heal, body }));
+          const e = await capture(() => runTest({ heal, qs, body }));
           expect(e.message).to.match(/^Error: Nock: No match for request/);
         } else {
-          await runTest({ heal, body });
+          await runTest({ heal, qs, body });
         }
         const content = fs.smartRead(cassettePath);
         if (heals) {
           expect(content[0].body.payload).to.not.equal(null);
-          await runTest({ body });
+          expect(content[0].path).to.equal(`/?q=${qs[0]}`);
+          await runTest({ qs, body });
+        } else {
+          expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
       };
     });
 
-    it('Testing healing without body matching', async () => {
-      await runner(true, false);
-    });
-
-    it('Testing healing with body matching', async () => {
-      await runner('body', true, { raises: false });
-    });
-
-    it('Testing healing with body matching and null', async () => {
-      await runner('body', true, { raises: false, body: null });
-    });
-
-    it('Testing healing with unknown recording', async () => {
-      await runner('body', false, { method: 'POST' });
-    });
-
-    it('Testing healing with undefined body matching', async () => {
-      await runner('body', false, { raises: false });
-    });
-
     it('Testing without healing', async () => {
-      await runner(false, false);
+      await runner(false, { heals: false, raises: true });
+    });
+
+    it('Testing order healing', async () => {
+      await runner(true, { heals: false, raises: true });
+    });
+
+    it('Testing body healing', async () => {
+      await runner('body');
+    });
+
+    it('Testing body healing with null body', async () => {
+      await runner('body', { body: null });
+    });
+
+    it('Testing body healing with mismatched request method', async () => {
+      await runner('body', { raises: true, heals: false, method: 'POST' });
+    });
+
+    it('Testing body healing with mismatched request path', async () => {
+      await runner('body', { qs: [2], raises: true, heals: false });
+    });
+
+    it('Testing path healing', async () => {
+      await runner('path', { qs: [2] });
     });
   });
 });
