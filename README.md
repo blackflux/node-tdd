@@ -81,6 +81,7 @@ Can be used in the following ways:
 - `--nock-heal`: Will try to heal ordering of nock cassette recordings
 - `--nock-heal body`: Will try to heal bodies of nock cassette recordings (ordering is expected to be correct)
 - `--nock-heal path`: Will try to heal bodies and paths of nock cassette recordings (ordering is expected to be correct)
+- `--nock-heal magic`: Will try to heal bodies, paths and responses of nock cassette recordings (ordering is expected to be correct)
 
 ### Options
 
