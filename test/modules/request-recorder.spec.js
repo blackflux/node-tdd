@@ -4,6 +4,8 @@ const fs = require('smart-fs');
 const expect = require('chai').expect;
 const get = require('lodash.get');
 const request = require('request-promise');
+const { logger } = require('lambda-monitor-logger');
+const aws = require('aws-sdk-wrap')({ logger });
 const { describe } = require('../../src/index');
 const RequestRecorder = require('../../src/modules/request-recorder');
 
@@ -37,16 +39,11 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     tmpDir = dir;
   });
 
-  const runTest = async ({
+  const nockRecord = async (fn, {
     stripHeaders = false,
     strict = false,
-    qs = [1],
-    heal = false,
-    body = {
-      id: 123,
-      payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6'
-    }
-  } = {}) => {
+    heal = false
+  }) => {
     const filePath = path.join(tmpDir, cassetteFile);
 
     const requestRecorder = RequestRecorder({
@@ -58,6 +55,26 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     await requestRecorder.inject(path.basename(filePath));
 
     try {
+      await fn();
+    } finally {
+      requestRecorder.release();
+      requestRecorder.shutdown();
+    }
+
+    return { cassette: fs.smartRead(filePath), ...requestRecorder.get() };
+  };
+
+  const runTest = ({
+    qs = [1],
+    body = {
+      id: 123,
+      payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6'
+    },
+    stripHeaders = undefined,
+    strict = undefined,
+    heal = undefined
+  } = {}) => nockRecord(
+    async () => {
       for (let idx = 0; idx < qs.length; idx += 1) {
         // eslint-disable-next-line no-await-in-loop
         expect(await request({
@@ -67,13 +84,9 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         }))
           .to.deep.equal({ data: String(qs[idx]) });
       }
-    } finally {
-      requestRecorder.release();
-      requestRecorder.shutdown();
-    }
-
-    return { cassette: fs.smartRead(filePath), ...requestRecorder.get() };
-  };
+    },
+    { stripHeaders, strict, heal }
+  );
 
   it('Testing headers captured', async () => {
     const { cassette } = await runTest();
@@ -199,6 +212,21 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
 
     it('Testing path healing', async () => {
       await runner('path', { qs: [2] });
+    });
+
+    it('Testing magic healing (no magic)', async () => {
+      await runner('magic', { qs: [2] });
+    });
+
+    describe('Testing magic healing', { cryptoSeed: 'd28095c6-19f4-4dc2-a7cc-f7640c032967' }, () => {
+      it('Testing heal SQS response', async ({ fixture }) => {
+        fs.smartWrite(path.join(tmpDir, cassetteFile), fixture('sqs-cassette-bad'));
+        const r = await nockRecord(() => aws.sqs.sendMessageBatch({
+          messages: [{ k: 1 }, { k: 2 }],
+          queueUrl: process.env.QUEUE_URL
+        }), { heal: 'magic' });
+        expect(r.expectedCassette).to.deep.equal(fixture('sqs-cassette-expected'));
+      });
     });
   });
 });
