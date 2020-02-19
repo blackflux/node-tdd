@@ -4,6 +4,7 @@ const fs = require('smart-fs');
 const Joi = require('joi-strict');
 const nock = require('nock');
 const nockListener = require('./request-recorder/nock-listener');
+const sqsHeal = require('./request-recorder/sqs-heal');
 
 const nockBack = nock.back;
 
@@ -53,10 +54,11 @@ module.exports = (opts) => {
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
-          records.push({ ...scope });
+          const scopeCopy = { ...scope };
+          records.push(scopeCopy);
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
-            if (['path', 'body'].includes(opts.heal)) {
+            if (['magic', 'path', 'body'].includes(opts.heal)) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
               let requestBody = body;
               try {
@@ -71,12 +73,27 @@ module.exports = (opts) => {
           };
           // eslint-disable-next-line no-param-reassign
           scope.filteringPath = (requestPath) => {
-            if (['path'].includes(opts.heal)) {
+            if (['magic', 'path'].includes(opts.heal)) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
               pendingMocks[idx].record.path = requestPath;
               return scope.path;
             }
             return requestPath;
+          };
+          // eslint-disable-next-line no-param-reassign
+          scope.response = (uri, requestBody) => {
+            if (['magic'].includes(opts.heal)) {
+              const response = [
+                sqsHeal
+              ].reduce(
+                (responseBody, fn) => fn(requestBody, responseBody, scope),
+                scopeCopy.response
+              );
+              // happens after scope.on('request', ...)
+              expectedCassette[expectedCassette.length - 1].response = response;
+              return response;
+            }
+            return scopeCopy.response;
           };
           return scope;
         },
