@@ -4,7 +4,7 @@ const fs = require('smart-fs');
 const Joi = require('joi-strict');
 const nock = require('nock');
 const nockListener = require('./request-recorder/nock-listener');
-const sqsHeal = require('./request-recorder/sqs-heal');
+const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
 
 const nockBack = nock.back;
 
@@ -84,7 +84,7 @@ module.exports = (opts) => {
           scope.response = (uri, requestBody) => {
             if (['magic'].includes(opts.heal)) {
               const response = [
-                sqsHeal
+                healSqsSendMessageBatch
               ].reduce(
                 (responseBody, fn) => fn(requestBody, responseBody, scope),
                 scopeCopy.response
