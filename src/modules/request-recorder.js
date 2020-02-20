@@ -86,15 +86,14 @@ module.exports = (opts) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
             if (['magic'].includes(opts.heal)) {
-              const responseBody = [
+              // eslint-disable-next-line no-param-reassign
+              interceptor.body = [
                 healSqsSendMessageBatch
               ].reduce(
-                (respBody, fn) => fn(requestBodyString, respBody, scope),
+                (responseBody, fn) => fn(requestBodyString, responseBody, scope),
                 interceptor.body
               );
-              pendingMocks[idx].record.response = responseBody;
-              // eslint-disable-next-line no-param-reassign
-              interceptor.body = responseBody;
+              pendingMocks[idx].record.response = interceptor.body;
             }
 
             expectedCassette.push(pendingMocks[idx].record);
