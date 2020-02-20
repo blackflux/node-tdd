@@ -54,8 +54,7 @@ module.exports = (opts) => {
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
-          const scopeCopy = { ...scope };
-          records.push(scopeCopy);
+          records.push({ ...scope });
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
             if (['magic', 'path', 'body'].includes(opts.heal)) {
@@ -80,26 +79,23 @@ module.exports = (opts) => {
             }
             return requestPath;
           };
-          // eslint-disable-next-line no-param-reassign
-          scope.response = (uri, requestBody) => {
-            if (['magic'].includes(opts.heal)) {
-              const response = [
-                healSqsSendMessageBatch
-              ].reduce(
-                (responseBody, fn) => fn(requestBody, responseBody, scope),
-                scopeCopy.response
-              );
-              // happens after scope.on('request', ...)
-              expectedCassette[expectedCassette.length - 1].response = response;
-              return response;
-            }
-            return scopeCopy.response;
-          };
           return scope;
         },
         after: (scope, scopeIdx) => {
-          scope.on('request', () => {
+          scope.on('request', (req, interceptor, requestBodyString) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
+
+            if (['magic'].includes(opts.heal)) {
+              // eslint-disable-next-line no-param-reassign
+              interceptor.body = [
+                healSqsSendMessageBatch
+              ].reduce(
+                (responseBody, fn) => fn(requestBodyString, responseBody, scope),
+                interceptor.body
+              );
+              pendingMocks[idx].record.response = interceptor.body;
+            }
+
             expectedCassette.push(pendingMocks[idx].record);
             if (idx !== 0) {
               outOfOrderErrors.push(pendingMocks[idx].key);

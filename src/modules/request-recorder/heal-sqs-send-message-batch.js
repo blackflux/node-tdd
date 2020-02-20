@@ -27,7 +27,7 @@ const parseResponseBody = (body) => {
 
 module.exports = (requestBody, responseBody, scope) => {
   if (
-    !/^https:\/\/sqs\.[a-z0-9-]+\.amazonaws\.com:443$/.test(scope.scope)
+    !/^https:\/\/sqs\.[a-z0-9-]+\.amazonaws\.com:443$/.test(scope.basePath)
     || !responseBody.startsWith('<?xml version="1.0"?><SendMessageBatchResponse')) {
     return responseBody;
   }
