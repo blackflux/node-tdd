@@ -19,13 +19,13 @@ describe('Testing RandomSeeder', () => {
 
     describe('Testing Random Consistent', () => {
       it('Testing First', () => {
-        expect(uuid4()).to.deep.equal('afff0cf7-a373-4b2c-9184-d02b35c4b970');
-        expect(uuid4()).to.deep.equal('864c731c-49f5-41c8-aca6-5cfee343c576');
+        expect(uuid4()).to.deep.equal('85123163-cdd6-4a8c-9e47-aa0a7a0f6a91');
+        expect(uuid4()).to.deep.equal('8d1831fe-751b-4aa1-80df-7f6c546e37c7');
       });
 
       it('Testing Second', () => {
-        expect(uuid4()).to.deep.equal('afff0cf7-a373-4b2c-9184-d02b35c4b970');
-        expect(uuid4()).to.deep.equal('864c731c-49f5-41c8-aca6-5cfee343c576');
+        expect(uuid4()).to.deep.equal('85123163-cdd6-4a8c-9e47-aa0a7a0f6a91');
+        expect(uuid4()).to.deep.equal('8d1831fe-751b-4aa1-80df-7f6c546e37c7');
       });
     });
 
@@ -73,8 +73,8 @@ describe('Testing RandomSeeder', () => {
     });
 
     it('Testing Random Consistent Reseeded', () => {
-      expect(uuid4()).to.deep.equal('198acafb-fddd-47c2-adda-6e4e735b529e');
-      expect(uuid4()).to.deep.equal('198acafb-fddd-47c2-adda-6e4e735b529e');
+      expect(uuid4()).to.deep.equal('f5442998-b332-4abd-86e2-78bb848420f6');
+      expect(uuid4()).to.deep.equal('f5442998-b332-4abd-86e2-78bb848420f6');
     });
   });
 });

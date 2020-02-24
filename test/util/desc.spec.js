@@ -141,8 +141,8 @@ describe('Testing { describe }', () => {
 
   describe('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, () => {
     it('Testing random is mocked', () => {
-      expect(uuid4()).to.deep.equal('f052644d-e485-4693-aef0-76267f1499ea');
-      expect(uuid4()).to.deep.equal('ba8e46ec-d63d-4fb8-9189-23e2454f7172');
+      expect(uuid4()).to.deep.equal('71ddab94-f651-4631-8aa3-651f205ed588');
+      expect(uuid4()).to.deep.equal('921e7b60-668f-4746-9aa8-a7cd964768a6');
     });
   });
 
