@@ -180,10 +180,10 @@
   dependencies:
     smart-fs "1.11.8"
 
-"@blackflux/robo-config-plugin@3.0.8":
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-3.0.8.tgz#5fb75b7c0a63deef32b4e37f37f57b2747113ca4"
-  integrity sha512-JlXhkhG2vV1JRHt0/ilM2w5AyqrkJAxN9gqd/7QEtbQGkBp30XpNRlvshh10CjoMz/IbeqshBIO6GbyDQoyGqA==
+"@blackflux/robo-config-plugin@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-3.1.0.tgz#8626879bc101c30718079376f42d4853f4342469"
+  integrity sha512-wdFbv6mjuyHomOy+ATBirF2UKIvdNh6vblLFkWjsr8rSY8fkhc6TuLeokb+U40wQDJazY4woxxpZhlbWZccYAA==
 
 "@hapi/address@^2.1.2":
   version "2.1.4"
@@ -4583,10 +4583,10 @@ minimist@0.0.8:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
   integrity sha1-hX/Kv8M5fSYluCKCYuhqp6ARsF0=
 
-minimist@1.2.3, minimist@^1.1.3, minimist@^1.2.0:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.3.tgz#3db5c0765545ab8637be71f333a104a965a9ca3f"
-  integrity sha512-+bMdgqjMN/Z77a6NlY/I3U5LlRDbnmaAk6lDveAPKwSpcPM4tKAuYsvYF8xjhOPXhOYGe/73vVLVez5PW+jqhw==
+minimist@1.2.4, minimist@^1.1.3, minimist@^1.2.0:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.4.tgz#40357ef9582f8cd42ba8eaa274ddcf27f0c979b7"
+  integrity sha512-wTiNDqe4D2rbTJGZk1qcdZgFtY0/r+iuE6GDT7V0/+Gu5MLpIDm4+CssDECR79OJs/OxLPXMzdxy153b5Qy3hg==
 
 minimist@~0.0.1:
   version "0.0.10"
