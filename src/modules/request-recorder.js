@@ -26,14 +26,12 @@ module.exports = (opts) => {
   const pendingMocks = [];
 
   const anyFlagPresent = (flags) => {
-    if (flags.length === 0) {
-      return opts.heal !== false;
+    assert(Array.isArray(flags) && flags.length !== 0);
+    if (typeof opts.heal !== 'string') {
+      return false;
     }
-    if (typeof opts.heal === 'string') {
-      const needleFlags = opts.heal.split(',');
-      return flags.some((flag) => needleFlags.includes(flag));
-    }
-    return false;
+    const needleFlags = opts.heal.split(',');
+    return flags.some((flag) => needleFlags.includes(flag));
   };
 
   return ({
@@ -133,7 +131,7 @@ module.exports = (opts) => {
       nockDone();
       nockDone = null;
       nockListener.unsubscribeAll('no match');
-      if (anyFlagPresent([])) {
+      if (opts.heal !== false) {
         fs.smartWrite(cassetteFilePath, expectedCassette, {
           keepOrder: outOfOrderErrors.length === 0 && pendingMocks.length === 0
         });
