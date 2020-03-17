@@ -123,7 +123,7 @@ module.exports = (opts) => {
       nockDone = null;
       nockListener.unsubscribeAll('no match');
       if (opts.heal !== false) {
-        fs.smartWrite(cassetteFilePath, expectedCassette);
+        fs.smartWrite(cassetteFilePath, expectedCassette, { keepOrder: false });
       }
       if (opts.strict !== false) {
         if (outOfOrderErrors.length !== 0) {
