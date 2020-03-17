@@ -211,7 +211,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     });
 
     it('Testing path healing', async () => {
-      await runner('path', { qs: [2] });
+      await runner('path,body', { qs: [2] });
     });
 
     it('Testing magic healing (no magic)', async () => {
