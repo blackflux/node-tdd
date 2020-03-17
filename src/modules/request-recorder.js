@@ -25,6 +25,15 @@ module.exports = (opts) => {
   const expectedCassette = [];
   const pendingMocks = [];
 
+  const anyFlagPresent = (flags) => {
+    assert(Array.isArray(flags) && flags.length !== 0);
+    if (typeof opts.heal !== 'string') {
+      return false;
+    }
+    const needleFlags = opts.heal.split(',');
+    return flags.some((flag) => needleFlags.includes(flag));
+  };
+
   return ({
     inject: async (cassetteFile) => {
       assert(nockDone === null);
@@ -57,7 +66,7 @@ module.exports = (opts) => {
           records.push({ ...scope });
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
-            if (['magic', 'path', 'body'].includes(opts.heal)) {
+            if (anyFlagPresent(['magic', 'body'])) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
               let requestBody = body;
               try {
@@ -72,7 +81,7 @@ module.exports = (opts) => {
           };
           // eslint-disable-next-line no-param-reassign
           scope.filteringPath = (requestPath) => {
-            if (['magic', 'path'].includes(opts.heal)) {
+            if (anyFlagPresent(['magic', 'path'])) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
               pendingMocks[idx].record.path = requestPath;
               return scope.path;
@@ -85,7 +94,7 @@ module.exports = (opts) => {
           scope.on('request', (req, interceptor, requestBodyString) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
-            if (['magic'].includes(opts.heal)) {
+            if (anyFlagPresent(['magic', 'response'])) {
               let responseBody = [
                 healSqsSendMessageBatch
               ].reduce(
@@ -123,7 +132,9 @@ module.exports = (opts) => {
       nockDone = null;
       nockListener.unsubscribeAll('no match');
       if (opts.heal !== false) {
-        fs.smartWrite(cassetteFilePath, expectedCassette, { keepOrder: false });
+        fs.smartWrite(cassetteFilePath, expectedCassette, {
+          keepOrder: outOfOrderErrors.length === 0 && pendingMocks.length === 0
+        });
       }
       if (opts.strict !== false) {
         if (outOfOrderErrors.length !== 0) {
