@@ -844,17 +844,17 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk-wrap@4.0.4:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/aws-sdk-wrap/-/aws-sdk-wrap-4.0.4.tgz#e1686dfff54b5605bb7307b1a8c80228809606b7"
-  integrity sha512-s1idFvT6JAyQfUR1cuirZ6j3TWmPogQcjcyQnkp9ow/z3y9au4uvJwZsy2v5muWOhq1TfjuhZ1JaBYBo9TGaug==
+aws-sdk-wrap@4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/aws-sdk-wrap/-/aws-sdk-wrap-4.0.5.tgz#24d55eef1c46ec300344e3b29c0cab289897aa33"
+  integrity sha512-/aL2CAoyvCeLQTC3nMH0vqlEj19p9k6erNI+3wCXN1HE4yXNcDHNpsZvq7PMLA0ZzoAMdOiSJGZZZeK3HzIzJg==
   dependencies:
     joi-strict "1.2.1"
     lambda-async "1.0.5"
     lodash.chunk "4.2.0"
     lodash.get "4.4.2"
     object-hash "2.0.3"
-    smart-fs "1.11.9"
+    smart-fs "1.11.10"
 
 aws-sdk@2.641.0:
   version "2.641.0"
@@ -6747,20 +6747,6 @@ smart-fs@1.11.8:
   version "1.11.8"
   resolved "https://registry.yarnpkg.com/smart-fs/-/smart-fs-1.11.8.tgz#c3c268da7794018a5f81488bc63d281c3e2d1dd9"
   integrity sha512-QOK7QsswqAzpfnjNVomKM+07CzcGxKV+e845XPW3SbKdIV/XoIUetQjZG9lbyBZQxjlI2AfR5VjNaX9bkowd/w==
-  dependencies:
-    fs-extra "8.1.0"
-    js-yaml "3.13.1"
-    json-stringify-pretty-compact "2.0.0"
-    lodash.clonedeep "4.5.0"
-    lodash.isequal "4.5.0"
-    object-align "1.0.11"
-    xml-js "1.6.11"
-    yaml-boost "1.9.20"
-
-smart-fs@1.11.9:
-  version "1.11.9"
-  resolved "https://registry.yarnpkg.com/smart-fs/-/smart-fs-1.11.9.tgz#5a685e47c79edfb9cee69424da0b16ba89752a22"
-  integrity sha512-2JJZSz6TjPoLfuT+Ko56+lUTpIlrXz9GbdQBjw7mNUJ+/v/FBRFyMGANijQeJ+ZtpyW/zcBrkxnQNvDo+cuvaQ==
   dependencies:
     fs-extra "8.1.0"
     js-yaml "3.13.1"
