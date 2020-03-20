@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const qs = require('querystring');
 const get = require('lodash.get');
-const uuid4 = require('uuid/v4');
+const { v4: uuid4 } = require('uuid');
 const xml2js = require('xml2js');
 
 const parseRequestBody = (body) => Object.values(Object
