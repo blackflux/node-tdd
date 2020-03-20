@@ -1,7 +1,7 @@
 const assert = require('assert');
 const expect = require('chai').expect;
 const crypto = require('crypto');
-const uuid4 = require('uuid/v4');
+const { v4: uuid4 } = require('uuid');
 const { describe } = require('../../src/index');
 const RandomSeeder = require('../../src/modules/random-seeder');
 
