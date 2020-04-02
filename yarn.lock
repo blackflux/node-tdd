@@ -869,10 +869,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk-wrap@4.0.6:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/aws-sdk-wrap/-/aws-sdk-wrap-4.0.6.tgz#a3a060e1b49497a65c30540bdacf01efb73dc245"
-  integrity sha512-EXuZ16HVwxmJ1qg3BYJ7rcGSDi/r/DX7Ns76xQP/Abpm5HOAFBzZ2jZjNaDYJVn7M+IpD1RQGqrugfQtnuTWsw==
+aws-sdk-wrap@4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/aws-sdk-wrap/-/aws-sdk-wrap-4.1.2.tgz#f421f1c3f6883fbb2286b38fb7b8e49b6fbe65a8"
+  integrity sha512-tVuRh0ezMfG8OlmRmFGQnpdUY7xH891H5SgiIGtczQA4RT1lZIvFvAlnt1HD4AhjT8SC2PJ4t2D7zYl4DxdbhQ==
   dependencies:
     joi-strict "1.2.1"
     lambda-async "1.0.5"
@@ -881,10 +881,10 @@ aws-sdk-wrap@4.0.6:
     object-hash "2.0.3"
     smart-fs "1.11.11"
 
-aws-sdk@2.650.0:
-  version "2.650.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.650.0.tgz#edf995cf2805c918d7470a652f1316ae902c5aa4"
-  integrity sha512-MlTKXeRSe4IXXqnulAiXZccpTgDafs3ofYIQv/7ApR+oQUFsq96RHwe8MdW9N1cXn7fz302jLXUAykj4boR3DA==
+aws-sdk@2.652.0:
+  version "2.652.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.652.0.tgz#00a4dd3a4ce588448895c42d25e967f2a23b487c"
+  integrity sha512-THMlf3CX/IKMh+jizDQ+XCf5LSp1x+rIl+4uIRJjMj+zHNes7zJy3DSkuu5gux5aG5x4God996vPdCus+F22JA==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -1223,10 +1223,10 @@ chai@4.2.0:
     pathval "^1.1.0"
     type-detect "^4.0.5"
 
-chalk@3.0.0, chalk@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-3.0.0.tgz#3f73c2bf526591f574cc492c51e2456349f844e4"
-  integrity sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==
+chalk@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.0.0.tgz#6e98081ed2d17faab615eb52ac66ec1fe6209e72"
+  integrity sha512-N9oWFcegS0sFr9oh1oz2d7Npos6vNoWW9HvtCg5N1KRFpUhaAhvTv5Y58g880fZaEYSNm3qDz8SU1UrGvp+n7A==
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
@@ -1250,6 +1250,14 @@ chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.2, chalk@^2.4.0, chalk@^2.4
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
+
+chalk@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-3.0.0.tgz#3f73c2bf526591f574cc492c51e2456349f844e4"
+  integrity sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==
+  dependencies:
+    ansi-styles "^4.1.0"
+    supports-color "^7.1.0"
 
 character-entities-legacy@^1.0.0:
   version "1.1.4"
@@ -3872,12 +3880,12 @@ joi-strict@1.2.1:
   dependencies:
     "@hapi/joi" "17.1.1"
 
-js-gardener@2.0.145:
-  version "2.0.145"
-  resolved "https://registry.yarnpkg.com/js-gardener/-/js-gardener-2.0.145.tgz#cbd9e5bce327949faf0285b9c68a6987612714c3"
-  integrity sha512-vD9+hzbtu+v1MZ2XnfdZ4WI1hsOiRk2ODIufrXkBHhGylAhuR6fN9zTOxkgtTeUmRA2xcx++q9tE5wczNurKyQ==
+js-gardener@2.0.148:
+  version "2.0.148"
+  resolved "https://registry.yarnpkg.com/js-gardener/-/js-gardener-2.0.148.tgz#245c9113530d06a7e08c94acf6e2e368611857b2"
+  integrity sha512-b2xehfMIifrXYhZWYf8hT1HYSD9c0QFq11gBcljRtp1eVcsgjpNeAFrmLbGXBjmBfs1mmBlh+rMt93bOfQa5yw==
   dependencies:
-    chalk "3.0.0"
+    chalk "4.0.0"
     fancy-log "1.3.3"
     glob "7.1.6"
     joi-strict "1.2.1"
@@ -3886,7 +3894,7 @@ js-gardener@2.0.145:
     lodash.get "4.4.2"
     mocha "7.1.1"
     npm-check "5.9.2"
-    robo-config "3.4.33"
+    robo-config "3.5.1"
 
 js-tokens@^3.0.0:
   version "3.0.2"
@@ -5327,10 +5335,10 @@ object-keys@^1.0.11, object-keys@^1.0.12, object-keys@^1.1.1:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
-object-scan@11.0.2:
-  version "11.0.2"
-  resolved "https://registry.yarnpkg.com/object-scan/-/object-scan-11.0.2.tgz#cb9e0b4ccb8b4800994533409377dcb4c4e2e6fc"
-  integrity sha512-w5g1d+4qSkryOhNucAy+SI0DQUGC5HfsCphdbraQ2LKDbtZj5e9J+nMpiK30tSGVgE261R6P6yxUf2tvwi4UEg==
+object-scan@11.0.3:
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/object-scan/-/object-scan-11.0.3.tgz#0791cd82bdfc53604d9fa261ac78b4645420eb64"
+  integrity sha512-uH4fBhTgE6WGiDCIJMsB8Kc/vXhQOKqFGKI2qPytu+0amlFxldb7LohP0fqRLqhOW33ziVY1qBqhvYNeFp/nHw==
 
 object-treeify@1.1.24:
   version "1.1.24"
@@ -6525,10 +6533,10 @@ rimraf@^3.0.0:
   dependencies:
     glob "^7.1.3"
 
-robo-config@3.4.33:
-  version "3.4.33"
-  resolved "https://registry.yarnpkg.com/robo-config/-/robo-config-3.4.33.tgz#baec7b791613d18bdfba368063c6fdd6205800bd"
-  integrity sha512-YW4+ESq/Rf1kUXRyEK13QpxgiytEOwmR1zkbmFHshUjgFOi0NB92KpG0cJhUpUnMfPxGFFWTCcx0kPNQHI32yg==
+robo-config@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/robo-config/-/robo-config-3.5.1.tgz#5509a8f43c413f830805209becac3bcfe13d5394"
+  integrity sha512-40bYzvLB25pLrhOeMo4KoM6mQMAVGjwsNCvPun4b8/UFTWYBWqY/6+ME2sATXn3vqGA1c6fm1Qz+j0FxNxGVxQ==
   dependencies:
     app-root-path "3.0.0"
     deepmerge "4.2.2"
@@ -6537,7 +6545,7 @@ robo-config@3.4.33:
     lodash.difference "4.5.0"
     lodash.get "4.4.2"
     object-deep-contain "1.0.23"
-    object-scan "11.0.2"
+    object-scan "11.0.3"
     object-treeify "1.1.24"
     smart-fs "1.11.11"
 
@@ -7718,10 +7726,10 @@ uuid@3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
-uuid@7.0.2:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.2.tgz#7ff5c203467e91f5e0d85cfcbaaf7d2ebbca9be6"
-  integrity sha512-vy9V/+pKG+5ZTYKf+VcphF5Oc6EFiu3W8Nv3P3zIh0EqVI80ZxOzuPfe9EHjkFNvf8+xuTHVeei4Drydlx4zjw==
+uuid@7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
+  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
 
 uuid@^3.3.2, uuid@^3.3.3:
   version "3.4.0"
