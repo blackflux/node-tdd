@@ -4,12 +4,19 @@ const tk = require('timekeeper');
 
 module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
-    unix: Joi.number()
+    timestamp: Joi.alternatives(
+      Joi.number().integer(),
+      Joi.date().iso()
+    )
   }), 'Invalid Options Provided');
   return {
     inject: () => {
       assert(tk.isKeepingTime() === false);
-      tk.freeze(new Date(opts.unix * 1000));
+      tk.freeze(
+        Number.isInteger(opts.timestamp)
+          ? new Date(opts.timestamp * 1000)
+          : new Date(opts.timestamp)
+      );
     },
     release: () => {
       assert(tk.isKeepingTime());
