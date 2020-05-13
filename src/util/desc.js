@@ -115,7 +115,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
             envManagerDesc.apply();
           }
           if (timestamp !== null) {
-            timeKeeper = TimeKeeper({ unix: timestamp });
+            timeKeeper = TimeKeeper({ timestamp });
             timeKeeper.inject();
           }
           if (cryptoSeed !== null) {

@@ -139,10 +139,10 @@ To allow overwriting of environment variables, prefix the name of the environmen
 
 #### timestamp
 
-Type: `number`<br>
+Type: `number|string`<br>
 Default: -
 
-Set unix timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
+Set timestamp to freeze time to. Will modify the result of e.g. `new Date()`.
 
 #### record
 
