@@ -41,7 +41,10 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     fixtureFolder: Joi.string().optional(),
     envVarsFile: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
-    timestamp: Joi.number().optional().min(0),
+    timestamp: Joi.alternatives(
+      Joi.number().integer().min(0),
+      Joi.date().iso()
+    ).optional(),
     record: Joi.any().optional(),
     cryptoSeed: Joi.string().optional(),
     timeout: Joi.number().optional().min(0)

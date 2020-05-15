@@ -5,7 +5,7 @@ const tk = require('timekeeper');
 module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
     timestamp: Joi.alternatives(
-      Joi.number().integer(),
+      Joi.number().integer().min(0),
       Joi.date().iso()
     )
   }), 'Invalid Options Provided');
