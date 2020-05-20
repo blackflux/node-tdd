@@ -14,7 +14,10 @@ module.exports = (opts) => {
     inject: () => {
       assert(original === null);
 
-      original = crypto.randomBytes;
+      original = {
+        randomBytes: crypto.randomBytes,
+        randomFillSync: crypto.randomFillSync
+      };
       const executionCounts = {};
 
       crypto.randomBytes = (size, cb) => {
@@ -39,10 +42,20 @@ module.exports = (opts) => {
         result = result.slice(0, size);
         return cb ? cb(null, result) : result;
       };
+      crypto.randomFillSync = (buffer, offset, size) => {
+        const o = offset || 0;
+        const s = size || buffer.byteLength;
+        crypto.randomBytes(s, (err, res) => {
+          res.copy(buffer, o, 0, s);
+        });
+        return buffer;
+      };
     },
     release: () => {
       assert(original !== null);
-      crypto.randomBytes = original;
+      Object.entries(original).forEach(([k, v]) => {
+        crypto[k] = v;
+      });
       original = null;
     },
     isInjected: () => original !== null
