@@ -62,34 +62,30 @@ module.exports = (opts) => {
       nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
         if (anyFlagPresent(['magic', 'inject'])) {
-          expectedCassette.push(new Promise((resolve) => {
+          expectedCassette.push((async () => {
             nockRecorder.rec({
               output_objects: true,
               dont_print: true,
               enable_reqheaders_recording: false
             });
-            const r = http.request(req, (response) => {
-              response.on('data', () => {});
-              response.on('end', () => {
-                const result = [
-                  ...nockRecorder.play().map((record) => {
-                    if (opts.stripHeaders !== true) {
-                      // eslint-disable-next-line no-param-reassign
-                      record.headers = convertHeaders(record.rawHeaders);
-                    }
-                    // eslint-disable-next-line no-param-reassign
-                    delete record.rawHeaders;
-                    return record;
-                  }),
-                  ...pendingMocks.map(({ record }) => record)
-                ];
-                nockRecorder.clear();
-                resolve(result);
+            await new Promise((resolve) => {
+              const r = http.request(req, (response) => {
+                response.on('data', () => {});
+                response.on('end', resolve);
               });
+              r.write(body);
+              r.end();
             });
-            r.write(body);
-            r.end();
-          }));
+            const recorded = nockRecorder.play();
+            nockRecorder.clear();
+            return [
+              ...recorded.map((record) => Object.assign(record, {
+                headers: opts.stripHeaders === true ? undefined : convertHeaders(record.rawHeaders),
+                rawHeaders: undefined
+              })),
+              ...pendingMocks.map(({ record }) => record)
+            ];
+          })());
         }
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
