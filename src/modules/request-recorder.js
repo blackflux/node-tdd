@@ -6,19 +6,10 @@ const Joi = require('joi-strict');
 const nock = require('nock');
 const nockListener = require('./request-recorder/nock-listener');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
+const { buildKey, tryParseJson, convertHeaders } = require('./request-recorder/util');
 
 const nockBack = nock.back;
 const nockRecorder = nock.recorder;
-
-const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
-
-const tryParseJson = (value) => {
-  try {
-    return JSON.parse(value);
-  } catch (e) {
-    return value;
-  }
-};
 
 module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
@@ -83,12 +74,8 @@ module.exports = (opts) => {
                 const result = [
                   ...nockRecorder.play().map((record) => {
                     if (opts.stripHeaders !== true) {
-                      const headers = {};
-                      for (let idx = 0; idx < record.rawHeaders.length; idx += 2) {
-                        headers[record.rawHeaders[idx].toLowerCase()] = record.rawHeaders[idx + 1];
-                      }
                       // eslint-disable-next-line no-param-reassign
-                      record.headers = headers;
+                      record.headers = convertHeaders(record.rawHeaders);
                     }
                     // eslint-disable-next-line no-param-reassign
                     delete record.rawHeaders;
