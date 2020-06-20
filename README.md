@@ -82,7 +82,7 @@ Can be used in the following ways:
 - `--nock-heal body`: Will try to heal bodies of nock cassette recordings (ordering is expected to be correct)
 - `--nock-heal path`: Will try to heal paths of nock cassette recordings (ordering is expected to be correct)
 - `--nock-heal response`: Will try to heal responses (ordering is expected to be correct)
-- `--nock-heal inject`: Will record the next unmatched request and then fail
+- `--nock-heal inject`: Will record the next unmatched request
 - `--nock-heal magic`: Will try to heal bodies, paths and responses of nock cassette recordings (ordering is expected to be correct)
 
 Note, different flags can be combined as e.g. `--nock-heal body,path`.
