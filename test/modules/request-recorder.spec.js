@@ -250,15 +250,14 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     });
 
     it('Testing record (with headers)', async () => {
-      const existingCassetteContent = [
-        makeCassetteEntry(1),
-        makeCassetteEntry(3)
-      ];
       await runner('record', {
         qs: [1, 2, 3],
         raises: true,
         heals: true,
-        cassetteContent: existingCassetteContent
+        cassetteContent: [
+          makeCassetteEntry(1),
+          makeCassetteEntry(3)
+        ]
       });
 
       const cassettePath = path.join(tmpDir, cassetteFile);
@@ -277,15 +276,14 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     });
 
     it('Testing record (without headers)', async () => {
-      const existingCassetteContent = [
-        makeCassetteEntry(1),
-        makeCassetteEntry(3)
-      ];
       await runner('record', {
         qs: [1, 2, 3],
         raises: true,
         heals: true,
-        cassetteContent: existingCassetteContent,
+        cassetteContent: [
+          makeCassetteEntry(1),
+          makeCassetteEntry(3)
+        ],
         stripHeaders: true
       });
 
