@@ -61,7 +61,7 @@ module.exports = (opts) => {
       nockBack.fixtures = opts.cassetteFolder;
       nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
-        if (anyFlagPresent(['magic', 'inject'])) {
+        if (anyFlagPresent(['magic', 'record'])) {
           expectedCassette.push((async () => {
             nockRecorder.rec({
               output_objects: true,

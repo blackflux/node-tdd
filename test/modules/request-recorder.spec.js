@@ -249,12 +249,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       });
     });
 
-    it('Testing inject (with headers)', async () => {
+    it('Testing record (with headers)', async () => {
       const existingCassetteContent = [
         makeCassetteEntry(1),
         makeCassetteEntry(3)
       ];
-      await runner('inject', {
+      await runner('record', {
         qs: [1, 2, 3],
         raises: true,
         heals: true,
@@ -276,12 +276,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       ]);
     });
 
-    it('Testing inject (without headers)', async () => {
+    it('Testing record (without headers)', async () => {
       const existingCassetteContent = [
         makeCassetteEntry(1),
         makeCassetteEntry(3)
       ];
-      await runner('inject', {
+      await runner('record', {
         qs: [1, 2, 3],
         raises: true,
         heals: true,
