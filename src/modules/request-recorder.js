@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { request } = require('http');
 const path = require('path');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
@@ -9,6 +10,14 @@ const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-messag
 const nockBack = nock.back;
 
 const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
+
+const tryParseJson = (value) => {
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return value;
+  }
+};
 
 module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
@@ -24,6 +33,7 @@ module.exports = (opts) => {
   const outOfOrderErrors = [];
   const expectedCassette = [];
   const pendingMocks = [];
+  const promises = [];
 
   const anyFlagPresent = (flags) => {
     assert(Array.isArray(flags) && flags.length !== 0);
@@ -42,6 +52,7 @@ module.exports = (opts) => {
       outOfOrderErrors.length = 0;
       expectedCassette.length = 0;
       pendingMocks.length = 0;
+      promises.length = 0;
 
       cassetteFilePath = path.join(opts.cassetteFolder, cassetteFile);
       const hasCassette = fs.existsSync(cassetteFilePath);
@@ -61,22 +72,32 @@ module.exports = (opts) => {
       nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
         if (anyFlagPresent(['magic', 'inject'])) {
-          let requestBody = body;
-          try {
-            requestBody = JSON.parse(requestBody);
-          } catch (e) {
-            /* */
-          }
-          expectedCassette.push({
-            scope: `${req.uri.protocol}//${req.uri.host}`,
-            method: req.method,
-            path: req.uri.path,
-            body: requestBody,
-            status: 200,
-            response: {},
-            responseIsBinary: false
-          });
-          expectedCassette.push(...pendingMocks.map(({ record }) => record));
+          promises.push(new Promise((resolve) => {
+            nock.enableNetConnect();
+            request(req, (response) => {
+              let responseBody = '';
+              response.on('data', (chunk) => {
+                responseBody += chunk;
+              });
+              response.on('end', () => {
+                const r = {
+                  scope: `${req.uri.protocol}//${req.uri.host}`,
+                  method: req.method,
+                  path: req.uri.path,
+                  body: tryParseJson(body),
+                  status: response.statusCode,
+                  response: tryParseJson(responseBody),
+                  responseIsBinary: false
+                };
+                if (opts.stripHeaders !== true) {
+                  r.headers = response.headers;
+                }
+                expectedCassette.push(r);
+                expectedCassette.push(...pendingMocks.map(({ record }) => record));
+                resolve();
+              });
+            }).end();
+          }));
         }
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
@@ -86,12 +107,7 @@ module.exports = (opts) => {
           scope.filteringRequestBody = (body) => {
             if (anyFlagPresent(['magic', 'body'])) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-              let requestBody = body;
-              try {
-                requestBody = JSON.parse(requestBody);
-              } catch (e) {
-                /* */
-              }
+              const requestBody = tryParseJson(body);
               pendingMocks[idx].record.body = requestBody === null ? 'null' : requestBody;
               return scope.body;
             }
@@ -113,17 +129,12 @@ module.exports = (opts) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
             if (anyFlagPresent(['magic', 'response'])) {
-              let responseBody = [
+              const responseBody = tryParseJson([
                 healSqsSendMessageBatch
               ].reduce(
                 (respBody, fn) => fn(requestBodyString, respBody, scope),
                 interceptor.body
-              );
-              try {
-                responseBody = JSON.parse(responseBody);
-              } catch (e) {
-                /* */
-              }
+              ));
               // eslint-disable-next-line no-param-reassign
               interceptor.body = responseBody;
               pendingMocks[idx].record.response = responseBody;
@@ -144,8 +155,9 @@ module.exports = (opts) => {
           }) : recordings, null, 2)
       }, resolve));
     },
-    release: () => {
+    release: async () => {
       assert(nockDone !== null);
+      await Promise.all(promises);
       nockDone();
       nockDone = null;
       nockListener.unsubscribeAll('no match');

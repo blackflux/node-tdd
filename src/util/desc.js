@@ -193,7 +193,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
             logRecorder = null;
           }
           if (requestRecorder !== null) {
-            requestRecorder.release();
+            await requestRecorder.release();
           }
           if (dir !== null) {
             dir = null;
