@@ -153,22 +153,28 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         qs = [1],
         body = undefined,
         raises = false,
-        heals = true
+        validateFailure = true,
+        heals = true,
+        cassetteContent = null
       } = {}) => {
-        const cassetteContent = [{
-          scope: server.uri,
-          method,
-          path: '/?q=1',
-          body: {
-            id: 123,
-            payload: null
-          },
-          status: 200,
-          response: { data: String(qs[0]) },
-          responseIsBinary: false
-        }];
         const cassettePath = path.join(tmpDir, cassetteFile);
-        fs.smartWrite(cassettePath, cassetteContent);
+        fs.smartWrite(
+          cassettePath,
+          cassetteContent === null
+            ? [{
+              scope: server.uri,
+              method,
+              path: '/?q=1',
+              body: {
+                id: 123,
+                payload: null
+              },
+              status: 200,
+              response: { data: String(qs[0]) },
+              responseIsBinary: false
+            }]
+            : cassetteContent
+        );
         if (raises) {
           const e = await capture(() => runTest({ heal, qs, body }));
           expect(e.message).to.match(/^Error: Nock: No match for request/);
@@ -180,7 +186,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           expect(content[0].body.payload).to.not.equal(null);
           expect(content[0].path).to.equal(`/?q=${qs[0]}`);
           await runTest({ qs, body });
-        } else {
+        } else if (validateFailure) {
           expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
       };
@@ -227,6 +233,52 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         }), { heal: 'magic' });
         expect(r.expectedCassette).to.deep.equal(fixture('sqs-cassette-expected'));
       });
+    });
+
+    it('Testing inject', async () => {
+      const existingCassetteContent = [
+        {
+          scope: server.uri,
+          method: 'GET',
+          path: '/?q=1',
+          body: { id: 123, payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6' },
+          status: 200,
+          response: { data: '1' },
+          responseIsBinary: false
+        },
+        {
+          scope: server.uri,
+          method: 'GET',
+          path: '/?q=3',
+          body: { id: 123, payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6' },
+          status: 200,
+          response: { data: '3' },
+          responseIsBinary: false
+        }
+      ];
+      await runner('inject', {
+        qs: [1, 2, 3],
+        raises: true,
+        heals: false,
+        validateFailure: false,
+        cassetteContent: existingCassetteContent
+      });
+
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([
+        existingCassetteContent[0],
+        {
+          scope: server.uri,
+          method: 'GET',
+          path: '/?q=2',
+          body: { id: 123, payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6' },
+          status: 200,
+          response: {},
+          responseIsBinary: false
+        },
+        existingCassetteContent[1]
+      ]);
     });
   });
 });

@@ -60,6 +60,24 @@ module.exports = (opts) => {
       nockBack.fixtures = opts.cassetteFolder;
       nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
+        if (anyFlagPresent(['magic', 'inject'])) {
+          let requestBody = body;
+          try {
+            requestBody = JSON.parse(requestBody);
+          } catch (e) {
+            /* */
+          }
+          expectedCassette.push({
+            scope: `${req.uri.protocol}//${req.uri.host}`,
+            method: req.method,
+            path: req.uri.path,
+            body: requestBody,
+            status: 200,
+            response: {},
+            responseIsBinary: false
+          });
+          expectedCassette.push(...pendingMocks.map(({ record }) => record));
+        }
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
