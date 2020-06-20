@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { request } = require('http');
+const http = require('http');
 const path = require('path');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
@@ -8,6 +8,7 @@ const nockListener = require('./request-recorder/nock-listener');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
 
 const nockBack = nock.back;
+const nockRecorder = nock.recorder;
 
 const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
 
@@ -33,7 +34,6 @@ module.exports = (opts) => {
   const outOfOrderErrors = [];
   const expectedCassette = [];
   const pendingMocks = [];
-  const promises = [];
 
   const anyFlagPresent = (flags) => {
     assert(Array.isArray(flags) && flags.length !== 0);
@@ -52,7 +52,6 @@ module.exports = (opts) => {
       outOfOrderErrors.length = 0;
       expectedCassette.length = 0;
       pendingMocks.length = 0;
-      promises.length = 0;
 
       cassetteFilePath = path.join(opts.cassetteFolder, cassetteFile);
       const hasCassette = fs.existsSync(cassetteFilePath);
@@ -72,31 +71,37 @@ module.exports = (opts) => {
       nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
         if (anyFlagPresent(['magic', 'inject'])) {
-          promises.push(new Promise((resolve) => {
-            nock.enableNetConnect();
-            request(req, (response) => {
-              let responseBody = '';
-              response.on('data', (chunk) => {
-                responseBody += chunk;
-              });
+          expectedCassette.push(new Promise((resolve) => {
+            nockRecorder.rec({
+              output_objects: true,
+              dont_print: true,
+              enable_reqheaders_recording: false
+            });
+            const r = http.request(req, (response) => {
+              response.on('data', () => {});
               response.on('end', () => {
-                const r = {
-                  scope: `${req.uri.protocol}//${req.uri.host}`,
-                  method: req.method,
-                  path: req.uri.path,
-                  body: tryParseJson(body),
-                  status: response.statusCode,
-                  response: tryParseJson(responseBody),
-                  responseIsBinary: false
-                };
-                if (opts.stripHeaders !== true) {
-                  r.headers = response.headers;
-                }
-                expectedCassette.push(r);
-                expectedCassette.push(...pendingMocks.map(({ record }) => record));
-                resolve();
+                const result = [
+                  ...nockRecorder.play().map((record) => {
+                    if (opts.stripHeaders !== true) {
+                      const headers = {};
+                      for (let idx = 0; idx < record.rawHeaders.length; idx += 2) {
+                        headers[record.rawHeaders[idx].toLowerCase()] = record.rawHeaders[idx + 1];
+                      }
+                      // eslint-disable-next-line no-param-reassign
+                      record.headers = headers;
+                    }
+                    // eslint-disable-next-line no-param-reassign
+                    delete record.rawHeaders;
+                    return record;
+                  }),
+                  ...pendingMocks.map(({ record }) => record)
+                ];
+                nockRecorder.clear();
+                resolve(result);
               });
-            }).end();
+            });
+            r.write(body);
+            r.end();
           }));
         }
       });
@@ -157,7 +162,9 @@ module.exports = (opts) => {
     },
     release: async () => {
       assert(nockDone !== null);
-      await Promise.all(promises);
+      if (expectedCassette[expectedCassette.length - 1] instanceof Promise) {
+        expectedCassette.push(...await expectedCassette.pop());
+      }
       nockDone();
       nockDone = null;
       nockListener.unsubscribeAll('no match');
