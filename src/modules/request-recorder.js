@@ -78,14 +78,14 @@ module.exports = (opts) => {
             });
             const recorded = nockRecorder.play();
             nockRecorder.clear();
-            return [
-              ...recorded.map((record) => Object.assign(record, {
-                headers: opts.stripHeaders === true ? undefined : convertHeaders(record.rawHeaders),
-                rawHeaders: undefined
-              })),
-              ...pendingMocks.map(({ record }) => record)
-            ];
+            return recorded.map((record) => Object.assign(record, {
+              headers: opts.stripHeaders === true ? undefined : convertHeaders(record.rawHeaders),
+              rawHeaders: undefined
+            }));
           })());
+        }
+        if (!anyFlagPresent(['magic', 'prune'])) {
+          expectedCassette.push(...pendingMocks.map(({ record }) => record));
         }
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
@@ -145,8 +145,12 @@ module.exports = (opts) => {
     },
     release: async () => {
       assert(nockDone !== null);
-      if (expectedCassette[expectedCassette.length - 1] instanceof Promise) {
-        expectedCassette.push(...await expectedCassette.pop());
+      for (let idx = 0; idx < expectedCassette.length; idx += 1) {
+        if (expectedCassette[idx] instanceof Promise) {
+          // eslint-disable-next-line no-await-in-loop
+          expectedCassette.splice(idx, 1, ...await expectedCassette[idx]);
+          idx -= 1;
+        }
       }
       nockDone();
       nockDone = null;

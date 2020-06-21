@@ -238,6 +238,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       await runner('magic', { qs: [2] });
     });
 
+    it('Testing prune', async () => {
+      await runner('prune,record', { qs: [1], raises: true, heals: true });
+    });
+
     describe('Testing magic healing', { cryptoSeed: 'd28095c6-19f4-4dc2-a7cc-f7640c032967' }, () => {
       it('Testing heal SQS response', async ({ fixture }) => {
         fs.smartWrite(path.join(tmpDir, cassetteFile), fixture('sqs-cassette-bad'));
