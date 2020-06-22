@@ -59,9 +59,12 @@ module.exports = (opts) => {
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
-      nockListener.subscribe('no match', (_, req, body) => {
+      nockListener.subscribe('no match', (req, options, body) => {
         assert(hasCassette === true);
         if (anyFlagPresent(['magic', 'record'])) {
+          if (options === undefined) {
+            throw new Error('Please delete empty cassette instead of using "record" option.');
+          }
           expectedCassette.push(async () => {
             nockRecorder.rec({
               output_objects: true,
@@ -69,7 +72,7 @@ module.exports = (opts) => {
               enable_reqheaders_recording: false
             });
             await new Promise((resolve) => {
-              const r = http.request(req, (response) => {
+              const r = http.request(options, (response) => {
                 response.on('data', () => {});
                 response.on('end', resolve);
               });
