@@ -57,7 +57,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     try {
       await fn();
     } finally {
-      requestRecorder.release();
+      await requestRecorder.release();
       requestRecorder.shutdown();
     }
 
@@ -145,35 +145,55 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   });
 
   describe('Testing healing of recording', () => {
+    let makeCassetteEntry;
     let runner;
 
     beforeEach(({ capture }) => {
+      makeCassetteEntry = (id) => ({
+        scope: server.uri,
+        method: 'GET',
+        path: `/?q=${id}`,
+        body: { id: 123, payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6' },
+        status: 200,
+        response: { data: `${id}` },
+        responseIsBinary: false
+      });
       runner = async (heal, {
         method = 'GET',
         qs = [1],
         body = undefined,
         raises = false,
-        heals = true
+        heals = true,
+        cassetteContent = null,
+        stripHeaders = undefined
       } = {}) => {
-        const cassetteContent = [{
-          scope: server.uri,
-          method,
-          path: '/?q=1',
-          body: {
-            id: 123,
-            payload: null
-          },
-          status: 200,
-          response: { data: String(qs[0]) },
-          responseIsBinary: false
-        }];
         const cassettePath = path.join(tmpDir, cassetteFile);
-        fs.smartWrite(cassettePath, cassetteContent);
+        fs.smartWrite(
+          cassettePath,
+          cassetteContent === null
+            ? [{
+              scope: server.uri,
+              method,
+              path: '/?q=1',
+              body: {
+                id: 123,
+                payload: null
+              },
+              status: 200,
+              response: { data: String(qs[0]) },
+              responseIsBinary: false
+            }]
+            : cassetteContent
+        );
         if (raises) {
-          const e = await capture(() => runTest({ heal, qs, body }));
+          const e = await capture(() => runTest({
+            heal, qs, body, stripHeaders
+          }));
           expect(e.message).to.match(/^Error: Nock: No match for request/);
         } else {
-          await runTest({ heal, qs, body });
+          await runTest({
+            heal, qs, body, stripHeaders
+          });
         }
         const content = fs.smartRead(cassettePath);
         if (heals) {
@@ -218,6 +238,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       await runner('magic', { qs: [2] });
     });
 
+    it('Testing prune', async () => {
+      await runner('prune,record', { qs: [1], raises: true });
+    });
+
     describe('Testing magic healing', { cryptoSeed: 'd28095c6-19f4-4dc2-a7cc-f7640c032967' }, () => {
       it('Testing heal SQS response', async ({ fixture }) => {
         fs.smartWrite(path.join(tmpDir, cassetteFile), fixture('sqs-cassette-bad'));
@@ -227,6 +251,53 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         }), { heal: 'magic' });
         expect(r.expectedCassette).to.deep.equal(fixture('sqs-cassette-expected'));
       });
+    });
+
+    it('Testing record (with headers)', async () => {
+      await runner('record', {
+        qs: [1, 2, 3],
+        raises: true,
+        heals: true,
+        cassetteContent: [
+          makeCassetteEntry(1),
+          makeCassetteEntry(3)
+        ]
+      });
+
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([
+        makeCassetteEntry(1),
+        Object.assign(makeCassetteEntry(2), {
+          headers: {
+            connection: 'close',
+            date: 'Thu, 01 Jan 1970 00:00:00 GMT',
+            'transfer-encoding': 'chunked'
+          }
+        }),
+        makeCassetteEntry(3)
+      ]);
+    });
+
+    it('Testing record (without headers)', async () => {
+      await runner('record', {
+        qs: [1, 2, 3],
+        raises: true,
+        heals: true,
+        cassetteContent: [
+          makeCassetteEntry(1),
+          makeCassetteEntry(3)
+        ],
+        stripHeaders: true
+      });
+
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([
+        makeCassetteEntry(1),
+        makeCassetteEntry(2),
+        makeCassetteEntry(3)
+      ]);
     });
   });
 });
