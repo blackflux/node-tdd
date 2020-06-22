@@ -107,10 +107,10 @@
   dependencies:
     "@babel/types" "^7.10.1"
 
-"@babel/helper-plugin-utils@^7.10.1", "@babel/helper-plugin-utils@^7.8.0":
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.10.1.tgz#ec5a5cf0eec925b66c60580328b122c01230a127"
-  integrity sha512-fvoGeXt0bJc7VMWZGCAEBEMo/HAjW2mP8apF5eXK0wSqwLAVHAISCWRoLMBMUs2kqeaG77jltVqu4Hn8Egl3nA==
+"@babel/helper-plugin-utils@^7.10.1", "@babel/helper-plugin-utils@^7.10.3", "@babel/helper-plugin-utils@^7.8.0":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.10.3.tgz#aac45cccf8bc1873b99a85f34bceef3beb5d3244"
+  integrity sha512-j/+j8NAWUTxOtx4LKHybpSClxHoq6I91DQ/mKgAXn5oNUPIUiGppjPIX3TDtJWPrdfP9Kfl7e4fgVMiQR9VE/g==
 
 "@babel/helper-replace-supers@^7.10.1":
   version "7.10.1"
@@ -165,12 +165,12 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.10.2.tgz#871807f10442b92ff97e4783b9b54f6a0ca812d0"
   integrity sha512-PApSXlNMJyB4JiGVhCOlzKIif+TKFTvu0aQAhnTvfP/z3vVSN6ZypH5bfUNwFXXjRQtUEBNFd2PtmCmG2Py3qQ==
 
-"@babel/plugin-proposal-object-rest-spread@7.10.1":
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.10.1.tgz#cba44908ac9f142650b4a65b8aa06bf3478d5fb6"
-  integrity sha512-Z+Qri55KiQkHh7Fc4BW6o+QBuTagbOp9txE+4U1i79u9oWlf2npkiDx+Rf3iK3lbcHBuNy9UOkwuR5wOMH3LIQ==
+"@babel/plugin-proposal-object-rest-spread@7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.10.3.tgz#b8d0d22f70afa34ad84b7a200ff772f9b9fce474"
+  integrity sha512-ZZh5leCIlH9lni5bU/wB/UcjtcVLgR8gc+FAgW2OOY+m9h1II3ItTO1/cewNUcsIDZSYcSaz/rYVls+Fb0ExVQ==
   dependencies:
-    "@babel/helper-plugin-utils" "^7.10.1"
+    "@babel/helper-plugin-utils" "^7.10.3"
     "@babel/plugin-syntax-object-rest-spread" "^7.8.0"
     "@babel/plugin-transform-parameters" "^7.10.1"
 
@@ -189,10 +189,10 @@
     "@babel/helper-get-function-arity" "^7.10.1"
     "@babel/helper-plugin-utils" "^7.10.1"
 
-"@babel/register@7.10.1":
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/@babel/register/-/register-7.10.1.tgz#b6567c5cb5049f44bbf8c35d6ff68ca3c43238ed"
-  integrity sha512-sl96+kB3IA2B9EzpwwBmYadOT14vw3KaXOknGDbJaZCOj52GDA4Tivudq9doCJcB+bEIKCEARZYwRgBBsCGXyg==
+"@babel/register@7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/register/-/register-7.10.3.tgz#b49b6603fc8d214cd2f77a6ed2256bd198b5994b"
+  integrity sha512-s1il0vdd02HCGwV1iocGJEzcbTNouZqMolSXKXFAiTNJSudPas9jdLQwyPPyAJxdNL6KGJ8pwWIOpKmgO/JWqg==
   dependencies:
     find-cache-dir "^2.0.0"
     lodash "^4.17.13"
@@ -240,10 +240,10 @@
   dependencies:
     smart-fs "1.11.14"
 
-"@blackflux/robo-config-plugin@3.4.11":
-  version "3.4.11"
-  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-3.4.11.tgz#28527316b3d843f403392d10294e157d2f2a766c"
-  integrity sha512-dt04euAsZloMMm1/xzaydeD82anj1aKGjzMetvNEeufBUAldBtK+FZWPGGofPO7C3SArDND8ZIN2YivhwwMGEA==
+"@blackflux/robo-config-plugin@3.4.12":
+  version "3.4.12"
+  resolved "https://registry.yarnpkg.com/@blackflux/robo-config-plugin/-/robo-config-plugin-3.4.12.tgz#c994965f9873be29ad8d904fbbc068f6e940cbb9"
+  integrity sha512-S/wtrhR63HBcBXraJWnE+/jvhDy/tb8sUgYzF7nlqNlGP8FDCWoHbX13CWGj9u9UqDILLr9oq7JF5ZTsbZbNRQ==
 
 "@hapi/address@^4.0.1":
   version "4.0.1"
@@ -918,10 +918,10 @@ aws-sdk-wrap@4.4.7:
     promise-pool-ext "1.3.2"
     smart-fs "1.11.13"
 
-aws-sdk@2.699.0:
-  version "2.699.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.699.0.tgz#e77b6ffa4c860882e2779c060b74fab33d42f554"
-  integrity sha512-EC431z/+i/cJgOgnDpOJ8Fa6+p7Oo1vIvdm/uJqP9tJX3+pxi/M/tvQavfz4yAlLBFqjQwxa8nrPisby0Mr5MQ==
+aws-sdk@2.701.0:
+  version "2.701.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.701.0.tgz#9827b7eb2bf87722c348d5195c17620b5fe1bead"
+  integrity sha512-95fWGr6gvyRH408VP5LQAycB8Wqw665ll7q6/soscGFD+2HuQ+gB5qpSlXJwOgSggKQCaExWoQnDABBoTSXM2w==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
