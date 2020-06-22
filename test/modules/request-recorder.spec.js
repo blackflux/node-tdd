@@ -299,5 +299,18 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         makeCassetteEntry(3)
       ]);
     });
+
+    it('Testing empty cassette', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, []);
+
+      const r = await capture(() => nockRecord(async () => {
+        await request({ uri: server.uri });
+      }, { stripHeaders: true, heal: 'record' }));
+      expect(r.message).to.equal('Error: Please delete empty cassette instead of using "record" option.');
+
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([]);
+    });
   });
 });
