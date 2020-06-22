@@ -1,14 +1,15 @@
 const assert = require('assert');
+const http = require('http');
 const path = require('path');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
 const nock = require('nock');
 const nockListener = require('./request-recorder/nock-listener');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
+const { buildKey, tryParseJson, convertHeaders } = require('./request-recorder/util');
 
 const nockBack = nock.back;
-
-const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
+const nockRecorder = nock.recorder;
 
 module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
@@ -60,6 +61,32 @@ module.exports = (opts) => {
       nockBack.fixtures = opts.cassetteFolder;
       nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
+        if (anyFlagPresent(['magic', 'record'])) {
+          expectedCassette.push(async () => {
+            nockRecorder.rec({
+              output_objects: true,
+              dont_print: true,
+              enable_reqheaders_recording: false
+            });
+            await new Promise((resolve) => {
+              const r = http.request(req, (response) => {
+                response.on('data', () => {});
+                response.on('end', resolve);
+              });
+              r.write(body);
+              r.end();
+            });
+            const recorded = nockRecorder.play();
+            nockRecorder.clear();
+            return recorded.map((record) => Object.assign(record, {
+              headers: opts.stripHeaders === true ? undefined : convertHeaders(record.rawHeaders),
+              rawHeaders: undefined
+            }));
+          });
+        }
+        if (!anyFlagPresent(['magic', 'prune'])) {
+          expectedCassette.push(...pendingMocks.map(({ record }) => record));
+        }
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
@@ -68,12 +95,7 @@ module.exports = (opts) => {
           scope.filteringRequestBody = (body) => {
             if (anyFlagPresent(['magic', 'body'])) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-              let requestBody = body;
-              try {
-                requestBody = JSON.parse(requestBody);
-              } catch (e) {
-                /* */
-              }
+              const requestBody = tryParseJson(body);
               pendingMocks[idx].record.body = requestBody === null ? 'null' : requestBody;
               return scope.body;
             }
@@ -95,17 +117,12 @@ module.exports = (opts) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
             if (anyFlagPresent(['magic', 'response'])) {
-              let responseBody = [
+              const responseBody = tryParseJson([
                 healSqsSendMessageBatch
               ].reduce(
                 (respBody, fn) => fn(requestBodyString, respBody, scope),
                 interceptor.body
-              );
-              try {
-                responseBody = JSON.parse(responseBody);
-              } catch (e) {
-                /* */
-              }
+              ));
               // eslint-disable-next-line no-param-reassign
               interceptor.body = responseBody;
               pendingMocks[idx].record.response = responseBody;
@@ -126,8 +143,15 @@ module.exports = (opts) => {
           }) : recordings, null, 2)
       }, resolve));
     },
-    release: () => {
+    release: async () => {
       assert(nockDone !== null);
+      for (let idx = 0; idx < expectedCassette.length; idx += 1) {
+        if (typeof expectedCassette[idx] === 'function') {
+          // eslint-disable-next-line no-await-in-loop
+          expectedCassette.splice(idx, 1, ...await expectedCassette[idx]());
+          idx -= 1;
+        }
+      }
       nockDone();
       nockDone = null;
       nockListener.unsubscribeAll('no match');
