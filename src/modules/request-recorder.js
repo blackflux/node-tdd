@@ -135,12 +135,11 @@ module.exports = (opts) => {
             pendingMocks.splice(idx, 1);
           });
         },
-        afterRecord: (recordings) => JSON
-          .stringify(opts.stripHeaders === true ? recordings.map((r) => {
-            const res = { ...r };
-            delete res.rawHeaders;
-            return res;
-          }) : recordings, null, 2)
+        afterRecord: (recordings) => JSON.stringify(recordings.map((r) => ({
+          ...r,
+          body: tryParseJson(r.body),
+          rawHeaders: opts.stripHeaders === true ? undefined : r.rawHeaders
+        })), null, 2)
       }, resolve));
     },
     release: async () => {
