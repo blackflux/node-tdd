@@ -1,6 +1,9 @@
 module.exports.buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
 
 module.exports.tryParseJson = (value) => {
+  if (typeof value !== 'string') {
+    return value;
+  }
   try {
     return JSON.parse(value);
   } catch (e) {
