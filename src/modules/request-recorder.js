@@ -62,7 +62,7 @@ module.exports = (opts) => {
       nockListener.subscribe('no match', (_, req, body) => {
         assert(hasCassette === true);
         if (anyFlagPresent(['magic', 'record'])) {
-          expectedCassette.push((async () => {
+          expectedCassette.push(async () => {
             nockRecorder.rec({
               output_objects: true,
               dont_print: true,
@@ -82,7 +82,7 @@ module.exports = (opts) => {
               headers: opts.stripHeaders === true ? undefined : convertHeaders(record.rawHeaders),
               rawHeaders: undefined
             }));
-          })());
+          });
         }
         if (!anyFlagPresent(['magic', 'prune'])) {
           expectedCassette.push(...pendingMocks.map(({ record }) => record));
@@ -146,9 +146,9 @@ module.exports = (opts) => {
     release: async () => {
       assert(nockDone !== null);
       for (let idx = 0; idx < expectedCassette.length; idx += 1) {
-        if (expectedCassette[idx] instanceof Promise) {
+        if (typeof expectedCassette[idx] === 'function') {
           // eslint-disable-next-line no-await-in-loop
-          expectedCassette.splice(idx, 1, ...await expectedCassette[idx]);
+          expectedCassette.splice(idx, 1, ...await expectedCassette[idx]());
           idx -= 1;
         }
       }

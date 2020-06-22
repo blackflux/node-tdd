@@ -199,7 +199,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         if (heals) {
           expect(content[0].body.payload).to.not.equal(null);
           expect(content[0].path).to.equal(`/?q=${qs[0]}`);
-          await runTest({ qs, body, stripHeaders });
+          await runTest({ qs, body });
         } else {
           expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
@@ -239,7 +239,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     });
 
     it('Testing prune', async () => {
-      await runner('prune,record', { qs: [1], raises: true, heals: true });
+      await runner('prune,record', { qs: [1], raises: true });
     });
 
     describe('Testing magic healing', { cryptoSeed: 'd28095c6-19f4-4dc2-a7cc-f7640c032967' }, () => {
