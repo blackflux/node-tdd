@@ -61,7 +61,21 @@ module.exports = (opts) => {
       nockBack.fixtures = opts.cassetteFolder;
       nockListener.subscribe('no match', (req, options, body) => {
         assert(hasCassette === true);
-        if (anyFlagPresent(['magic', 'record'])) {
+        if (anyFlagPresent(['stub'])) {
+          if (options === undefined) {
+            throw new Error('Please delete empty cassette instead of using "stub" option.');
+          }
+          expectedCassette.push({
+            scope: `${options.uri.protocol}//${options.uri.host}`,
+            method: options.method,
+            path: options.uri.path,
+            body: tryParseJson(body),
+            status: 200,
+            response: {},
+            responseIsBinary: false
+          });
+        }
+        if (anyFlagPresent(['record'])) {
           if (options === undefined) {
             throw new Error('Please delete empty cassette instead of using "record" option.');
           }
