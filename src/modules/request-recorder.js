@@ -7,6 +7,7 @@ const nock = require('nock');
 const nockListener = require('./request-recorder/nock-listener');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
 const { buildKey, tryParseJson, convertHeaders } = require('./request-recorder/util');
+const requestInjector = require('./request-recorder/request-injector');
 
 const nockBack = nock.back;
 const nockRecorder = nock.recorder;
@@ -62,6 +63,7 @@ module.exports = (opts) => {
       nockListener.subscribe('no match', (req, options, body) => {
         assert(hasCassette === true);
         if (anyFlagPresent(['record'])) {
+          // const { options, body } = requestInjector.getLast();
           if (options === undefined) {
             throw new Error('Please delete empty cassette instead of using "record" option.');
           }
@@ -99,9 +101,6 @@ module.exports = (opts) => {
             response: {},
             responseIsBinary: false
           });
-        }
-        if (!anyFlagPresent(['magic', 'prune'])) {
-          expectedCassette.push(...pendingMocks.map(({ record }) => record));
         }
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
@@ -157,9 +156,15 @@ module.exports = (opts) => {
           rawHeaders: opts.stripHeaders === true ? undefined : r.rawHeaders
         })), null, 2)
       }, resolve));
+      requestInjector.inject();
     },
     release: async () => {
       assert(nockDone !== null);
+      requestInjector.release();
+      nockDone();
+      nockDone = null;
+      nockListener.unsubscribeAll('no match');
+
       for (let idx = 0; idx < expectedCassette.length; idx += 1) {
         if (typeof expectedCassette[idx] === 'function') {
           // eslint-disable-next-line no-await-in-loop
@@ -167,13 +172,15 @@ module.exports = (opts) => {
           idx -= 1;
         }
       }
-      nockDone();
-      nockDone = null;
-      nockListener.unsubscribeAll('no match');
+
       if (opts.heal !== false) {
-        fs.smartWrite(cassetteFilePath, expectedCassette, {
-          keepOrder: outOfOrderErrors.length === 0 && pendingMocks.length === 0
-        });
+        fs.smartWrite(
+          cassetteFilePath,
+          anyFlagPresent(['magic', 'prune'])
+            ? expectedCassette
+            : [...expectedCassette, ...pendingMocks.map(({ record }) => record)],
+          { keepOrder: outOfOrderErrors.length === 0 && pendingMocks.length === 0 }
+        );
       }
       if (opts.strict !== false) {
         if (outOfOrderErrors.length !== 0) {
