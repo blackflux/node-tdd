@@ -300,7 +300,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       ]);
     });
 
-    it('Testing empty cassette', async ({ capture }) => {
+    it('Testing record (empty cassette)', async ({ capture }) => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
 
@@ -308,6 +308,39 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         await request({ uri: server.uri });
       }, { stripHeaders: true, heal: 'record' }));
       expect(r.message).to.equal('Error: Please delete empty cassette instead of using "record" option.');
+
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([]);
+    });
+
+    it('Testing stub', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [
+        makeCassetteEntry(1),
+        makeCassetteEntry(3)
+      ]);
+      const e = await capture(() => runTest({
+        heal: 'stub',
+        qs: [1, 2, 3]
+      }));
+      expect(e.message).to.match(/^Error: Nock: No match for request/);
+
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([
+        makeCassetteEntry(1),
+        Object.assign(makeCassetteEntry(2), { response: {} }),
+        makeCassetteEntry(3)
+      ]);
+    });
+
+    it('Testing stub (empty cassette)', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, []);
+
+      const r = await capture(() => nockRecord(async () => {
+        await request({ uri: server.uri });
+      }, { stripHeaders: true, heal: 'stub' }));
+      expect(r.message).to.equal('Error: Please delete empty cassette instead of using "stub" option.');
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([]);
