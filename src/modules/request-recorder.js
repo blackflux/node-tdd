@@ -1,5 +1,6 @@
 const assert = require('assert');
 const http = require('http');
+const https = require('http');
 const path = require('path');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
@@ -62,7 +63,7 @@ module.exports = (opts) => {
       nockBack.fixtures = opts.cassetteFolder;
       nockListener.subscribe('no match', () => {
         assert(hasCassette === true);
-        const options = requestInjector.getLastOptions();
+        const { protocol, options, body } = requestInjector.getLast();
         if (anyFlagPresent(['record'])) {
           expectedCassette.push(async () => {
             nockRecorder.rec({
@@ -71,12 +72,12 @@ module.exports = (opts) => {
               enable_reqheaders_recording: false
             });
             await new Promise((resolve) => {
-              const r = http.request(options, (response) => {
+              const r = { http, https }[protocol].request(options, (response) => {
                 response.on('data', () => {});
                 response.on('end', resolve);
               });
-              if (options.body !== undefined) {
-                r.write(options.body);
+              if (body !== undefined) {
+                r.write(...(Array.isArray(body) ? body : [body]));
               }
               r.end();
             });
@@ -89,10 +90,10 @@ module.exports = (opts) => {
           });
         } else if (anyFlagPresent(['stub'])) {
           expectedCassette.push({
-            scope: `${options.uri.protocol}//${options.uri.host}`,
+            scope: `${protocol}://${options.uri.host}`,
             method: options.method,
             path: options.uri.path,
-            body: tryParseJson(options.body),
+            body: tryParseJson(body),
             status: 200,
             response: {},
             responseIsBinary: false
