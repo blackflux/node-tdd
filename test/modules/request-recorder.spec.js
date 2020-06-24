@@ -304,13 +304,20 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
 
-      const r = await capture(() => nockRecord(async () => {
+      await capture(() => nockRecord(async () => {
         await request({ uri: server.uri });
       }, { stripHeaders: true, heal: 'record' }));
-      expect(r.message).to.equal('Error: Please delete empty cassette instead of using "record" option.');
 
       const cassetteContent = fs.smartRead(cassettePath);
-      expect(cassetteContent).to.deep.equal([]);
+      expect(cassetteContent).to.deep.equal([{
+        body: '',
+        method: 'GET',
+        path: '/',
+        response: {},
+        responseIsBinary: false,
+        scope: server.uri,
+        status: 200
+      }]);
     });
 
     it('Testing stub', async ({ capture }) => {
@@ -337,13 +344,19 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
 
-      const r = await capture(() => nockRecord(async () => {
+      await capture(() => nockRecord(async () => {
         await request({ uri: server.uri });
       }, { stripHeaders: true, heal: 'stub' }));
-      expect(r.message).to.equal('Error: Please delete empty cassette instead of using "stub" option.');
 
       const cassetteContent = fs.smartRead(cassettePath);
-      expect(cassetteContent).to.deep.equal([]);
+      expect(cassetteContent).to.deep.equal([{
+        method: 'GET',
+        path: '/',
+        response: {},
+        responseIsBinary: false,
+        scope: server.uri,
+        status: 200
+      }]);
     });
   });
 });

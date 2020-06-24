@@ -1,40 +1,26 @@
 const assert = require('assert');
 const http = require('http');
+const common = require('nock/lib/common');
 
-let requestOriginal;
-let lastArgs = null;
-const lastWrite = [];
-const reset = () => {
-  lastArgs = null;
-  lastWrite.length = 0;
-};
+let requestOriginal = null;
+let lastRequestOptions = null;
 
-const fn = (...requestArgs) => {
-  reset();
-  lastArgs = requestArgs;
-
-  const result = requestOriginal(...requestArgs);
-  const writeOriginal = result.write;
-  result.write = (...writeArgs) => {
-    lastWrite.push(writeArgs);
-    return writeOriginal(...writeArgs);
-  };
-  return result;
+const requestWrapper = (...args) => {
+  lastRequestOptions = common.normalizeClientRequestArgs(...args).options;
+  return requestOriginal(...args);
 };
 
 module.exports = {
   inject: () => {
-    assert(http.request !== fn, 'Inject Failure');
+    assert(http.request !== requestWrapper, 'Inject Failure');
     requestOriginal = http.request;
-    http.request = fn;
+    http.request = requestWrapper;
   },
   release: () => {
-    assert(http.request === fn, 'Release Failure');
+    assert(http.request === requestWrapper, 'Release Failure');
     http.request = requestOriginal;
-    reset();
+    requestOriginal = null;
+    lastRequestOptions = null;
   },
-  getLast: () => ({
-    options: lastArgs.filter((e) => typeof e !== 'function').slice(-1)[0],
-    body: lastWrite
-  })
+  getLastOptions: () => lastRequestOptions
 };

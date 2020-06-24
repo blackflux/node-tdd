@@ -60,13 +60,10 @@ module.exports = (opts) => {
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
-      nockListener.subscribe('no match', (req, options, body) => {
+      nockListener.subscribe('no match', () => {
         assert(hasCassette === true);
+        const options = requestInjector.getLastOptions();
         if (anyFlagPresent(['record'])) {
-          // const { options, body } = requestInjector.getLast();
-          if (options === undefined) {
-            throw new Error('Please delete empty cassette instead of using "record" option.');
-          }
           expectedCassette.push(async () => {
             nockRecorder.rec({
               output_objects: true,
@@ -78,7 +75,9 @@ module.exports = (opts) => {
                 response.on('data', () => {});
                 response.on('end', resolve);
               });
-              r.write(body);
+              if (options.body !== undefined) {
+                r.write(options.body);
+              }
               r.end();
             });
             const recorded = nockRecorder.play();
@@ -89,14 +88,11 @@ module.exports = (opts) => {
             }));
           });
         } else if (anyFlagPresent(['stub'])) {
-          if (options === undefined) {
-            throw new Error('Please delete empty cassette instead of using "stub" option.');
-          }
           expectedCassette.push({
             scope: `${options.uri.protocol}//${options.uri.host}`,
             method: options.method,
             path: options.uri.path,
-            body: tryParseJson(body),
+            body: tryParseJson(options.body),
             status: 200,
             response: {},
             responseIsBinary: false
