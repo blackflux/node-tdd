@@ -1,5 +1,4 @@
 const path = require('path');
-const http = require('http');
 const fs = require('smart-fs');
 const expect = require('chai').expect;
 const get = require('lodash.get');
@@ -7,62 +6,28 @@ const request = require('request-promise');
 const { logger } = require('lambda-monitor-logger');
 const aws = require('aws-sdk-wrap')({ logger });
 const { describe } = require('../../src/index');
-const RequestRecorder = require('../../src/modules/request-recorder');
-
-const spawnServer = async () => {
-  const listener = (req, resp) => {
-    resp.writeHead(200);
-    resp.write(JSON.stringify({ data: req.url.split('=')[1] }));
-    resp.end();
-  };
-  const server = http.createServer(listener);
-  await new Promise((resolve) => server.listen(resolve));
-  return {
-    uri: `http://localhost:${server.address().port}`,
-    close: () => new Promise((resolve) => server.close(resolve))
-  };
-};
+const { spawnServer, NockRecord } = require('../server');
 
 describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   const cassetteFile = 'file1.json';
   let tmpDir;
   let server;
+  let server2;
+  let nockRecord;
 
   before(async () => {
     server = await spawnServer();
+    server2 = await spawnServer('https');
   });
   after(async () => {
     await server.close();
+    await server2.close();
   });
 
   beforeEach(async ({ dir }) => {
     tmpDir = dir;
+    nockRecord = NockRecord(tmpDir, cassetteFile);
   });
-
-  const nockRecord = async (fn, {
-    stripHeaders = false,
-    strict = false,
-    heal = false
-  }) => {
-    const filePath = path.join(tmpDir, cassetteFile);
-
-    const requestRecorder = RequestRecorder({
-      cassetteFolder: tmpDir,
-      stripHeaders,
-      strict,
-      heal
-    });
-    await requestRecorder.inject(path.basename(filePath));
-
-    try {
-      await fn();
-    } finally {
-      await requestRecorder.release();
-      requestRecorder.shutdown();
-    }
-
-    return { cassette: fs.smartRead(filePath), ...requestRecorder.get() };
-  };
 
   const runTest = ({
     qs = [1],
@@ -316,6 +281,31 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         response: {},
         responseIsBinary: false,
         scope: server.uri,
+        status: 200
+      }]);
+    });
+
+    it('Testing record (https)', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, []);
+
+      await capture(() => nockRecord(() => request({
+        uri: `${server2.uri}/?q=1`,
+        strictSSL: false,
+        json: true,
+        body: { key: 'value' }
+      }), { stripHeaders: true, heal: 'record' }));
+
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([{
+        body: { key: 'value' },
+        method: 'GET',
+        path: '/?q=1',
+        response: {
+          data: '1'
+        },
+        responseIsBinary: false,
+        scope: server2.uri.replace('https', 'http'),
         status: 200
       }]);
     });
