@@ -90,9 +90,9 @@ module.exports = (opts) => {
           });
         } else if (anyFlagPresent(['stub'])) {
           expectedCassette.push({
-            scope: `${protocol}://${options.uri.host}`,
+            scope: `${protocol}://${options.host}:${options.port}`,
             method: options.method,
-            path: options.uri.path,
+            path: options.path,
             body: tryParseJson(body),
             status: 200,
             response: {},
