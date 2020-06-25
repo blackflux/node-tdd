@@ -1,5 +1,4 @@
 const path = require('path');
-const http = require('http');
 const fs = require('smart-fs');
 const expect = require('chai').expect;
 const get = require('lodash.get');
@@ -8,20 +7,7 @@ const { logger } = require('lambda-monitor-logger');
 const aws = require('aws-sdk-wrap')({ logger });
 const { describe } = require('../../src/index');
 const RequestRecorder = require('../../src/modules/request-recorder');
-
-const spawnServer = async () => {
-  const listener = (req, resp) => {
-    resp.writeHead(200);
-    resp.write(JSON.stringify({ data: req.url.split('=')[1] }));
-    resp.end();
-  };
-  const server = http.createServer(listener);
-  await new Promise((resolve) => server.listen(resolve));
-  return {
-    uri: `http://localhost:${server.address().port}`,
-    close: () => new Promise((resolve) => server.close(resolve))
-  };
-};
+const { spawnServer } = require('../server');
 
 describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   const cassetteFile = 'file1.json';
