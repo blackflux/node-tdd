@@ -39,6 +39,7 @@ const wrapper = (proto) => {
     release: () => {
       assert(protocol.request === requestWrapper, 'Release Failure');
       protocol.request = requestOriginal;
+      requestOriginal = null;
     }
   };
 };
