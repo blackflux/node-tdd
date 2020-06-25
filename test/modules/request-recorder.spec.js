@@ -6,13 +6,13 @@ const request = require('request-promise');
 const { logger } = require('lambda-monitor-logger');
 const aws = require('aws-sdk-wrap')({ logger });
 const { describe } = require('../../src/index');
-const RequestRecorder = require('../../src/modules/request-recorder');
-const { spawnServer } = require('../server');
+const { spawnServer, NockRecord } = require('../server');
 
 describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   const cassetteFile = 'file1.json';
-  let tmpDir;
   let server;
+  let tmpDir;
+  let nockRecord;
 
   before(async () => {
     server = await spawnServer();
@@ -23,32 +23,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
 
   beforeEach(async ({ dir }) => {
     tmpDir = dir;
+    nockRecord = NockRecord(tmpDir, cassetteFile);
   });
-
-  const nockRecord = async (fn, {
-    stripHeaders = false,
-    strict = false,
-    heal = false
-  }) => {
-    const filePath = path.join(tmpDir, cassetteFile);
-
-    const requestRecorder = RequestRecorder({
-      cassetteFolder: tmpDir,
-      stripHeaders,
-      strict,
-      heal
-    });
-    await requestRecorder.inject(path.basename(filePath));
-
-    try {
-      await fn();
-    } finally {
-      await requestRecorder.release();
-      requestRecorder.shutdown();
-    }
-
-    return { cassette: fs.smartRead(filePath), ...requestRecorder.get() };
-  };
 
   const runTest = ({
     qs = [1],
