@@ -15,17 +15,15 @@ const wrapper = (proto) => {
     lastProtocol = proto;
     lastOptions = common.normalizeClientRequestArgs(...args).options;
     lastBody = lastOptions.body;
-    const result = requestOriginal(...args);
-    const writeOriginal = result.write;
-    result.write = (...chunks) => {
-      if (lastBody === undefined) {
-        lastBody = [];
-      }
-      if (Array.isArray(lastBody)) {
-        lastBody.push(...chunks);
-      }
-      return writeOriginal(...chunks);
-    };
+    const result = requestOriginal.call(protocol, ...args);
+    if (lastBody === undefined) {
+      lastBody = [];
+      const writeOriginal = result.write;
+      result.write = (...chunks) => {
+        lastBody.push(chunks);
+        return writeOriginal.call(result, ...chunks);
+      };
+    }
     return result;
   };
 
@@ -34,13 +32,13 @@ const wrapper = (proto) => {
       assert(protocol.request !== requestWrapper, 'Inject Failure');
       requestOriginal = protocol.request;
       protocol.request = requestWrapper;
+      lastProtocol = null;
+      lastOptions = null;
+      lastBody = null;
     },
     release: () => {
       assert(protocol.request === requestWrapper, 'Release Failure');
       protocol.request = requestOriginal;
-      lastProtocol = null;
-      lastOptions = null;
-      lastBody = null;
     }
   };
 };

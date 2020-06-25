@@ -10,15 +10,18 @@ const { spawnServer, NockRecord } = require('../server');
 
 describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   const cassetteFile = 'file1.json';
-  let server;
   let tmpDir;
+  let server;
+  let server2;
   let nockRecord;
 
   before(async () => {
     server = await spawnServer();
+    server2 = await spawnServer('https');
   });
   after(async () => {
     await server.close();
+    await server2.close();
   });
 
   beforeEach(async ({ dir }) => {
@@ -278,6 +281,31 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         response: {},
         responseIsBinary: false,
         scope: server.uri,
+        status: 200
+      }]);
+    });
+
+    it('Testing record (https)', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, []);
+
+      await capture(() => nockRecord(() => request({
+        uri: `${server2.uri}/?q=1`,
+        strictSSL: false,
+        json: true,
+        body: { key: 'value' }
+      }), { stripHeaders: true, heal: 'record' }));
+
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([{
+        body: { key: 'value' },
+        method: 'GET',
+        path: '/?q=1',
+        response: {
+          data: '1'
+        },
+        responseIsBinary: false,
+        scope: server2.uri.replace('https', 'http'),
         status: 200
       }]);
     });

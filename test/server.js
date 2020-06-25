@@ -10,10 +10,15 @@ module.exports.spawnServer = async (proto = 'http') => {
     resp.write(JSON.stringify({ data: req.url.split('=')[1] }));
     resp.end();
   };
-  const server = { http, https }[proto].createServer(listener);
+  const server = { http, https }[proto].createServer(proto === 'https' ? {
+    key: fs.readFileSync(path.join(__dirname, 'certs', 'my-server.key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'certs', 'my-server.crt.pem'))
+  } : {}, listener);
   await new Promise((resolve) => server.listen(resolve));
+  const address = server.address();
   return {
-    uri: `${proto}://localhost:${server.address().port}`,
+    address,
+    uri: `${proto}://localhost:${address.port}`,
     close: () => new Promise((resolve) => server.close(resolve))
   };
 };

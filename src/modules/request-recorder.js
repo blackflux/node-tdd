@@ -72,12 +72,13 @@ module.exports = (opts) => {
               enable_reqheaders_recording: false
             });
             await new Promise((resolve) => {
+              options.protocol = `${protocol}:`;
               const r = { http, https }[protocol].request(options, (response) => {
                 response.on('data', () => {});
                 response.on('end', resolve);
               });
               if (body !== undefined) {
-                r.write(...(Array.isArray(body) ? body : [body]));
+                r.write(body);
               }
               r.end();
             });
