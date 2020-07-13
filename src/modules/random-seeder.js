@@ -57,7 +57,7 @@ module.exports = (opts) => {
         });
         return buffer;
       };
-      Math.random = () => crypto.randomBytes(8).readUInt32LE() / 0xffffffff;
+      Math.random = () => crypto.randomBytes(4).readUInt32LE() / 0xffffffff;
     },
     release: () => {
       assert(original !== null);

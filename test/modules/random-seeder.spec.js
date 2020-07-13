@@ -57,7 +57,17 @@ describe('Testing RandomSeeder', () => {
     });
 
     it('Testing Math.random()', () => {
-      expect(Math.random()).to.equal(0.6071484104281172);
+      expect(Math.random()).to.equal(0.05960690161669788);
+    });
+
+    it('Testing Math.random() stable', () => {
+      const count = 1000;
+      let avg = 0;
+      for (let idx = 0; idx < count; idx += 1) {
+        avg += Math.random();
+      }
+      avg /= count;
+      expect(avg).to.equal(0.4983554917758692);
     });
   });
 
