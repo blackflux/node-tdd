@@ -55,6 +55,10 @@ describe('Testing RandomSeeder', () => {
         done();
       });
     });
+
+    it('Testing Math.random()', () => {
+      expect(Math.random()).to.equal(0.6071484104281172);
+    });
   });
 
   describe('Testing RandomSeeder Reseeded', () => {
