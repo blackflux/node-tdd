@@ -113,7 +113,7 @@
     "lodash.get": "4.4.2",
     "minimist": "1.2.5",
     "nock": "13.0.2",
-    "smart-fs": "1.11.14",
+    "smart-fs": "1.11.15",
     "timekeeper": "2.2.0",
     "tmp": "0.2.1",
     "uuid": "8.2.0",
