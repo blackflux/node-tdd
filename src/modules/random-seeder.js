@@ -3,6 +3,8 @@ const crypto = require('crypto');
 const get = require('lodash.get');
 const Joi = require('joi-strict');
 
+const libs = { Math, crypto };
+
 module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
     seed: Joi.string(),
@@ -15,8 +17,13 @@ module.exports = (opts) => {
       assert(original === null);
 
       original = {
-        randomBytes: crypto.randomBytes,
-        randomFillSync: crypto.randomFillSync
+        crypto: {
+          randomBytes: crypto.randomBytes,
+          randomFillSync: crypto.randomFillSync
+        },
+        Math: {
+          random: Math.random
+        }
       };
       const executionCounts = {};
 
@@ -50,11 +57,14 @@ module.exports = (opts) => {
         });
         return buffer;
       };
+      Math.random = () => crypto.randomBytes(8).readUInt32LE() / 0xffffffff;
     },
     release: () => {
       assert(original !== null);
-      Object.entries(original).forEach(([k, v]) => {
-        crypto[k] = v;
+      Object.entries(original).forEach(([lib, v]) => {
+        Object.entries(v).forEach(([method, org]) => {
+          libs[lib][method] = org;
+        });
       });
       original = null;
     },
