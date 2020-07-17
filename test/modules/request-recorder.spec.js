@@ -348,5 +348,65 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         status: 200
       }]);
     });
+
+    it('Testing modifiers', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [{
+        method: 'POST',
+        path: '/',
+        response: {},
+        body: {
+          'payload|jsonStringify|toBase64': {
+            key: 'value'
+          }
+        },
+        responseIsBinary: false,
+        scope: server.uri,
+        status: 200
+      }]);
+      await nockRecord(async () => {
+        await request({
+          method: 'POST',
+          uri: server.uri,
+          body: { payload: 'eyJrZXkiOiJ2YWx1ZSJ9' },
+          json: true
+        });
+      }, {
+        stripHeaders: true,
+        modifiers: {
+          toBase64: (input) => Buffer.from(input).toString('base64'),
+          jsonStringify: (input) => JSON.stringify(input)
+        }
+      });
+    });
+
+    it('Testing unknown modifiers', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [{
+        method: 'POST',
+        path: '/',
+        response: {},
+        body: {
+          'payload|jsonStringify|toBase64': {
+            key: 'value'
+          }
+        },
+        responseIsBinary: false,
+        scope: server.uri,
+        status: 200
+      }]);
+      await nockRecord(async () => {
+        await request({
+          method: 'POST',
+          uri: server.uri,
+          body: {
+            'payload|jsonStringify|toBase64': {
+              key: 'value'
+            }
+          },
+          json: true
+        });
+      }, { stripHeaders: true });
+    });
   });
 });

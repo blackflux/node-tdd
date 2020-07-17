@@ -115,6 +115,15 @@ Default: `$FILENAME__cassettes`
 Used to customize the folder name that contains the nock cassettes. This can be useful when multiple describe in
 the same file use nock.
 
+#### nockModifiers
+
+Type: `object`<br>
+Default: `{}`
+
+Used to define modifiers that are applied to cassette request bodies and responses.
+This can be used to e.g. make e.g. base64 encoded response bodies more readable.
+See tests for how to use this in more detail.
+
 #### fixtureFolder
 
 Type: `string`<br>

@@ -7,6 +7,7 @@ const Joi = require('joi-strict');
 const nock = require('nock');
 const nockListener = require('./request-recorder/nock-listener');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
+const applyModifiers = require('./request-recorder/apply-modifiers');
 const { buildKey, tryParseJson, convertHeaders } = require('./request-recorder/util');
 const requestInjector = require('./request-recorder/request-injector');
 
@@ -18,7 +19,8 @@ module.exports = (opts) => {
     cassetteFolder: Joi.string(),
     stripHeaders: Joi.boolean(),
     strict: Joi.boolean(),
-    heal: Joi.alternatives(Joi.boolean(), Joi.string())
+    heal: Joi.alternatives(Joi.boolean(), Joi.string()),
+    modifiers: Joi.object().pattern(Joi.string(), Joi.function())
   }), 'Invalid Options Provided');
   let nockDone = null;
   let cassetteFilePath = null;
@@ -104,6 +106,12 @@ module.exports = (opts) => {
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
           records.push({ ...scope });
+          ['body', 'response'].forEach((field) => {
+            if (scope[field] instanceof Object) {
+              // eslint-disable-next-line no-param-reassign
+              scope[field] = applyModifiers(scope[field], opts.modifiers);
+            }
+          });
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
             if (anyFlagPresent(['magic', 'body'])) {
