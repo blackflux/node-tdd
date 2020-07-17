@@ -53,7 +53,7 @@ Can be called to interact with the currently captured logs. Exposes the followin
 - `reset()`: Reset currently captured logs
 - `verbose(flag: boolean)`: Set verbosity mode of capture (if the original logger function is called)
 
- Only available when `recordConsole` is set.
+ Only available when `record` option is used.
 
 #### capture
 
@@ -114,6 +114,15 @@ Default: `$FILENAME__cassettes`
 
 Used to customize the folder name that contains the nock cassettes. This can be useful when multiple describe in
 the same file use nock.
+
+#### nockModifiers
+
+Type: `object`<br>
+Default: `{}`
+
+Used to define modifiers that can be used in cassettes.
+E.g. can be used to make encoded response bodies more readable.
+See tests for how to use in detail.
 
 #### fixtureFolder
 

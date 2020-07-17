@@ -38,6 +38,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     useTmpDir: Joi.boolean().optional(),
     useNock: Joi.boolean().optional(),
     nockFolder: Joi.string().optional(),
+    nockModifiers: Joi.object().optional().pattern(Joi.string(), Joi.function()),
     fixtureFolder: Joi.string().optional(),
     envVarsFile: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
@@ -53,6 +54,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const useNock = get(opts, 'useNock', false);
   const nockFolder = resolve(get(opts, 'nockFolder', '$FILENAME__cassettes'));
   const fixtureFolder = resolve(get(opts, 'fixtureFolder', '$FILENAME__fixtures'));
+  const nockModifiers = get(opts, 'nockModifiers', {});
   const envVarsFile = resolve(get(opts, 'envVarsFile', '$FILENAME.env.yml'));
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
@@ -130,7 +132,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
               cassetteFolder: `${nockFolder}/`,
               stripHeaders: false,
               strict: true,
-              heal: nockHeal
+              heal: nockHeal,
+              modifiers: nockModifiers
             });
           }
           await beforeCb.call(this);
