@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('smart-fs');
 const Joi = require('joi-strict');
 const nock = require('nock');
+const cloneDeep = require('lodash.clonedeep');
 const nockListener = require('./request-recorder/nock-listener');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
 const applyModifiers = require('./request-recorder/apply-modifiers');
@@ -105,7 +106,7 @@ module.exports = (opts) => {
       });
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
-          records.push({ ...scope });
+          records.push(cloneDeep(scope));
           Object
             .entries(scope)
             .filter(([k]) => ['body', 'response'].includes(k.split('|')[0]))
