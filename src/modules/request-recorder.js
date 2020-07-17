@@ -106,12 +106,18 @@ module.exports = (opts) => {
       nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
         before: (scope, scopeIdx) => {
           records.push({ ...scope });
-          ['body', 'response'].forEach((field) => {
-            if (scope[field] instanceof Object) {
+          Object
+            .entries(scope)
+            .filter(([k]) => ['body', 'response'].includes(k.split('|')[0]))
+            .forEach(([k, v]) => {
+              const [newKey, newValue] = Object.entries(applyModifiers({ [k]: v }, opts.modifiers))[0];
+              if (k !== newKey) {
+                // eslint-disable-next-line no-param-reassign
+                delete scope[k];
+              }
               // eslint-disable-next-line no-param-reassign
-              scope[field] = applyModifiers(scope[field], opts.modifiers);
-            }
-          });
+              scope[newKey] = newValue;
+            });
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
             if (anyFlagPresent(['magic', 'body'])) {

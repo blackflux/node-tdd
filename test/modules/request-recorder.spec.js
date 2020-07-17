@@ -354,9 +354,9 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       fs.smartWrite(cassettePath, [{
         method: 'POST',
         path: '/',
-        response: {},
-        body: {
-          'payload|jsonStringify|toBase64': {
+        'response|jsonStringify|toBase64': {},
+        'body|jsonStringify|toBase64': {
+          payload: {
             key: 'value'
           }
         },
@@ -365,12 +365,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         status: 200
       }]);
       await nockRecord(async () => {
-        await request({
+        const r = await request({
           method: 'POST',
           uri: server.uri,
-          body: { payload: 'eyJrZXkiOiJ2YWx1ZSJ9' },
-          json: true
+          body: 'eyJwYXlsb2FkIjp7ImtleSI6InZhbHVlIn19'
         });
+        expect(r).to.deep.equal('e30=');
       }, {
         stripHeaders: true,
         modifiers: {
