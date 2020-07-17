@@ -17,8 +17,10 @@ module.exports = (input, modifiers) => {
             newKey += `|${modifierName}`;
           }
         }
-        // eslint-disable-next-line no-param-reassign
-        delete parent[key];
+        if (k !== newKey) {
+          // eslint-disable-next-line no-param-reassign
+          delete parent[key];
+        }
         // eslint-disable-next-line no-param-reassign
         parent[newKey] = newValue;
       }
