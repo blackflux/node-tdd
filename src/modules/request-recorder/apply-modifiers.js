@@ -4,7 +4,7 @@ module.exports = (input, modifiers) => {
   objectScan(['**'], {
     filterFn: ({ key, value, parent }) => {
       const k = key[key.length - 1];
-      if (k.includes('|')) {
+      if (typeof k === 'string' && k.includes('|')) {
         const [prefix, ...modifierNames] = k.split('|');
         let newKey = prefix;
         let newValue = value;
@@ -25,5 +25,4 @@ module.exports = (input, modifiers) => {
       }
     }
   })(input);
-  return input;
 };

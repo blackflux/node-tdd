@@ -120,8 +120,8 @@ the same file use nock.
 Type: `object`<br>
 Default: `{}`
 
-Used to define modifiers that are applied to cassette request bodies and responses.
-This can be used to e.g. make base64 encoded response bodies more readable.
+Used to define modifiers that can be used in cassettes.
+E.g. this can be used to make encoded response bodies more readable.
 See tests for how to use this in more detail.
 
 #### fixtureFolder
