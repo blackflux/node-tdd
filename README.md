@@ -121,8 +121,8 @@ Type: `object`<br>
 Default: `{}`
 
 Used to define modifiers that can be used in cassettes.
-E.g. this can be used to make encoded response bodies more readable.
-See tests for how to use this in more detail.
+E.g. can be used to make encoded response bodies more readable.
+See tests for how to use in detail.
 
 #### fixtureFolder
 
