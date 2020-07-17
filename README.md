@@ -121,7 +121,7 @@ Type: `object`<br>
 Default: `{}`
 
 Used to define modifiers that are applied to cassette request bodies and responses.
-This can be used to e.g. make e.g. base64 encoded response bodies more readable.
+This can be used to e.g. make base64 encoded response bodies more readable.
 See tests for how to use this in more detail.
 
 #### fixtureFolder
