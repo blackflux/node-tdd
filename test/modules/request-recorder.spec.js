@@ -147,6 +147,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         jsonStringify: (input) => JSON.stringify(input)
       };
     });
+
     it('Testing modifiers (top level)', async () => {
       prepareCassette({
         'response|jsonStringify|toBase64': {},
