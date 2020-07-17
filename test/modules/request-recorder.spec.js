@@ -163,7 +163,42 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       });
     });
 
-    it('Testing unknown modifiers', async () => {
+    it('Testing modifiers (nested)', async () => {
+      prepareCassette({
+        response: {
+          'data|jsonStringify|toBase64': {}
+        },
+        body: {
+          'payload|jsonStringify|toBase64': {
+            key: 'value'
+          }
+        }
+      });
+      await validate({
+        json: true,
+        modifiers: defaultModifiers,
+        body: { payload: 'eyJrZXkiOiJ2YWx1ZSJ9' },
+        response: { data: 'e30=' }
+      });
+    });
+
+    it('Testing unknown modifiers (top level)', async () => {
+      prepareCassette({
+        'response|jsonStringify|toBase64': {},
+        'body|jsonStringify|toBase64': {
+          payload: {
+            key: 'value'
+          }
+        }
+      });
+      await validate({
+        json: true,
+        body: undefined,
+        response: undefined
+      });
+    });
+
+    it('Testing unknown modifiers (nested)', async () => {
       prepareCassette({
         response: {},
         body: {
