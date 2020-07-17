@@ -109,6 +109,68 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     expect(e.message).to.equal('Unexpected file(s) in cassette folder: file1.json_other.json');
   });
 
+  describe('Testing modifiers', () => {
+    it('Testing modifiers', async () => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [{
+        method: 'POST',
+        path: '/',
+        'response|jsonStringify|toBase64': {},
+        'body|jsonStringify|toBase64': {
+          payload: {
+            key: 'value'
+          }
+        },
+        responseIsBinary: false,
+        scope: server.uri,
+        status: 200
+      }]);
+      await nockRecord(async () => {
+        const r = await request({
+          method: 'POST',
+          uri: server.uri,
+          body: 'eyJwYXlsb2FkIjp7ImtleSI6InZhbHVlIn19'
+        });
+        expect(r).to.deep.equal('e30=');
+      }, {
+        stripHeaders: true,
+        modifiers: {
+          toBase64: (input) => Buffer.from(input).toString('base64'),
+          jsonStringify: (input) => JSON.stringify(input)
+        }
+      });
+    });
+
+    it('Testing unknown modifiers', async () => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [{
+        method: 'POST',
+        path: '/',
+        response: {},
+        body: {
+          'payload|jsonStringify|toBase64': {
+            key: 'value'
+          }
+        },
+        responseIsBinary: false,
+        scope: server.uri,
+        status: 200
+      }]);
+      await nockRecord(async () => {
+        await request({
+          method: 'POST',
+          uri: server.uri,
+          body: {
+            'payload|jsonStringify|toBase64': {
+              key: 'value'
+            }
+          },
+          json: true
+        });
+      }, { stripHeaders: true });
+    });
+  });
+
   describe('Testing healing of recording', () => {
     let makeCassetteEntry;
     let runner;
@@ -347,66 +409,6 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         scope: server.uri,
         status: 200
       }]);
-    });
-
-    it('Testing modifiers', async ({ capture }) => {
-      const cassettePath = path.join(tmpDir, cassetteFile);
-      fs.smartWrite(cassettePath, [{
-        method: 'POST',
-        path: '/',
-        'response|jsonStringify|toBase64': {},
-        'body|jsonStringify|toBase64': {
-          payload: {
-            key: 'value'
-          }
-        },
-        responseIsBinary: false,
-        scope: server.uri,
-        status: 200
-      }]);
-      await nockRecord(async () => {
-        const r = await request({
-          method: 'POST',
-          uri: server.uri,
-          body: 'eyJwYXlsb2FkIjp7ImtleSI6InZhbHVlIn19'
-        });
-        expect(r).to.deep.equal('e30=');
-      }, {
-        stripHeaders: true,
-        modifiers: {
-          toBase64: (input) => Buffer.from(input).toString('base64'),
-          jsonStringify: (input) => JSON.stringify(input)
-        }
-      });
-    });
-
-    it('Testing unknown modifiers', async ({ capture }) => {
-      const cassettePath = path.join(tmpDir, cassetteFile);
-      fs.smartWrite(cassettePath, [{
-        method: 'POST',
-        path: '/',
-        response: {},
-        body: {
-          'payload|jsonStringify|toBase64': {
-            key: 'value'
-          }
-        },
-        responseIsBinary: false,
-        scope: server.uri,
-        status: 200
-      }]);
-      await nockRecord(async () => {
-        await request({
-          method: 'POST',
-          uri: server.uri,
-          body: {
-            'payload|jsonStringify|toBase64': {
-              key: 'value'
-            }
-          },
-          json: true
-        });
-      }, { stripHeaders: true });
     });
   });
 });
