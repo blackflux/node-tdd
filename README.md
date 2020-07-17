@@ -53,7 +53,7 @@ Can be called to interact with the currently captured logs. Exposes the followin
 - `reset()`: Reset currently captured logs
 - `verbose(flag: boolean)`: Set verbosity mode of capture (if the original logger function is called)
 
- Only available when `recordConsole` is set.
+ Only available when the `record` option is used.
 
 #### capture
 

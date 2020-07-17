@@ -109,7 +109,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     expect(e.message).to.equal('Unexpected file(s) in cassette folder: file1.json_other.json');
   });
 
-  describe('Testing modifiers', () => {
+  describe('Testing modifiers', { record: console }, () => {
     let prepareCassette;
     let validate;
     let defaultModifiers;
@@ -148,7 +148,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       };
     });
 
-    it('Testing modifiers (top level)', async () => {
+    it('Testing modifiers (top level)', async ({ recorder }) => {
       prepareCassette({
         'response|jsonStringify|toBase64': {},
         'body|jsonStringify|toBase64': {
@@ -162,9 +162,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         body: 'eyJwYXlsb2FkIjp7ImtleSI6InZhbHVlIn19',
         response: 'e30='
       });
+      expect(recorder.get()).to.deep.equal([]);
     });
 
-    it('Testing modifiers (nested)', async () => {
+    it('Testing modifiers (nested)', async ({ recorder }) => {
       prepareCassette({
         response: {
           'data|jsonStringify|toBase64': {}
@@ -181,9 +182,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         body: { payload: 'eyJrZXkiOiJ2YWx1ZSJ9' },
         response: { data: 'e30=' }
       });
+      expect(recorder.get()).to.deep.equal([]);
     });
 
-    it('Testing unknown modifiers (top level)', async () => {
+    it('Testing unknown modifiers (top level)', async ({ recorder }) => {
       prepareCassette({
         'response|jsonStringify|toBase64': {},
         'body|jsonStringify|toBase64': {
@@ -197,9 +199,13 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         body: undefined,
         response: undefined
       });
+      expect(recorder.get()).to.deep.equal([
+        'Unknown Modifier(s) detected: jsonStringify, toBase64',
+        'Unknown Modifier(s) detected: jsonStringify, toBase64'
+      ]);
     });
 
-    it('Testing unknown modifiers (nested)', async () => {
+    it('Testing unknown modifiers (nested)', async ({ recorder }) => {
       prepareCassette({
         response: {},
         body: {
@@ -217,6 +223,9 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         },
         response: {}
       });
+      expect(recorder.get()).to.deep.equal([
+        'Unknown Modifier(s) detected: jsonStringify, toBase64'
+      ]);
     });
   });
 
