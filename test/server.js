@@ -26,7 +26,8 @@ module.exports.spawnServer = async (proto = 'http') => {
 module.exports.NockRecord = (tmpDir, cassetteFile) => async (fn, {
   stripHeaders = false,
   strict = false,
-  heal = false
+  heal = false,
+  modifiers = {}
 }) => {
   const filePath = path.join(tmpDir, cassetteFile);
 
@@ -34,7 +35,8 @@ module.exports.NockRecord = (tmpDir, cassetteFile) => async (fn, {
     cassetteFolder: tmpDir,
     stripHeaders,
     strict,
-    heal
+    heal,
+    modifiers
   });
   await requestRecorder.inject(path.basename(filePath));
 

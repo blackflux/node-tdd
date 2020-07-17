@@ -109,6 +109,126 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     expect(e.message).to.equal('Unexpected file(s) in cassette folder: file1.json_other.json');
   });
 
+  describe('Testing modifiers', { record: console }, () => {
+    let prepareCassette;
+    let validate;
+    let defaultModifiers;
+    beforeEach(() => {
+      prepareCassette = (kwargs) => {
+        const cassettePath = path.join(tmpDir, cassetteFile);
+        fs.smartWrite(cassettePath, [{
+          method: 'POST',
+          path: '/',
+          responseIsBinary: false,
+          scope: server.uri,
+          status: 200,
+          ...kwargs
+        }]);
+      };
+      validate = async ({
+        body,
+        response,
+        modifiers = {},
+        json = false
+      }) => nockRecord(async () => {
+        const r = await request({
+          method: 'POST',
+          uri: server.uri,
+          body,
+          json
+        });
+        expect(r).to.deep.equal(response);
+      }, {
+        stripHeaders: true,
+        modifiers
+      });
+      defaultModifiers = {
+        toBase64: (input) => Buffer.from(input).toString('base64'),
+        jsonStringify: (input) => JSON.stringify(input)
+      };
+    });
+
+    it('Testing modifiers (top level)', async ({ recorder }) => {
+      prepareCassette({
+        'response|jsonStringify|toBase64': {},
+        'body|jsonStringify|toBase64': {
+          payload: {
+            key: 'value'
+          }
+        }
+      });
+      await validate({
+        modifiers: defaultModifiers,
+        body: 'eyJwYXlsb2FkIjp7ImtleSI6InZhbHVlIn19',
+        response: 'e30='
+      });
+      expect(recorder.get()).to.deep.equal([]);
+    });
+
+    it('Testing modifiers (nested)', async ({ recorder }) => {
+      prepareCassette({
+        response: {
+          'data|jsonStringify|toBase64': {}
+        },
+        body: {
+          'payload|jsonStringify|toBase64': {
+            key: 'value'
+          }
+        }
+      });
+      await validate({
+        json: true,
+        modifiers: defaultModifiers,
+        body: { payload: 'eyJrZXkiOiJ2YWx1ZSJ9' },
+        response: { data: 'e30=' }
+      });
+      expect(recorder.get()).to.deep.equal([]);
+    });
+
+    it('Testing unknown modifiers (top level)', async ({ recorder }) => {
+      prepareCassette({
+        'response|jsonStringify|toBase64': {},
+        'body|jsonStringify|toBase64': {
+          payload: {
+            key: 'value'
+          }
+        }
+      });
+      await validate({
+        json: true,
+        body: undefined,
+        response: undefined
+      });
+      expect(recorder.get()).to.deep.equal([
+        'Unknown Modifier(s) detected: jsonStringify, toBase64',
+        'Unknown Modifier(s) detected: jsonStringify, toBase64'
+      ]);
+    });
+
+    it('Testing unknown modifiers (nested)', async ({ recorder }) => {
+      prepareCassette({
+        response: {},
+        body: {
+          'payload|jsonStringify|toBase64': {
+            key: 'value'
+          }
+        }
+      });
+      await validate({
+        json: true,
+        body: {
+          'payload|jsonStringify|toBase64': {
+            key: 'value'
+          }
+        },
+        response: {}
+      });
+      expect(recorder.get()).to.deep.equal([
+        'Unknown Modifier(s) detected: jsonStringify, toBase64'
+      ]);
+    });
+  });
+
   describe('Testing healing of recording', () => {
     let makeCassetteEntry;
     let runner;
