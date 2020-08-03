@@ -62,7 +62,7 @@
     "lambda-monitor-logger": "2.4.1",
     "nyc": "15.1.0",
     "request": "2.88.2",
-    "request-promise": "4.2.5",
+    "request-promise": "4.2.6",
     "semantic-release": "17.1.1"
   },
   "licenses": [
