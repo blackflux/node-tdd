@@ -1,3 +1,4 @@
+const qs = require('querystring');
 const fs = require('smart-fs');
 const path = require('path');
 const http = require('http');
@@ -6,8 +7,9 @@ const RequestRecorder = require('../src/modules/request-recorder');
 
 module.exports.spawnServer = async (proto = 'http') => {
   const listener = (req, resp) => {
+    const params = qs.parse(req.url.split('?').pop());
     resp.writeHead(200);
-    resp.write(JSON.stringify({ data: req.url.split('=')[1] }));
+    resp.write(JSON.stringify({ data: params.q }));
     resp.end();
   };
   const server = { http, https }[proto].createServer(proto === 'https' ? {
