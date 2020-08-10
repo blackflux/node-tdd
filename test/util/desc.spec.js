@@ -146,6 +146,16 @@ describe('Testing { describe }', () => {
     });
   });
 
+  describe('Testing random mocking with redeed', {
+    cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e',
+    cryptoSeedReseed: true
+  }, () => {
+    it('Testing random is mocked', () => {
+      expect(uuid4()).to.deep.equal('e9d78197-b53c-48ab-99d1-08b7d7661460');
+      expect(uuid4()).to.deep.equal('e9d78197-b53c-48ab-99d1-08b7d7661460');
+    });
+  });
+
   describe('Testing async done callback', () => {
     it('Test done is a function', (done) => {
       expect(typeof done).to.equal('function');
