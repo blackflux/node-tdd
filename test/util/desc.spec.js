@@ -146,7 +146,7 @@ describe('Testing { describe }', () => {
     });
   });
 
-  describe('Testing random mocking with redeed', {
+  describe('Testing random mocking with reseed', {
     cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e',
     cryptoSeedReseed: true
   }, () => {
