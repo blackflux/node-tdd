@@ -173,6 +173,15 @@ Default: -
 
 When set, randomization is overwritten and consistent per test using the provided seed.
 
+#### cryptoSeedReseed
+
+Type: `boolean`<br>
+Default: `false`
+
+When set to true, all random functions are re-seeded. This results in reduced randomness.
+
+Only allowed when cryptoSeed is provided.
+
 #### timeout
 
 Type: `number`<br>
