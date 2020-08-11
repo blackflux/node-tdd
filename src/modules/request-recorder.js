@@ -21,7 +21,10 @@ module.exports = (opts) => {
     stripHeaders: Joi.boolean(),
     strict: Joi.boolean(),
     heal: Joi.alternatives(Joi.boolean(), Joi.string()),
-    modifiers: Joi.object().pattern(Joi.string(), Joi.function())
+    modifiers: Joi.object().pattern(
+      Joi.string(),
+      Joi.alternatives(Joi.function(), Joi.link('#modifiers'))
+    )
   }), 'Invalid Options Provided');
   let nockDone = null;
   let cassetteFilePath = null;
