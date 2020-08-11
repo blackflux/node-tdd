@@ -48,6 +48,11 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     ).optional(),
     record: Joi.any().optional(),
     cryptoSeed: Joi.string().optional(),
+    cryptoSeedReseed: Joi.when('cryptoSeed', {
+      is: Joi.string(),
+      then: Joi.boolean().optional(),
+      otherwise: Joi.forbidden()
+    }),
     timeout: Joi.number().optional().min(0)
   }), 'Bad Options Provided');
   const useTmpDir = get(opts, 'useTmpDir', false);
@@ -60,6 +65,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const timestamp = get(opts, 'timestamp', null);
   const record = get(opts, 'record', false);
   const cryptoSeed = get(opts, 'cryptoSeed', null);
+  const cryptoSeedReseed = get(opts, 'cryptoSeedReseed', false);
   const timeout = get(opts, 'timeout', null);
   const nockHeal = get(minimist(process.argv.slice(2)), 'nock-heal', false);
 
@@ -124,7 +130,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
             timeKeeper.inject();
           }
           if (cryptoSeed !== null) {
-            randomSeeder = RandomSeeder({ seed: cryptoSeed, reseed: false });
+            randomSeeder = RandomSeeder({ seed: cryptoSeed, reseed: cryptoSeedReseed });
             randomSeeder.inject();
           }
           if (useNock === true) {
