@@ -1,4 +1,3 @@
-const timers = require('timers');
 const expect = require('chai').expect;
 const nockCommon = require('nock/lib/common');
 
