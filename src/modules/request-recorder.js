@@ -7,6 +7,7 @@ const Joi = require('joi-strict');
 const nock = require('nock');
 const cloneDeep = require('lodash.clonedeep');
 const nockListener = require('./request-recorder/nock-listener');
+const nockMock = require('./request-recorder/nock-mock');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
 const applyModifiers = require('./request-recorder/apply-modifiers');
 const { buildKey, tryParseJson, convertHeaders } = require('./request-recorder/util');
@@ -67,6 +68,7 @@ module.exports = (opts) => {
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
+      nockMock.patch();
       nockListener.subscribe('no match', () => {
         assert(hasCassette === true);
         const { protocol, options, body } = requestInjector.getLast();
@@ -169,6 +171,7 @@ module.exports = (opts) => {
       nockDone();
       nockDone = null;
       nockListener.unsubscribeAll('no match');
+      nockMock.unpatch();
 
       for (let idx = 0; idx < expectedCassette.length; idx += 1) {
         if (typeof expectedCassette[idx] === 'function') {
