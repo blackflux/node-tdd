@@ -8,6 +8,7 @@
       "packageName": "node-tdd",
       "projectName": "node-tdd",
       "owner": "simlu",
+      "nodeVersion": "10",
       "ownerName": "Lukas Siemon",
       "mergeBot": "MrsFlux"
     }
