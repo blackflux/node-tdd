@@ -5446,10 +5446,10 @@ object-scan@13.1.2:
   resolved "https://registry.yarnpkg.com/object-scan/-/object-scan-13.1.2.tgz#d190cdfd8821b6496afd2305568c5e7aaa539e24"
   integrity sha512-MurZBgumqnz1rM+cQ/3lGM33Mr+MXTvGUg3H1Ylcad4Q71XbBmsFKcqWq6lFc+70W1t3xCsTWYrXT/doZt9LeA==
 
-object-scan@13.1.5:
-  version "13.1.5"
-  resolved "https://registry.yarnpkg.com/object-scan/-/object-scan-13.1.5.tgz#d4f3a3b0cb89e7a3d6f6a89dd046e70585318105"
-  integrity sha512-661amgbFgthyFhAqKHcot+0akjiCHj89/mnX3wWN9nvoGxgNr+jXVtsovVAz1C++fSUg7GPsUSa93U/7H+QNVA==
+object-scan@13.1.6:
+  version "13.1.6"
+  resolved "https://registry.yarnpkg.com/object-scan/-/object-scan-13.1.6.tgz#7ca059e129ee653edadb4ea1fecb57996d998a3d"
+  integrity sha512-11zDs+8YzbqrhsFEqsPfPS8MucHuph5bmu0HA6JL2BlDoauLe2yKFa7HrZG1rS/+vdQCBibivqA+nvE5hj5ahQ==
 
 object-treeify@1.1.26:
   version "1.1.26"
