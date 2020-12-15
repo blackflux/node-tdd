@@ -64,7 +64,8 @@ describe('Testing { describe }', () => {
       });
 
       afterEach(({ dir }) => {
-        assert(dir === undefined);
+        assert(dir.startsWith(dirPrefix));
+        assert(dir === beforeDir);
       });
 
       it('Testing dir matched beforeEach dir', ({ dir }) => {
