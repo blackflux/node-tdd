@@ -49,6 +49,7 @@
     "aws-sdk": "2.766.0",
     "aws-sdk-wrap": "4.5.0",
     "babel-eslint": "10.1.0",
+    "babel-preset-latest-node": "5.0.0",
     "chai": "4.2.0",
     "coveralls": "3.1.0",
     "eslint": "7.10.0",
@@ -63,8 +64,7 @@
     "nyc": "15.1.0",
     "request": "2.88.2",
     "request-promise": "4.2.6",
-    "semantic-release": "17.1.2",
-    "babel-preset-latest-node": "5.0.0"
+    "semantic-release": "17.1.2"
   },
   "licenses": [
     {

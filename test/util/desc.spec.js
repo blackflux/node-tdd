@@ -97,6 +97,16 @@ describe('Testing { describe }', () => {
       });
       expect(result.headers.date).to.equal('Sun, 19 Nov 2017 02:02:30 GMT');
     });
+
+    it('Testing wildcard port matching', async () => {
+      const result = await request({
+        uri: `http://ip-api.com:${Math.round(Math.random() * 1000)}/json`,
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true
+      });
+      expect(result.headers.date).to.equal('Sun, 19 Nov 2017 02:02:30 GMT');
+    });
   });
 
   describe('Testing freezing time', { timestamp: 123456789 }, () => {
