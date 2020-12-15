@@ -197,6 +197,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       // eslint-disable-next-line func-names
       mocha.afterEach(function () {
         return (async () => {
+          await afterEachCb.call(this, getArgs());
           if (logRecorder !== null) {
             logRecorder.release();
             logRecorder = null;
@@ -207,7 +208,6 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           if (dir !== null) {
             dir = null;
           }
-          await afterEachCb.call(this, getArgs());
         })();
       });
 
