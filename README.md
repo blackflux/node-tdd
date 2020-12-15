@@ -124,6 +124,13 @@ Used to define modifiers that can be used in cassettes.
 E.g. can be used to make encoded response bodies more readable.
 See tests for how to use in detail.
 
+### nockStripHeaders
+
+Type: `boolean`<br>
+Default: `false`
+
+When set to true, all headers are stripped when requests are recorded.
+
 #### fixtureFolder
 
 Type: `string`<br>

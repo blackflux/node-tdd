@@ -39,6 +39,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     useNock: Joi.boolean().optional(),
     nockFolder: Joi.string().optional(),
     nockModifiers: Joi.object().optional().pattern(Joi.string(), Joi.function()),
+    nockStripHeaders: Joi.boolean().optional(),
     fixtureFolder: Joi.string().optional(),
     envVarsFile: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
@@ -58,8 +59,9 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const useTmpDir = get(opts, 'useTmpDir', false);
   const useNock = get(opts, 'useNock', false);
   const nockFolder = resolve(get(opts, 'nockFolder', '$FILENAME__cassettes'));
-  const fixtureFolder = resolve(get(opts, 'fixtureFolder', '$FILENAME__fixtures'));
   const nockModifiers = get(opts, 'nockModifiers', {});
+  const nockStripHeaders = get(opts, 'nockStripHeaders', false);
+  const fixtureFolder = resolve(get(opts, 'fixtureFolder', '$FILENAME__fixtures'));
   const envVarsFile = resolve(get(opts, 'envVarsFile', '$FILENAME.env.yml'));
   const envVars = get(opts, 'envVars', null);
   const timestamp = get(opts, 'timestamp', null);
@@ -136,7 +138,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           if (useNock === true) {
             requestRecorder = RequestRecorder({
               cassetteFolder: `${nockFolder}/`,
-              stripHeaders: false,
+              stripHeaders: nockStripHeaders,
               strict: true,
               heal: nockHeal,
               modifiers: nockModifiers
