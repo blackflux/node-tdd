@@ -115,7 +115,7 @@
     "lodash.get": "4.4.2",
     "minimist": "1.2.5",
     "nock": "13.0.5",
-    "object-scan": "13.6.10",
+    "object-scan": "13.6.11",
     "smart-fs": "1.12.3",
     "timekeeper": "2.2.0",
     "tmp": "0.2.1",
