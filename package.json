@@ -64,7 +64,7 @@
     "request": "2.88.2",
     "request-promise": "4.2.6",
     "semantic-release": "17.3.3",
-    "babel-preset-latest-node": "5.2.0"
+    "babel-preset-latest-node": "5.4.0"
   },
   "licenses": [
     {
