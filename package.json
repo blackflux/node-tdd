@@ -114,7 +114,7 @@
     "lodash.clonedeep": "4.5.0",
     "lodash.get": "4.4.2",
     "minimist": "1.2.5",
-    "nock": "13.0.9",
+    "nock": "13.0.10",
     "object-scan": "13.9.1",
     "smart-fs": "1.12.5",
     "timekeeper": "2.2.0",
