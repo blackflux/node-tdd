@@ -8,7 +8,9 @@ const RequestRecorder = require('../src/modules/request-recorder');
 module.exports.spawnServer = async (proto = 'http') => {
   const listener = (req, resp) => {
     const params = qs.parse(req.url.split('?').pop());
-    resp.writeHead(200);
+    resp.writeHead(200, {
+      date: new Date().toUTCString()
+    });
     resp.write(JSON.stringify({ data: params.q }));
     resp.end();
   };
