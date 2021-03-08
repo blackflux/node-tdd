@@ -99,7 +99,7 @@ module.exports = (opts) => {
           });
         } else if (anyFlagPresent(['stub'])) {
           expectedCassette.push({
-            scope: `${protocol}://${options.host}:${options.port}`,
+            scope: `${protocol}://${options.host || options.hostname}:${options.port}`,
             method: options.method,
             path: options.path,
             body: tryParseJson(body),

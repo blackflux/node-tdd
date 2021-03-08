@@ -3,7 +3,7 @@ const os = require('os');
 const path = require('path');
 const expect = require('chai').expect;
 const { v4: uuid4 } = require('uuid');
-const request = require('request-promise');
+const axios = require('axios');
 const fancyLog = require('fancy-log');
 const describe = require('../../src/util/desc');
 
@@ -90,11 +90,10 @@ describe('Testing { describe }', () => {
     it('Testing useNock empty recording', () => {});
 
     it('Testing useNock record request', async () => {
-      const result = await request({
-        uri: 'http://ip-api.com/json',
+      const result = await axios({
+        url: 'http://ip-api.com/json',
         method: 'GET',
-        json: true,
-        resolveWithFullResponse: true
+        responseType: 'json'
       });
       expect(result.headers.date).to.equal('Sun, 19 Nov 2017 02:02:30 GMT');
     });
