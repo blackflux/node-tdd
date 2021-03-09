@@ -43,12 +43,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     async () => {
       for (let idx = 0; idx < qs.length; idx += 1) {
         // eslint-disable-next-line no-await-in-loop
-        const r = await axios({
+        const { data } = await axios({
           url: `${server.uri}?q=${qs[idx]}`,
           data: body,
           responseType: 'json'
         });
-        expect(r.data).to.deep.equal({ data: String(qs[idx]) });
+        expect(data).to.deep.equal({ data: String(qs[idx]) });
       }
     },
     { stripHeaders, strict, heal }
