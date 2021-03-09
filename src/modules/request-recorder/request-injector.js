@@ -31,6 +31,7 @@ const wrapper = (proto) => {
       protocol.request = requestWrapper;
       lastProtocol = null;
       lastOptions = null;
+      lastBody.length = 0;
     },
     release: () => {
       assert(protocol.request === requestWrapper, 'Release Failure');
