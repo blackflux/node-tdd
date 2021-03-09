@@ -11,6 +11,8 @@ module.exports.tryParseJson = (value) => {
   }
 };
 
+module.exports.nullAsString = (value) => (value === null ? 'null' : value);
+
 module.exports.convertHeaders = (array) => {
   const obj = {};
   for (let idx = 0; idx < array.length; idx += 2) {
