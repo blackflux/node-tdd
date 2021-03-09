@@ -10,7 +10,12 @@ const nockListener = require('./request-recorder/nock-listener');
 const nockMock = require('./request-recorder/nock-mock');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
 const applyModifiers = require('./request-recorder/apply-modifiers');
-const { buildKey, tryParseJson, convertHeaders } = require('./request-recorder/util');
+const {
+  buildKey,
+  tryParseJson,
+  nullAsString,
+  convertHeaders
+} = require('./request-recorder/util');
 const requestInjector = require('./request-recorder/request-injector');
 
 const nockBack = nock.back;
@@ -118,7 +123,7 @@ module.exports = (opts) => {
             if (anyFlagPresent(['magic', 'body'])) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
               const requestBody = tryParseJson(body);
-              pendingMocks[idx].record.body = requestBody === null ? 'null' : requestBody;
+              pendingMocks[idx].record.body = nullAsString(requestBody);
               return scope.body;
             }
             return body;

@@ -3,7 +3,6 @@ const https = require('https');
 const fs = require('smart-fs');
 const expect = require('chai').expect;
 const get = require('lodash.get');
-const request = require('request-promise');
 const axios = require('axios');
 const { logger } = require('lambda-monitor-logger');
 const aws = require('aws-sdk-wrap')({ logger });
@@ -44,12 +43,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     async () => {
       for (let idx = 0; idx < qs.length; idx += 1) {
         // eslint-disable-next-line no-await-in-loop
-        const r = await request({
-          uri: `${server.uri}?q=${qs[idx]}`,
-          body,
-          json: true
+        const r = await axios({
+          url: `${server.uri}?q=${qs[idx]}`,
+          data: body,
+          responseType: 'json'
         });
-        expect(r).to.deep.equal({ data: String(qs[idx]) });
+        expect(r.data).to.deep.equal({ data: String(qs[idx]) });
       }
     },
     { stripHeaders, strict, heal }
@@ -276,7 +275,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           const e = await capture(() => runTest({
             heal, qs, body, stripHeaders
           }));
-          expect(e.message).to.match(/^Error: Nock: No match for request/);
+          expect(e.message).to.match(/^Nock: No match for request/);
         } else {
           await runTest({
             heal, qs, body, stripHeaders
@@ -444,7 +443,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         heal: 'stub',
         qs: [1, 2, 3]
       }));
-      expect(e.message).to.match(/^Error: Nock: No match for request/);
+      expect(e.message).to.match(/^Nock: No match for request/);
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([

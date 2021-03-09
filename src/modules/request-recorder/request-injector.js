@@ -5,7 +5,7 @@ const common = require('nock/lib/common');
 
 let lastProtocol = null;
 let lastOptions = null;
-let lastBody = null;
+const lastBody = [];
 
 const wrapper = (proto) => {
   let requestOriginal = null;
@@ -14,16 +14,13 @@ const wrapper = (proto) => {
   const requestWrapper = (...args) => {
     lastProtocol = proto;
     lastOptions = common.normalizeClientRequestArgs(...args).options;
-    lastBody = lastOptions.body;
+    lastBody.length = 0;
     const result = requestOriginal.call(protocol, ...args);
-    if (lastBody === undefined) {
-      lastBody = [];
-      const writeOriginal = result.write;
-      result.write = (...chunks) => {
-        lastBody.push(chunks);
-        return writeOriginal.call(result, ...chunks);
-      };
-    }
+    const writeOriginal = result.write;
+    result.write = (chunk, encoding, callback) => {
+      lastBody.push(chunk.toString());
+      return writeOriginal.call(result, chunk, encoding, callback);
+    };
     return result;
   };
 
@@ -34,7 +31,6 @@ const wrapper = (proto) => {
       protocol.request = requestWrapper;
       lastProtocol = null;
       lastOptions = null;
-      lastBody = null;
     },
     release: () => {
       assert(protocol.request === requestWrapper, 'Release Failure');
@@ -59,7 +55,7 @@ module.exports = (() => {
     getLast: () => ({
       protocol: lastProtocol,
       options: lastOptions,
-      body: lastBody
+      body: lastBody.length === 0 ? undefined : lastBody.join('')
     })
   };
 })();
