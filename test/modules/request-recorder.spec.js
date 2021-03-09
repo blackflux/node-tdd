@@ -1,8 +1,9 @@
 const path = require('path');
+const https = require('https');
 const fs = require('smart-fs');
 const expect = require('chai').expect;
 const get = require('lodash.get');
-const request = require('request-promise');
+const axios = require('axios');
 const { logger } = require('lambda-monitor-logger');
 const aws = require('aws-sdk-wrap')({ logger });
 const { describe } = require('../../src/index');
@@ -42,12 +43,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     async () => {
       for (let idx = 0; idx < qs.length; idx += 1) {
         // eslint-disable-next-line no-await-in-loop
-        expect(await request({
-          uri: `${server.uri}?q=${qs[idx]}`,
-          body,
-          json: true
-        }))
-          .to.deep.equal({ data: String(qs[idx]) });
+        const { data } = await axios({
+          url: `${server.uri}?q=${qs[idx]}`,
+          data: body,
+          responseType: 'json'
+        });
+        expect(data).to.deep.equal({ data: String(qs[idx]) });
       }
     },
     { stripHeaders, strict, heal }
@@ -131,13 +132,13 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         modifiers = {},
         json = false
       }) => nockRecord(async () => {
-        const r = await request({
+        const { data } = await axios({
           method: 'POST',
-          uri: server.uri,
-          body,
-          json
+          url: server.uri,
+          data: body,
+          responseType: json === true ? 'json' : undefined
         });
-        expect(r).to.deep.equal(response);
+        expect(data).to.deep.equal(response);
       }, {
         stripHeaders: true,
         modifiers
@@ -197,7 +198,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       await validate({
         json: true,
         body: undefined,
-        response: undefined
+        response: ''
       });
       expect(recorder.get()).to.deep.equal([
         'Unknown Modifier(s) detected: jsonStringify, toBase64',
@@ -260,7 +261,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
               scope: server.uri,
               method,
               path: '/?q=1',
-              body: {
+              body: method === 'GET' ? '' : {
                 id: 123,
                 payload: null
               },
@@ -274,7 +275,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           const e = await capture(() => runTest({
             heal, qs, body, stripHeaders
           }));
-          expect(e.message).to.match(/^Error: Nock: No match for request/);
+          expect(e.message).to.match(/^Nock: No match for request/);
         } else {
           await runTest({
             heal, qs, body, stripHeaders
@@ -390,7 +391,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       fs.smartWrite(cassettePath, []);
 
       await capture(() => nockRecord(async () => {
-        await request({ uri: server.uri });
+        await axios(server.uri);
       }, { stripHeaders: true, heal: 'record' }));
 
       const cassetteContent = fs.smartRead(cassettePath);
@@ -409,16 +410,18 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
 
-      await capture(() => nockRecord(() => request({
-        uri: `${server2.uri}/?q=1`,
-        strictSSL: false,
-        json: true,
-        body: { key: 'value' }
+      const agentHTTPS = new https.Agent({
+        rejectUnauthorized: false
+      });
+      await capture(() => nockRecord(() => axios({
+        method: 'GET',
+        url: `${server2.uri}/?q=1`,
+        httpsAgent: agentHTTPS
       }), { stripHeaders: true, heal: 'record' }));
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([{
-        body: { key: 'value' },
+        body: '',
         method: 'GET',
         path: '/?q=1',
         response: {
@@ -440,7 +443,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         heal: 'stub',
         qs: [1, 2, 3]
       }));
-      expect(e.message).to.match(/^Error: Nock: No match for request/);
+      expect(e.message).to.match(/^Nock: No match for request/);
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([
@@ -455,7 +458,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       fs.smartWrite(cassettePath, []);
 
       await capture(() => nockRecord(async () => {
-        await request({ uri: server.uri });
+        await axios(server.uri);
       }, { stripHeaders: true, heal: 'stub' }));
 
       const cassetteContent = fs.smartRead(cassettePath);
