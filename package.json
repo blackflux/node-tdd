@@ -63,7 +63,7 @@
     "js-gardener": "2.0.188",
     "lambda-monitor-logger": "2.4.11",
     "nyc": "15.1.0",
-    "semantic-release": "17.4.1"
+    "semantic-release": "17.4.2"
   },
   "licenses": [
     {
