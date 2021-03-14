@@ -50,7 +50,7 @@
     "aws-sdk-wrap": "9.0.1",
     "axios": "0.21.1",
     "babel-eslint": "10.1.0",
-    "babel-preset-latest-node": "5.4.0",
+    "babel-preset-latest-node": "5.5.1",
     "chai": "4.3.4",
     "coveralls": "3.1.0",
     "eslint": "7.22.0",
