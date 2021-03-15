@@ -115,7 +115,7 @@
     "minimist": "1.2.5",
     "nock": "13.0.10",
     "object-scan": "13.9.1",
-    "smart-fs": "1.12.5",
+    "smart-fs": "1.12.7",
     "timekeeper": "2.2.0",
     "tmp": "0.2.1",
     "uuid": "8.3.0",
