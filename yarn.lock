@@ -1032,14 +1032,14 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk-wrap@9.2.4:
-  version "9.2.4"
-  resolved "https://registry.yarnpkg.com/aws-sdk-wrap/-/aws-sdk-wrap-9.2.4.tgz#1484a7564d01c4ead93922450f9c3e2032fba1e7"
-  integrity sha512-0uISW5zSGEow7hk5KWJ7DkQ1P0gFOQag1rq0anzozgYs4wjyF5uHlFrXIKZp1vU69aL4ch8KSb2z9qM7e03S/w==
+aws-sdk-wrap@9.2.5:
+  version "9.2.5"
+  resolved "https://registry.yarnpkg.com/aws-sdk-wrap/-/aws-sdk-wrap-9.2.5.tgz#567af20380e187f8521c3585a574e02ad04218a7"
+  integrity sha512-X7qCi0DfZ8VrjzeqGMUUbIpYhFSn8HURkpR41122PiVExVl2LBlKabHhE5org7QmuhfmhGtJE3aj7yfRkQhiIQ==
   dependencies:
     dynamodb-toolbox "0.3.3"
     joi-strict "2.0.0"
-    lambda-async "1.0.11"
+    lambda-async "2.0.0"
     lodash.chunk "4.2.0"
     lodash.get "4.4.2"
     object-fields "3.0.0"
@@ -4301,10 +4301,10 @@ kind-of@^6.0.0, kind-of@^6.0.2, kind-of@^6.0.3:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-lambda-async@1.0.11:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/lambda-async/-/lambda-async-1.0.11.tgz#389fba16cdcc7c30f2eb0335be8faac3358d6c77"
-  integrity sha512-8gNC37n9LmDp7+PfgseK7tZHzW0HpatxmFzrhTGhDqZOGqlxf3TlErp4mW4ZJCMjXRff7DBFNnA49HtdKUTUAw==
+lambda-async@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/lambda-async/-/lambda-async-2.0.0.tgz#6792b79dd180ca8e0d73aba7d44e8fdd499d87fa"
+  integrity sha512-1Cm/ly+aAwWBdvm4eUMdQhQiHdF9jKVimXwWlq9iy0YipX17CCyG6Ku6/gChMhBTqcgpNSsAm2AvTZWZt0pYgA==
 
 lambda-monitor-logger@3.0.0:
   version "3.0.0"
