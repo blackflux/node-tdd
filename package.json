@@ -46,7 +46,7 @@
     "@babel/register": "7.13.16",
     "@blackflux/eslint-plugin-rules": "2.0.3",
     "@blackflux/robo-config-plugin": "5.0.3",
-    "aws-sdk": "2.887.0",
+    "aws-sdk": "2.891.0",
     "aws-sdk-wrap": "9.5.0",
     "axios": "0.21.1",
     "babel-eslint": "10.1.0",
