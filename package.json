@@ -109,6 +109,7 @@
   ],
   "dependencies": {
     "callsites": "3.1.0",
+    "compare-urls": "2.0.0",
     "joi-strict": "2.0.0",
     "lodash.clonedeep": "4.5.0",
     "lodash.get": "4.4.2",
