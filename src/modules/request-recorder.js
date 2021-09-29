@@ -6,6 +6,7 @@ const fs = require('smart-fs');
 const Joi = require('joi-strict');
 const nock = require('nock');
 const cloneDeep = require('lodash.clonedeep');
+const compareUrls = require('compare-urls');
 const nockListener = require('./request-recorder/nock-listener');
 const nockMock = require('./request-recorder/nock-mock');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
@@ -132,7 +133,9 @@ module.exports = (opts) => {
           scope.filteringPath = (requestPath) => {
             if (anyFlagPresent(['magic', 'path'])) {
               const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-              pendingMocks[idx].record.path = requestPath;
+              if (!compareUrls(pendingMocks[idx].record.path, requestPath)) {
+                pendingMocks[idx].record.path = requestPath;
+              }
               return scope.path;
             }
             return requestPath;
