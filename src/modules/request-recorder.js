@@ -196,10 +196,6 @@ module.exports = (opts) => {
     release: async () => {
       assert(nockDone !== null);
       requestInjector.release();
-      nockDone();
-      nockDone = null;
-      nockListener.unsubscribeAll('no match');
-      nockMock.unpatch();
 
       for (let idx = 0; idx < expectedCassette.length; idx += 1) {
         if (typeof expectedCassette[idx] === 'function') {
@@ -208,6 +204,11 @@ module.exports = (opts) => {
           idx -= 1;
         }
       }
+
+      nockDone();
+      nockDone = null;
+      nockListener.unsubscribeAll('no match');
+      nockMock.unpatch();
 
       if (opts.heal !== false) {
         fs.smartWrite(

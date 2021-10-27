@@ -400,7 +400,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             accept: 'application/json, text/plain, */*',
             'content-type': 'application/json',
             host: server.host,
-            'content-length': 59
+            'content-length': 59,
+            'user-agent': 'axios/0.24.0'
           }
         }),
         makeCassetteEntry(3)
@@ -428,7 +429,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             accept: 'application/json, text/plain, */*',
             'content-type': 'application/json',
             host: server.host,
-            'content-length': 59
+            'content-length': 59,
+            'user-agent': 'axios/0.24.0'
           }
         }),
         makeCassetteEntry(3)
@@ -450,7 +452,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          host: server.host
+          host: server.host,
+          'user-agent': 'axios/0.24.0'
         },
         response: {},
         responseIsBinary: false,
@@ -479,7 +482,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/?q=1',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          host: server2.host
+          host: server2.host,
+          'user-agent': 'axios/0.24.0'
         },
         response: {
           data: '1'
