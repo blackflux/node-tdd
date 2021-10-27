@@ -326,8 +326,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       await runner('path,body', { qs: [2] });
     });
 
-    it('Testing heal header', async () => {
-      await runner('header', {
+    it('Testing heal headers', async () => {
+      await runner('headers', {
         qs: [1],
         raises: false,
         heals: true,

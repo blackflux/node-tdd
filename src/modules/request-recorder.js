@@ -125,7 +125,7 @@ module.exports = (opts) => {
           scope.reqheaders = rewriteHeaders(
             scope.reqheaders,
             (k, v) => (valueRequest) => {
-              if (anyFlagPresent(['magic', 'header'])) {
+              if (anyFlagPresent(['magic', 'headers'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 // overwrite existing headers
                 pendingMocks[idx].record.reqheaders[k] = valueRequest;
@@ -161,7 +161,7 @@ module.exports = (opts) => {
           scope.on('request', (req, interceptor, requestBodyString) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
-            if (anyFlagPresent(['magic', 'header'])) {
+            if (anyFlagPresent(['magic', 'headers'])) {
               // overwrite all headers
               pendingMocks[idx].record.reqheaders = rewriteHeaders(req.headers);
             }
