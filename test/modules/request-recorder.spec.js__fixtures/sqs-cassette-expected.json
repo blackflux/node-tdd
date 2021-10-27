@@ -5,6 +5,15 @@
     "path": "/",
     "body": "Action=SendMessageBatch&QueueUrl=https%3A%2F%2Fsqs.us-west-2.amazonaws.com%2F123456789101%2Fservice-name-data-local-SomeQueue&SendMessageBatchRequestEntry.1.Id=4f494d6b422d1e5fbbe6b6d82584ce7f70c1530f&SendMessageBatchRequestEntry.1.MessageBody=%7B%22k%22%3A1%7D&SendMessageBatchRequestEntry.2.Id=743966ceb52ce2e8c7a2424f4d652e3b7936f1ee&SendMessageBatchRequestEntry.2.MessageBody=%7B%22k%22%3A2%7D&Version=2012-11-05",
     "status": 200,
+    "reqheaders": {
+      "authorization": "AWS4-HMAC-SHA256 Credential=XXXXXXXXXXXXXXXXXXXX/19700101/us-west-2/sqs/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=b4ce92c6e730ca8b5ba2464f377a8701f3667be77829462782c5fe23385d7e41",
+      "content-length": 416,
+      "content-type": "application/x-www-form-urlencoded; charset=utf-8",
+      "host": "sqs.us-west-2.amazonaws.com",
+      "user-agent": "aws-sdk-nodejs/2.981.0 linux/v14.17.3 promise",
+      "x-amz-content-sha256": "17d19b49bb837e619d7976416cd88334c32dfbe9f92b70028a6fcfa358e98cce",
+      "x-amz-date": "19700101T000000Z"
+    },
     "response": "<?xml version=\"1.0\"?><SendMessageBatchResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><SendMessageBatchResult><SendMessageBatchResultEntry><Id>4f494d6b422d1e5fbbe6b6d82584ce7f70c1530f</Id><MessageId>c0004b0c-ea00-498a-a5a2-362703c0b621</MessageId><MD5OfMessageBody>e59138f35192e320088b83d28388d6bb</MD5OfMessageBody></SendMessageBatchResultEntry><SendMessageBatchResultEntry><Id>743966ceb52ce2e8c7a2424f4d652e3b7936f1ee</Id><MessageId>c0004b0c-ea00-498a-a5a2-362703c0b621</MessageId><MD5OfMessageBody>0dc3f48bc3e78aed8f69f72be8a11087</MD5OfMessageBody></SendMessageBatchResultEntry></SendMessageBatchResult><ResponseMetadata><RequestId>584b2818-1c3b-5bfd-97e0-7d388e494f1e</RequestId></ResponseMetadata></SendMessageBatchResponse>"
   }
 ]

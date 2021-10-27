@@ -15,7 +15,8 @@ const {
   buildKey,
   tryParseJson,
   nullAsString,
-  convertHeaders
+  convertHeaders,
+  rewriteHeaders
 } = require('./request-recorder/util');
 const requestInjector = require('./request-recorder/request-injector');
 
@@ -83,7 +84,7 @@ module.exports = (opts) => {
             nockRecorder.rec({
               output_objects: true,
               dont_print: true,
-              enable_reqheaders_recording: false
+              enable_reqheaders_recording: true
             });
             await new Promise((resolve) => {
               options.protocol = `${protocol}:`;
@@ -110,6 +111,7 @@ module.exports = (opts) => {
             path: options.path,
             body: tryParseJson(body),
             status: 200,
+            reqheaders: rewriteHeaders(options.headers),
             response: {},
             responseIsBinary: false
           });
@@ -119,6 +121,19 @@ module.exports = (opts) => {
         before: (scope, scopeIdx) => {
           records.push(cloneDeep(scope));
           applyModifiers(scope, opts.modifiers);
+          // eslint-disable-next-line no-param-reassign
+          scope.reqheaders = rewriteHeaders(
+            scope.reqheaders,
+            (k, v) => (valueRequest) => {
+              if (anyFlagPresent(['magic', 'header'])) {
+                const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
+                // overwrite existing headers
+                pendingMocks[idx].record.reqheaders[k] = valueRequest;
+                return true;
+              }
+              return String(v) === String(valueRequest);
+            }
+          );
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
             if (anyFlagPresent(['magic', 'body'])) {
@@ -145,6 +160,11 @@ module.exports = (opts) => {
         after: (scope, scopeIdx) => {
           scope.on('request', (req, interceptor, requestBodyString) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
+
+            if (anyFlagPresent(['magic', 'header'])) {
+              // overwrite all headers
+              pendingMocks[idx].record.reqheaders = rewriteHeaders(req.headers);
+            }
 
             if (anyFlagPresent(['magic', 'response'])) {
               const responseBody = tryParseJson([

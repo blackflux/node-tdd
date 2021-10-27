@@ -80,12 +80,13 @@ Can be used in the following ways:
 
 - `--nock-heal`: Will try to heal ordering of nock cassette recordings
 - `--nock-heal prune`: Will remove unmatched recordings from nock cassette
+- `--nock-heal header`: Will try to heal request headers of nock cassette recordings
 - `--nock-heal body`: Will try to heal bodies of nock cassette recordings
 - `--nock-heal path`: Will try to heal paths of nock cassette recordings
 - `--nock-heal response`: Will try to heal responses
 - `--nock-heal record`: Will record the next unmatched request
 - `--nock-heal stub`: Will stub the next unmatched request
-- `--nock-heal magic`: Shorthand for `prune,body,path,response`
+- `--nock-heal magic`: Shorthand for `prune,header,body,path,response`
 
 Notes:
 - Different flags can be combined as e.g. `--nock-heal body,path`
