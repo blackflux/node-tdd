@@ -7,6 +7,7 @@ const Joi = require('joi-strict');
 const nock = require('nock');
 const cloneDeep = require('lodash.clonedeep');
 const compareUrls = require('compare-urls');
+const nockCommon = require('nock/lib/common');
 const nockListener = require('./request-recorder/nock-listener');
 const nockMock = require('./request-recorder/nock-mock');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
@@ -124,14 +125,14 @@ module.exports = (opts) => {
           // eslint-disable-next-line no-param-reassign
           scope.reqheaders = rewriteHeaders(
             scope.reqheaders,
-            (k, v) => (valueRequest) => {
+            (k, valueRecording) => (valueRequest) => {
               if (anyFlagPresent(['magic', 'headers'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 // overwrite existing headers
                 pendingMocks[idx].record.reqheaders[k] = valueRequest;
                 return true;
               }
-              return String(v) === String(valueRequest);
+              return nockCommon.matchStringOrRegexp(valueRequest, valueRecording);
             }
           );
           // eslint-disable-next-line no-param-reassign
