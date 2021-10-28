@@ -126,13 +126,19 @@ module.exports = (opts) => {
           scope.reqheaders = rewriteHeaders(
             scope.reqheaders,
             (k, valueRecording) => (valueRequest) => {
-              if (anyFlagPresent(['magic', 'headers'])) {
+              const match = nockCommon.matchStringOrRegexp(
+                valueRequest,
+                /^\^.*\$$/.test(valueRecording) ? new RegExp(valueRecording) : valueRecording
+              );
+
+              if (!match && anyFlagPresent(['magic', 'headers'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 // overwrite existing headers
                 pendingMocks[idx].record.reqheaders[k] = valueRequest;
                 return true;
               }
-              return nockCommon.matchStringOrRegexp(valueRequest, valueRecording);
+
+              return match;
             }
           );
           // eslint-disable-next-line no-param-reassign
@@ -163,8 +169,11 @@ module.exports = (opts) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
             if (anyFlagPresent(['magic', 'headers'])) {
-              // overwrite all headers
-              pendingMocks[idx].record.reqheaders = rewriteHeaders(req.headers);
+              // add new headers
+              pendingMocks[idx].record.reqheaders = {
+                ...rewriteHeaders(req.headers),
+                ...rewriteHeaders(pendingMocks[idx].record.reqheaders)
+              };
             }
 
             if (anyFlagPresent(['magic', 'response'])) {

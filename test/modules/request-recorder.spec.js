@@ -335,7 +335,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           {
             ...makeCassetteEntry(1),
             reqheaders: {
-              'content-type': 'other/type'
+              'content-type': 'other/type',
+              'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
             }
           }
         ]
@@ -350,7 +351,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'content-length': 59,
-            'user-agent': 'axios/0.24.0'
+            'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
           }
         })
       ]);
@@ -371,7 +372,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           messages: [{ k: 1 }, { k: 2 }],
           queueUrl: process.env.QUEUE_URL
         }), { heal: 'magic' });
-        expect(r.expectedCassette).to.deep.equal(fixture('sqs-cassette-expected'));
+        const expected = fixture('sqs-cassette-expected');
+        expected[0].reqheaders['user-agent'] = r.expectedCassette[0].reqheaders['user-agent'];
+        expect(r.expectedCassette[0].reqheaders['user-agent'].startsWith('aws-sdk-nodejs/2.')).to.equal(true);
+        expect(r.expectedCassette).to.deep.equal(expected);
       });
     });
 
