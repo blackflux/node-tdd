@@ -10,7 +10,7 @@
       "content-length": 416,
       "content-type": "application/x-www-form-urlencoded; charset=utf-8",
       "host": "sqs.us-west-2.amazonaws.com",
-      "user-agent": "aws-sdk-nodejs/2.981.0 linux/v14.17.3 promise",
+      "user-agent": "<missing>",
       "x-amz-content-sha256": "17d19b49bb837e619d7976416cd88334c32dfbe9f92b70028a6fcfa358e98cce",
       "x-amz-date": "19700101T000000Z"
     },
