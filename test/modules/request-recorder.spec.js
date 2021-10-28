@@ -241,6 +241,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: `/?q=${id}`,
         body: { id: 123, payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6' },
         status: 200,
+        reqheaders: {
+          accept: 'application/json, text/plain, */*',
+          'content-type': 'application/json',
+          'user-agent': 'axios/0.24.0',
+          'content-length': 59
+        },
         response: { data: `${id}` },
         responseIsBinary: false
       });
@@ -320,6 +326,37 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       await runner('path,body', { qs: [2] });
     });
 
+    it('Testing heal headers', async () => {
+      await runner('headers', {
+        qs: [1],
+        raises: false,
+        heals: true,
+        cassetteContent: [
+          {
+            ...makeCassetteEntry(1),
+            reqheaders: {
+              'content-type': 'other/type',
+              'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
+            }
+          }
+        ]
+      });
+
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      const cassetteContent = fs.smartRead(cassettePath);
+      expect(cassetteContent).to.deep.equal([
+        Object.assign(makeCassetteEntry(1), {
+          reqheaders: {
+            accept: 'application/json, text/plain, */*',
+            'content-type': 'application/json',
+            host: server.host,
+            'content-length': 59,
+            'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
+          }
+        })
+      ]);
+    });
+
     it('Testing magic healing (no magic)', async () => {
       await runner('magic', { qs: [2] });
     });
@@ -335,7 +372,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           messages: [{ k: 1 }, { k: 2 }],
           queueUrl: process.env.QUEUE_URL
         }), { heal: 'magic' });
-        expect(r.expectedCassette).to.deep.equal(fixture('sqs-cassette-expected'));
+        const expected = fixture('sqs-cassette-expected');
+        expected[0].reqheaders['user-agent'] = r.expectedCassette[0].reqheaders['user-agent'];
+        expect(r.expectedCassette[0].reqheaders['user-agent'].startsWith('aws-sdk-nodejs/2.')).to.equal(true);
+        expect(r.expectedCassette).to.deep.equal(expected);
       });
     });
 
@@ -359,6 +399,13 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             connection: 'close',
             date: 'Thu, 01 Jan 1970 00:00:00 GMT',
             'transfer-encoding': 'chunked'
+          },
+          reqheaders: {
+            accept: 'application/json, text/plain, */*',
+            'content-type': 'application/json',
+            host: server.host,
+            'content-length': 59,
+            'user-agent': 'axios/0.24.0'
           }
         }),
         makeCassetteEntry(3)
@@ -381,7 +428,15 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([
         makeCassetteEntry(1),
-        makeCassetteEntry(2),
+        Object.assign(makeCassetteEntry(2), {
+          reqheaders: {
+            accept: 'application/json, text/plain, */*',
+            'content-type': 'application/json',
+            host: server.host,
+            'content-length': 59,
+            'user-agent': 'axios/0.24.0'
+          }
+        }),
         makeCassetteEntry(3)
       ]);
     });
@@ -399,6 +454,11 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         body: '',
         method: 'GET',
         path: '/',
+        reqheaders: {
+          accept: 'application/json, text/plain, */*',
+          host: server.host,
+          'user-agent': 'axios/0.24.0'
+        },
         response: {},
         responseIsBinary: false,
         scope: server.uri,
@@ -424,6 +484,11 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         body: '',
         method: 'GET',
         path: '/?q=1',
+        reqheaders: {
+          accept: 'application/json, text/plain, */*',
+          host: server2.host,
+          'user-agent': 'axios/0.24.0'
+        },
         response: {
           data: '1'
         },
@@ -465,6 +530,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       expect(cassetteContent).to.deep.equal([{
         method: 'GET',
         path: '/',
+        reqheaders: {
+          accept: 'application/json, text/plain, */*',
+          'user-agent': 'axios/0.24.0'
+        },
         response: {},
         responseIsBinary: false,
         scope: server.uri,

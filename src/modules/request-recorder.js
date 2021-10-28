@@ -7,6 +7,7 @@ const Joi = require('joi-strict');
 const nock = require('nock');
 const cloneDeep = require('lodash.clonedeep');
 const compareUrls = require('compare-urls');
+const nockCommon = require('nock/lib/common');
 const nockListener = require('./request-recorder/nock-listener');
 const nockMock = require('./request-recorder/nock-mock');
 const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
@@ -15,7 +16,8 @@ const {
   buildKey,
   tryParseJson,
   nullAsString,
-  convertHeaders
+  convertHeaders,
+  rewriteHeaders
 } = require('./request-recorder/util');
 const requestInjector = require('./request-recorder/request-injector');
 
@@ -83,7 +85,7 @@ module.exports = (opts) => {
             nockRecorder.rec({
               output_objects: true,
               dont_print: true,
-              enable_reqheaders_recording: false
+              enable_reqheaders_recording: true
             });
             await new Promise((resolve) => {
               options.protocol = `${protocol}:`;
@@ -110,6 +112,7 @@ module.exports = (opts) => {
             path: options.path,
             body: tryParseJson(body),
             status: 200,
+            reqheaders: rewriteHeaders(options.headers),
             response: {},
             responseIsBinary: false
           });
@@ -119,6 +122,25 @@ module.exports = (opts) => {
         before: (scope, scopeIdx) => {
           records.push(cloneDeep(scope));
           applyModifiers(scope, opts.modifiers);
+          // eslint-disable-next-line no-param-reassign
+          scope.reqheaders = rewriteHeaders(
+            scope.reqheaders,
+            (k, valueRecording) => (valueRequest) => {
+              const match = nockCommon.matchStringOrRegexp(
+                valueRequest,
+                /^\^.*\$$/.test(valueRecording) ? new RegExp(valueRecording) : valueRecording
+              );
+
+              if (!match && anyFlagPresent(['magic', 'headers'])) {
+                const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
+                // overwrite existing headers
+                pendingMocks[idx].record.reqheaders[k] = valueRequest;
+                return true;
+              }
+
+              return match;
+            }
+          );
           // eslint-disable-next-line no-param-reassign
           scope.filteringRequestBody = (body) => {
             if (anyFlagPresent(['magic', 'body'])) {
@@ -145,6 +167,14 @@ module.exports = (opts) => {
         after: (scope, scopeIdx) => {
           scope.on('request', (req, interceptor, requestBodyString) => {
             const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
+
+            if (anyFlagPresent(['magic', 'headers'])) {
+              // add new headers
+              pendingMocks[idx].record.reqheaders = {
+                ...rewriteHeaders(req.headers),
+                ...rewriteHeaders(pendingMocks[idx].record.reqheaders)
+              };
+            }
 
             if (anyFlagPresent(['magic', 'response'])) {
               const responseBody = tryParseJson([
@@ -176,10 +206,6 @@ module.exports = (opts) => {
     release: async () => {
       assert(nockDone !== null);
       requestInjector.release();
-      nockDone();
-      nockDone = null;
-      nockListener.unsubscribeAll('no match');
-      nockMock.unpatch();
 
       for (let idx = 0; idx < expectedCassette.length; idx += 1) {
         if (typeof expectedCassette[idx] === 'function') {
@@ -188,6 +214,11 @@ module.exports = (opts) => {
           idx -= 1;
         }
       }
+
+      nockDone();
+      nockDone = null;
+      nockListener.unsubscribeAll('no match');
+      nockMock.unpatch();
 
       if (opts.heal !== false) {
         fs.smartWrite(

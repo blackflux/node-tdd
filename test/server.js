@@ -22,6 +22,7 @@ module.exports.spawnServer = async (proto = 'http') => {
   const address = server.address();
   return {
     address,
+    host: `localhost:${address.port}`,
     uri: `${proto}://localhost:${address.port}`,
     close: () => new Promise((resolve) => server.close(resolve))
   };
