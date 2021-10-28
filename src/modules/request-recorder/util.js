@@ -20,3 +20,13 @@ module.exports.convertHeaders = (array) => {
   }
   return obj;
 };
+
+module.exports.rewriteHeaders = (headers, fn = (k, v) => v) => {
+  if (headers === undefined) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(headers)
+      .map(([k, v]) => [k.toLowerCase(), fn(k, v)])
+  );
+};

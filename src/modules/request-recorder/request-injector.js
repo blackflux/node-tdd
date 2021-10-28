@@ -1,7 +1,7 @@
 const assert = require('assert');
 const http = require('http');
 const https = require('https');
-const common = require('nock/lib/common');
+const nockCommon = require('nock/lib/common');
 
 let lastProtocol = null;
 let lastOptions = null;
@@ -13,7 +13,7 @@ const wrapper = (proto) => {
 
   const requestWrapper = (...args) => {
     lastProtocol = proto;
-    lastOptions = common.normalizeClientRequestArgs(...args).options;
+    lastOptions = nockCommon.normalizeClientRequestArgs(...args).options;
     lastBody.length = 0;
     const result = requestOriginal.call(protocol, ...args);
     const writeOriginal = result.write;
