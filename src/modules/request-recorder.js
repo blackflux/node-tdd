@@ -223,7 +223,7 @@ module.exports = (opts) => {
       if (opts.heal !== false) {
         fs.smartWrite(
           cassetteFilePath,
-          anyFlagPresent(['magic', 'prune'])
+          anyFlagPresent(['prune'])
             ? expectedCassette
             : [...expectedCassette, ...pendingMocks.map(({ record }) => record)],
           { keepOrder: outOfOrderErrors.length === 0 && pendingMocks.length === 0 }
