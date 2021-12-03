@@ -86,7 +86,7 @@ Can be used in the following ways:
 - `--nock-heal response`: Will try to heal responses
 - `--nock-heal record`: Will record the next unmatched request
 - `--nock-heal stub`: Will stub the next unmatched request
-- `--nock-heal magic`: Shorthand for `prune,headers,body,path,response`
+- `--nock-heal magic`: Shorthand for `headers,body,path,response`
 
 Notes:
 - Different flags can be combined as e.g. `--nock-heal body,path`
