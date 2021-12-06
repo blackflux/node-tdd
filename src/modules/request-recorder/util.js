@@ -27,6 +27,7 @@ module.exports.rewriteHeaders = (headers, fn = (k, v) => v) => {
   }
   return Object.fromEntries(
     Object.entries(headers)
+      .sort(([a], [b]) => (a > b ? 1 : -1))
       .map(([k, v]) => [k.toLowerCase(), fn(k, v)])
   );
 };
