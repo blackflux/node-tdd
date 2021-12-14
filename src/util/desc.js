@@ -61,6 +61,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const nockFolder = resolve(get(opts, 'nockFolder', '$FILENAME__cassettes'));
   const nockModifiers = get(opts, 'nockModifiers', {});
   const nockStripHeaders = get(opts, 'nockStripHeaders', false);
+  const nockReqHeaderOverwrite = get(opts, 'nockReqHeaderOverwrite', {});
   const fixtureFolder = resolve(get(opts, 'fixtureFolder', '$FILENAME__fixtures'));
   const envVarsFile = resolve(get(opts, 'envVarsFile', '$FILENAME.env.yml'));
   const envVars = get(opts, 'envVars', null);
@@ -139,6 +140,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
             requestRecorder = RequestRecorder({
               cassetteFolder: `${nockFolder}/`,
               stripHeaders: nockStripHeaders,
+              reqHeaderOverwrite: nockReqHeaderOverwrite,
               strict: true,
               heal: nockHeal,
               modifiers: nockModifiers

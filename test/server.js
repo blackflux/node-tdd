@@ -30,6 +30,7 @@ module.exports.spawnServer = async (proto = 'http') => {
 
 module.exports.NockRecord = (tmpDir, cassetteFile) => async (fn, {
   stripHeaders = false,
+  reqHeaderOverwrite = {},
   strict = false,
   heal = false,
   modifiers = {}
@@ -39,6 +40,7 @@ module.exports.NockRecord = (tmpDir, cassetteFile) => async (fn, {
   const requestRecorder = RequestRecorder({
     cassetteFolder: tmpDir,
     stripHeaders,
+    reqHeaderOverwrite,
     strict,
     heal,
     modifiers

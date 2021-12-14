@@ -132,6 +132,13 @@ Default: `false`
 
 When set to true, all headers are stripped when requests are recorded.
 
+### nockReqHeaderOverwrite
+
+Type: `object`<br>
+Default: `{}`
+
+Can be used to overwrite `reqheaders` in recordings. Cassette files are only updated when changed.
+
 #### fixtureFolder
 
 Type: `string`<br>
