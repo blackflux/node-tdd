@@ -481,7 +481,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         stripHeaders: true,
         heal: 'record',
         reqHeaderOverwrite: {
-          'user-agent': '^axios/.*$'
+          'user-agent': '^axios/.*$',
+          host: ({ value, headers }) => `${value} @ ${headers['user-agent']}`
         }
       }));
 
@@ -492,7 +493,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/?q=1',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          host: server2.host,
+          host: `${server2.host} @ axios/0.24.0`,
           'user-agent': '^axios/.*$'
         },
         response: {

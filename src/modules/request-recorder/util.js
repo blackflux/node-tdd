@@ -25,9 +25,14 @@ module.exports.rewriteHeaders = (headers, fn = (k, v) => v) => {
   if (headers === undefined) {
     return {};
   }
-  return Object.fromEntries(
+  const headersLower = Object.fromEntries(
     Object.entries(headers)
       .sort(([a], [b]) => (a > b ? 1 : -1))
-      .map(([k, v]) => [k.toLowerCase(), fn(k, v)])
+      .map(([k, v]) => [k.toLowerCase(), v])
   );
+  const result = {};
+  Object.entries(headersLower).forEach(([k, v]) => {
+    result[k] = fn(k, v, headersLower);
+  });
+  return result;
 };

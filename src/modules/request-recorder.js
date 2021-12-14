@@ -30,7 +30,7 @@ module.exports = (opts) => {
     stripHeaders: Joi.boolean(),
     reqHeaderOverwrite: Joi.object().pattern(
       Joi.string().case('lower'),
-      Joi.string()
+      Joi.alternatives(Joi.string(), Joi.function())
     ),
     strict: Joi.boolean(),
     heal: Joi.alternatives(Joi.boolean(), Joi.string()),
@@ -56,11 +56,13 @@ module.exports = (opts) => {
     return flags.some((flag) => needleFlags.includes(flag));
   };
 
-  const overwriteHeaders = (k, v) => {
-    if (k in opts.reqHeaderOverwrite) {
-      return opts.reqHeaderOverwrite[k];
+  const overwriteHeaders = (key, value, headers) => {
+    if (key in opts.reqHeaderOverwrite) {
+      return typeof opts.reqHeaderOverwrite[key] === 'function'
+        ? opts.reqHeaderOverwrite[key]({ key, value, headers })
+        : opts.reqHeaderOverwrite[key];
     }
-    return v;
+    return value;
   };
 
   return ({
