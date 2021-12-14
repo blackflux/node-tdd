@@ -477,7 +477,13 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         method: 'GET',
         url: `${server2.uri}/?q=1`,
         httpsAgent: agentHTTPS
-      }), { stripHeaders: true, heal: 'record' }));
+      }), {
+        stripHeaders: true,
+        heal: 'record',
+        reqHeaderOverwrite: {
+          'user-agent': '^axios/.*$'
+        }
+      }));
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([{
@@ -487,7 +493,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           host: server2.host,
-          'user-agent': 'axios/0.24.0'
+          'user-agent': '^axios/.*$'
         },
         response: {
           data: '1'

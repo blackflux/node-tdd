@@ -28,6 +28,10 @@ module.exports = (opts) => {
   Joi.assert(opts, Joi.object().keys({
     cassetteFolder: Joi.string(),
     stripHeaders: Joi.boolean(),
+    reqHeaderOverwrite: Joi.object().pattern(
+      Joi.string().case('lower'),
+      Joi.string()
+    ),
     strict: Joi.boolean(),
     heal: Joi.alternatives(Joi.boolean(), Joi.string()),
     modifiers: Joi.object().pattern(
@@ -50,6 +54,13 @@ module.exports = (opts) => {
     }
     const needleFlags = opts.heal.split(',');
     return flags.some((flag) => needleFlags.includes(flag));
+  };
+
+  const overwriteHeaders = (k, v) => {
+    if (k in opts.reqHeaderOverwrite) {
+      return opts.reqHeaderOverwrite[k];
+    }
+    return v;
   };
 
   return ({
@@ -102,7 +113,8 @@ module.exports = (opts) => {
             nockRecorder.clear();
             return recorded.map((record) => Object.assign(record, {
               headers: opts.stripHeaders === true ? undefined : convertHeaders(record.rawHeaders),
-              rawHeaders: undefined
+              rawHeaders: undefined,
+              reqheaders: rewriteHeaders(record.reqheaders, overwriteHeaders)
             }));
           });
         } else if (anyFlagPresent(['stub'])) {
@@ -112,7 +124,7 @@ module.exports = (opts) => {
             path: options.path,
             body: tryParseJson(body),
             status: 200,
-            reqheaders: rewriteHeaders(options.headers),
+            reqheaders: rewriteHeaders(options.headers, overwriteHeaders),
             response: {},
             responseIsBinary: false
           });
@@ -170,10 +182,11 @@ module.exports = (opts) => {
 
             if (anyFlagPresent(['magic', 'headers'])) {
               // add new headers
-              pendingMocks[idx].record.reqheaders = {
+              const reqheaders = {
                 ...rewriteHeaders(req.headers),
                 ...rewriteHeaders(pendingMocks[idx].record.reqheaders)
               };
+              pendingMocks[idx].record.reqheaders = rewriteHeaders(reqheaders, overwriteHeaders);
             }
 
             if (anyFlagPresent(['magic', 'response'])) {
@@ -199,7 +212,7 @@ module.exports = (opts) => {
           ...r,
           body: tryParseJson(r.body),
           rawHeaders: opts.stripHeaders === true ? undefined : r.rawHeaders,
-          reqheaders: rewriteHeaders(r.reqheaders)
+          reqheaders: rewriteHeaders(r.reqheaders, overwriteHeaders)
         })), null, 2)
       }, resolve));
       requestInjector.inject();
