@@ -40,6 +40,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     nockFolder: Joi.string().optional(),
     nockModifiers: Joi.object().optional().pattern(Joi.string(), Joi.function()),
     nockStripHeaders: Joi.boolean().optional(),
+    nockReqHeaderOverwrite: Joi.object().optional()
+      .pattern(Joi.string(), Joi.alternatives(Joi.function(), Joi.string())),
     fixtureFolder: Joi.string().optional(),
     envVarsFile: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
