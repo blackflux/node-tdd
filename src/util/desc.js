@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('smart-fs');
 const callsites = require('callsites');
 const get = require('lodash.get');
+const { fileURLToPath } = require('url');
 const minimist = require('minimist');
 const tmp = require('tmp');
 const Joi = require('joi-strict');
@@ -28,7 +29,14 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const opts = testsOrNull === null ? {} : optsOrTests;
   const tests = testsOrNull === null ? optsOrTests : testsOrNull;
 
-  const testFile = path.resolve(callsites()[1].getFileName());
+  const filenameOrUrl = callsites()[1].getFileName();
+  // eslint-disable-next-line @blackflux/rules/istanbul-prevent-ignore
+  /* istanbul ignore next */
+  const testFile = path.resolve(
+    filenameOrUrl.startsWith('file://')
+      ? fileURLToPath(filenameOrUrl)
+      : filenameOrUrl
+  );
   const resolve = (name) => path.join(
     path.dirname(testFile),
     name.replace(/\$FILENAME/g, path.basename(testFile))
