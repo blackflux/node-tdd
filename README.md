@@ -24,8 +24,8 @@ Drop-in extension for mocha by simply importing `describe` as below.
 
 <!-- eslint-disable import/no-unresolved, import/no-extraneous-dependencies -->
 ```js
-const expect = require('chai').expect;
-const { describe } = require('node-tdd');
+import { expect } from 'chai';
+import { describe } from 'node-tdd';
 
 describe('Testing some stuff', /* { ...options }, */ () => {
   it('Testing a thing', () => {

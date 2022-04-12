@@ -1,7 +1,7 @@
-const expect = require('chai').expect;
-const nockCommon = require('nock/lib/common');
+import nockCommon from 'nock/lib/common.js';
 
-const nockMock = require('../../../src/modules/request-recorder/nock-mock');
+import { expect } from 'chai';
+import nockMock from '../../../src/modules/request-recorder/nock-mock.js';
 
 describe('Testing nock-mock.js', () => {
   beforeEach(() => {

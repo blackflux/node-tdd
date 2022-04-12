@@ -1,7 +1,7 @@
-const assert = require('assert');
-const Joi = require('joi-strict');
+import assert from 'assert';
+import Joi from 'joi-strict';
 
-module.exports = (opts) => {
+export default (opts) => {
   Joi.assert(opts, Joi.object().keys({
     logger: Joi.any(),
     verbose: Joi.boolean()

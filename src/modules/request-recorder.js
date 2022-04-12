@@ -1,30 +1,30 @@
-const assert = require('assert');
-const http = require('http');
-const https = require('http');
-const path = require('path');
-const fs = require('smart-fs');
-const Joi = require('joi-strict');
-const nock = require('nock');
-const cloneDeep = require('lodash.clonedeep');
-const compareUrls = require('compare-urls');
-const nockCommon = require('nock/lib/common');
-const nockListener = require('./request-recorder/nock-listener');
-const nockMock = require('./request-recorder/nock-mock');
-const healSqsSendMessageBatch = require('./request-recorder/heal-sqs-send-message-batch');
-const applyModifiers = require('./request-recorder/apply-modifiers');
-const {
+import assert from 'assert';
+import http from 'http';
+import path from 'path';
+import fs from 'smart-fs';
+import Joi from 'joi-strict';
+import nock from 'nock';
+import cloneDeep from 'lodash.clonedeep';
+import compareUrls from 'compare-urls';
+import nockCommon from 'nock/lib/common.js';
+import nockListener from './request-recorder/nock-listener.js';
+import nockMock from './request-recorder/nock-mock.js';
+import healSqsSendMessageBatch from './request-recorder/heal-sqs-send-message-batch.js';
+import applyModifiers from './request-recorder/apply-modifiers.js';
+import requestInjector from './request-recorder/request-injector.js';
+
+import {
   buildKey,
   tryParseJson,
   nullAsString,
   convertHeaders,
   rewriteHeaders
-} = require('./request-recorder/util');
-const requestInjector = require('./request-recorder/request-injector');
+} from './request-recorder/util.js';
 
 const nockBack = nock.back;
 const nockRecorder = nock.recorder;
 
-module.exports = (opts) => {
+export default (opts) => {
   Joi.assert(opts, Joi.object().keys({
     cassetteFolder: Joi.string(),
     stripHeaders: Joi.boolean(),
@@ -102,7 +102,7 @@ module.exports = (opts) => {
             });
             await new Promise((resolve) => {
               options.protocol = `${protocol}:`;
-              const r = { http, https }[protocol].request(options, (response) => {
+              const r = { http, https: http }[protocol].request(options, (response) => {
                 response.on('data', () => {});
                 response.on('end', resolve);
               });
@@ -132,91 +132,93 @@ module.exports = (opts) => {
           });
         }
       });
-      nockDone = await new Promise((resolve) => nockBack(cassetteFile, {
-        before: (scope, scopeIdx) => {
-          records.push(cloneDeep(scope));
-          applyModifiers(scope, opts.modifiers);
-          // eslint-disable-next-line no-param-reassign
-          scope.reqheaders = rewriteHeaders(
-            scope.reqheaders,
-            (k, valueRecording) => (valueRequest) => {
-              const match = nockCommon.matchStringOrRegexp(
-                valueRequest,
-                /^\^.*\$$/.test(valueRecording) ? new RegExp(valueRecording) : valueRecording
-              );
+      nockDone = await new Promise((resolve) => {
+        nockBack(cassetteFile, {
+          before: (scope, scopeIdx) => {
+            records.push(cloneDeep(scope));
+            applyModifiers(scope, opts.modifiers);
+            // eslint-disable-next-line no-param-reassign
+            scope.reqheaders = rewriteHeaders(
+              scope.reqheaders,
+              (k, valueRecording) => (valueRequest) => {
+                const match = nockCommon.matchStringOrRegexp(
+                  valueRequest,
+                  /^\^.*\$$/.test(valueRecording) ? new RegExp(valueRecording) : valueRecording
+                );
 
-              if (!match && anyFlagPresent(['magic', 'headers'])) {
+                if (!match && anyFlagPresent(['magic', 'headers'])) {
+                  const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
+                  // overwrite existing headers
+                  pendingMocks[idx].record.reqheaders[k] = valueRequest;
+                  return true;
+                }
+
+                return match;
+              }
+            );
+            // eslint-disable-next-line no-param-reassign
+            scope.filteringRequestBody = (body) => {
+              if (anyFlagPresent(['magic', 'body'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-                // overwrite existing headers
-                pendingMocks[idx].record.reqheaders[k] = valueRequest;
-                return true;
+                const requestBody = tryParseJson(body);
+                pendingMocks[idx].record.body = nullAsString(requestBody);
+                return scope.body;
+              }
+              return body;
+            };
+            // eslint-disable-next-line no-param-reassign
+            scope.filteringPath = (requestPath) => {
+              if (anyFlagPresent(['magic', 'path'])) {
+                const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
+                if (!compareUrls(pendingMocks[idx].record.path, requestPath)) {
+                  pendingMocks[idx].record.path = requestPath;
+                }
+                return scope.path;
+              }
+              return requestPath;
+            };
+            return scope;
+          },
+          after: (scope, scopeIdx) => {
+            scope.on('request', (req, interceptor, requestBodyString) => {
+              const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
+
+              if (anyFlagPresent(['magic', 'headers'])) {
+                // add new headers
+                const reqheaders = {
+                  ...rewriteHeaders(req.headers),
+                  ...rewriteHeaders(pendingMocks[idx].record.reqheaders)
+                };
+                pendingMocks[idx].record.reqheaders = rewriteHeaders(reqheaders, overwriteHeaders);
               }
 
-              return match;
-            }
-          );
-          // eslint-disable-next-line no-param-reassign
-          scope.filteringRequestBody = (body) => {
-            if (anyFlagPresent(['magic', 'body'])) {
-              const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-              const requestBody = tryParseJson(body);
-              pendingMocks[idx].record.body = nullAsString(requestBody);
-              return scope.body;
-            }
-            return body;
-          };
-          // eslint-disable-next-line no-param-reassign
-          scope.filteringPath = (requestPath) => {
-            if (anyFlagPresent(['magic', 'path'])) {
-              const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-              if (!compareUrls(pendingMocks[idx].record.path, requestPath)) {
-                pendingMocks[idx].record.path = requestPath;
+              if (anyFlagPresent(['magic', 'response'])) {
+                const responseBody = tryParseJson([
+                  healSqsSendMessageBatch
+                ].reduce(
+                  (respBody, fn) => fn(requestBodyString, respBody, scope),
+                  interceptor.body
+                ));
+                // eslint-disable-next-line no-param-reassign
+                interceptor.body = responseBody;
+                pendingMocks[idx].record.response = responseBody;
               }
-              return scope.path;
-            }
-            return requestPath;
-          };
-          return scope;
-        },
-        after: (scope, scopeIdx) => {
-          scope.on('request', (req, interceptor, requestBodyString) => {
-            const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
-            if (anyFlagPresent(['magic', 'headers'])) {
-              // add new headers
-              const reqheaders = {
-                ...rewriteHeaders(req.headers),
-                ...rewriteHeaders(pendingMocks[idx].record.reqheaders)
-              };
-              pendingMocks[idx].record.reqheaders = rewriteHeaders(reqheaders, overwriteHeaders);
-            }
-
-            if (anyFlagPresent(['magic', 'response'])) {
-              const responseBody = tryParseJson([
-                healSqsSendMessageBatch
-              ].reduce(
-                (respBody, fn) => fn(requestBodyString, respBody, scope),
-                interceptor.body
-              ));
-              // eslint-disable-next-line no-param-reassign
-              interceptor.body = responseBody;
-              pendingMocks[idx].record.response = responseBody;
-            }
-
-            expectedCassette.push(pendingMocks[idx].record);
-            if (idx !== 0) {
-              outOfOrderErrors.push(pendingMocks[idx].key);
-            }
-            pendingMocks.splice(idx, 1);
-          });
-        },
-        afterRecord: (recordings) => JSON.stringify(recordings.map((r) => ({
-          ...r,
-          body: tryParseJson(r.body),
-          rawHeaders: opts.stripHeaders === true ? undefined : r.rawHeaders,
-          reqheaders: rewriteHeaders(r.reqheaders, overwriteHeaders)
-        })), null, 2)
-      }, resolve));
+              expectedCassette.push(pendingMocks[idx].record);
+              if (idx !== 0) {
+                outOfOrderErrors.push(pendingMocks[idx].key);
+              }
+              pendingMocks.splice(idx, 1);
+            });
+          },
+          afterRecord: (recordings) => JSON.stringify(recordings.map((r) => ({
+            ...r,
+            body: tryParseJson(r.body),
+            rawHeaders: opts.stripHeaders === true ? undefined : r.rawHeaders,
+            reqheaders: rewriteHeaders(r.reqheaders, overwriteHeaders)
+          })), null, 2)
+        }, resolve);
+      });
       requestInjector.inject();
     },
     release: async () => {

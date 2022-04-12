@@ -1,11 +1,11 @@
-const assert = require('assert');
-const os = require('os');
-const path = require('path');
-const expect = require('chai').expect;
-const { v4: uuid4 } = require('uuid');
-const axios = require('axios');
-const fancyLog = require('fancy-log');
-const describe = require('../../src/util/desc');
+import assert from 'assert';
+import os from 'os';
+import path from 'path';
+import axios from 'axios';
+import fancyLog from 'fancy-log';
+import { expect } from 'chai';
+import { v4 as uuid4 } from 'uuid';
+import describe from '../../src/util/desc.js';
 
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
 
@@ -168,6 +168,10 @@ describe('Testing { describe }', () => {
       expect(fixture('data')).to.deep.equal({});
     });
 
+    it('Test script fixture loaded', async ({ fixture }) => {
+      expect(await fixture('code')).to.deep.equal({ key: 'value' });
+    });
+
     it('Test fixture not found', async ({ fixture, capture }) => {
       const e = await capture(() => fixture('unknown'));
       expect(String(e)).to.equal('AssertionError [ERR_ASSERTION]: fixture "unknown" not found or ambiguous');
@@ -184,11 +188,10 @@ describe('Testing { describe }', () => {
     });
 
     it('Test capture throws when no error captured', async ({ capture }) => {
-      try {
-        await capture(() => {});
-      } catch (e) {
-        expect(String(e)).to.equal('AssertionError [ERR_ASSERTION]: expected [Function] to throw an error');
-      }
+      const err = await new Promise((resolve) => {
+        capture(() => {}).catch((e) => resolve(e));
+      });
+      expect(String(err)).to.equal('AssertionError [ERR_ASSERTION]: expected [Function] to throw an error');
     });
   });
 

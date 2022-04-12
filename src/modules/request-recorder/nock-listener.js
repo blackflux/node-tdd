@@ -1,6 +1,6 @@
-const nock = require('nock');
+import nock from 'nock';
 
-module.exports = (() => {
+export default (() => {
   const fnLists = {
     'no match': []
   };

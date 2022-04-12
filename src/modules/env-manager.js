@@ -1,5 +1,5 @@
-const assert = require('assert');
-const Joi = require('joi-strict');
+import assert from 'assert';
+import Joi from 'joi-strict';
 
 const setEnvVar = (key, value) => {
   if ([null, undefined].includes(value)) {
@@ -10,7 +10,7 @@ const setEnvVar = (key, value) => {
   }
 };
 
-module.exports = (opts) => {
+export default (opts) => {
   Joi.assert(opts, Joi.object().keys({
     envVars: Joi.object().pattern(Joi.string(), Joi.string()),
     allowOverwrite: Joi.boolean()
