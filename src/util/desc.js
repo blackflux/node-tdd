@@ -1,18 +1,18 @@
-const assert = require('assert');
-const path = require('path');
-const fs = require('smart-fs');
-const callsites = require('callsites');
-const get = require('lodash.get');
-const { fileURLToPath } = require('url');
-const minimist = require('minimist');
-const tmp = require('tmp');
-const Joi = require('joi-strict');
-const RequestRecorder = require('../modules/request-recorder');
-const EnvManager = require('../modules/env-manager');
-const TimeKeeper = require('../modules/time-keeper');
-const LogRecorder = require('../modules/log-recorder');
-const RandomSeeder = require('../modules/random-seeder');
-const { getParents, genCassetteName } = require('./mocha-test');
+import assert from 'assert';
+import path from 'path';
+import fs from 'smart-fs';
+import callsites from 'callsites';
+import get from 'lodash.get';
+import { fileURLToPath } from 'url';
+import minimist from 'minimist';
+import tmp from 'tmp';
+import Joi from 'joi-strict';
+import RequestRecorder from '../modules/request-recorder.js';
+import EnvManager from '../modules/env-manager.js';
+import TimeKeeper from '../modules/time-keeper.js';
+import LogRecorder from '../modules/log-recorder.js';
+import RandomSeeder from '../modules/random-seeder.js';
+import { getParents, genCassetteName } from './mocha-test.js';
 
 const mocha = {
   it,
@@ -30,11 +30,11 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const tests = testsOrNull === null ? optsOrTests : testsOrNull;
 
   const filenameOrUrl = callsites()[1].getFileName();
-  // eslint-disable-next-line @blackflux/rules/istanbul-prevent-ignore
-  /* istanbul ignore next */
   const testFile = path.resolve(
     filenameOrUrl.startsWith('file://')
       ? fileURLToPath(filenameOrUrl)
+      // eslint-disable-next-line @blackflux/rules/c8-prevent-ignore
+      /* c8 ignore next */
       : filenameOrUrl
   );
   const resolve = (name) => path.join(
@@ -261,4 +261,4 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     })();
   });
 };
-module.exports = desc;
+export default desc;

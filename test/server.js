@@ -1,11 +1,11 @@
-const qs = require('querystring');
-const fs = require('smart-fs');
-const path = require('path');
-const http = require('http');
-const https = require('https');
-const RequestRecorder = require('../src/modules/request-recorder');
+import qs from 'querystring';
+import fs from 'smart-fs';
+import path from 'path';
+import http from 'http';
+import https from 'https';
+import RequestRecorder from '../src/modules/request-recorder.js';
 
-module.exports.spawnServer = async (proto = 'http') => {
+export const spawnServer = async (proto = 'http') => {
   const listener = (req, resp) => {
     const params = qs.parse(req.url.split('?').pop());
     resp.writeHead(200, {
@@ -15,20 +15,24 @@ module.exports.spawnServer = async (proto = 'http') => {
     resp.end();
   };
   const server = { http, https }[proto].createServer(proto === 'https' ? {
-    key: fs.readFileSync(path.join(__dirname, 'certs', 'my-server.key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'certs', 'my-server.crt.pem'))
+    key: fs.readFileSync(path.join(fs.dirname(import.meta.url), 'certs', 'my-server.key.pem')),
+    cert: fs.readFileSync(path.join(fs.dirname(import.meta.url), 'certs', 'my-server.crt.pem'))
   } : {}, listener);
-  await new Promise((resolve) => server.listen(resolve));
+  await new Promise((resolve) => {
+    server.listen(resolve);
+  });
   const address = server.address();
   return {
     address,
     host: `localhost:${address.port}`,
     uri: `${proto}://localhost:${address.port}`,
-    close: () => new Promise((resolve) => server.close(resolve))
+    close: () => new Promise((resolve) => {
+      server.close(resolve);
+    })
   };
 };
 
-module.exports.NockRecord = (tmpDir, cassetteFile) => async (fn, {
+export const NockRecord = (tmpDir, cassetteFile) => async (fn, {
   stripHeaders = false,
   reqHeaderOverwrite = {},
   strict = false,

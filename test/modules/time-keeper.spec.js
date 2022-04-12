@@ -1,6 +1,6 @@
-const expect = require('chai').expect;
-const { describe } = require('../../src/index');
-const TimeKeeper = require('../../src/modules/time-keeper');
+import { expect } from 'chai';
+import { describe } from '../../src/index.js';
+import TimeKeeper from '../../src/modules/time-keeper.js';
 
 describe('Testing TimeKeeper', () => {
   it('Testing Basic freeze (unix)', () => {

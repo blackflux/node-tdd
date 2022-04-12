@@ -1,8 +1,9 @@
-const crypto = require('crypto');
-const qs = require('querystring');
-const get = require('lodash.get');
-const { v4: uuid4 } = require('uuid');
-const xml2js = require('xml2js');
+import crypto from 'crypto';
+import qs from 'querystring';
+import get from 'lodash.get';
+
+import { v4 as uuid4 } from 'uuid';
+import xml2js from 'xml2js';
 
 const parseRequestBody = (body) => Object.values(Object
   .entries(qs.parse(body))
@@ -25,7 +26,7 @@ const parseResponseBody = (body) => {
   return parsed;
 };
 
-module.exports = (requestBody, responseBody, scope) => {
+export default (requestBody, responseBody, scope) => {
   if (
     !/^https:\/\/sqs\.[a-z0-9-]+\.amazonaws\.com:443$/.test(scope.basePath)
     || !responseBody.startsWith('<?xml version="1.0"?><SendMessageBatchResponse')) {

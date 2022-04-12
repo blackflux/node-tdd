@@ -1,13 +1,21 @@
-const path = require('path');
-const https = require('https');
-const fs = require('smart-fs');
-const expect = require('chai').expect;
-const get = require('lodash.get');
-const axios = require('axios');
-const { logger } = require('lambda-monitor-logger');
-const aws = require('aws-sdk-wrap')({ logger });
-const { describe } = require('../../src/index');
-const { spawnServer, NockRecord } = require('../server');
+import path from 'path';
+import https from 'https';
+import fs from 'smart-fs';
+import get from 'lodash.get';
+import axios from 'axios';
+import { logger } from 'lambda-monitor-logger';
+import { expect } from 'chai';
+import AWS from 'aws-sdk';
+import awsSdkWrap from 'aws-sdk-wrap';
+import { describe } from '../../src/index.js';
+import { spawnServer, NockRecord } from '../server.js';
+
+const aws = awsSdkWrap({
+  logger,
+  services: {
+    SQS: AWS.SQS
+  }
+});
 
 describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   const cassetteFile = 'file1.json';
@@ -233,6 +241,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   describe('Testing healing of recording', () => {
     let makeCassetteEntry;
     let runner;
+    let mkRequest;
 
     beforeEach(({ capture }) => {
       makeCassetteEntry = (id) => ({
@@ -244,7 +253,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
-          'user-agent': 'axios/0.24.0',
+          'user-agent': 'axios/0.26.1',
           'content-length': 59
         },
         response: { data: `${id}` },
@@ -295,6 +304,9 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         } else {
           expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
+      };
+      mkRequest = async () => {
+        await axios(server.uri);
       };
     });
 
@@ -405,7 +417,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'content-length': 59,
-            'user-agent': 'axios/0.24.0'
+            'user-agent': 'axios/0.26.1'
           }
         }),
         makeCassetteEntry(3)
@@ -434,7 +446,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'content-length': 59,
-            'user-agent': 'axios/0.24.0'
+            'user-agent': 'axios/0.26.1'
           }
         }),
         makeCassetteEntry(3)
@@ -445,9 +457,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
 
-      await capture(() => nockRecord(async () => {
-        await axios(server.uri);
-      }, { stripHeaders: true, heal: 'record' }));
+      await capture(() => nockRecord(mkRequest, { stripHeaders: true, heal: 'record' }));
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([{
@@ -457,7 +467,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           host: server.host,
-          'user-agent': 'axios/0.24.0'
+          'user-agent': 'axios/0.26.1'
         },
         response: {},
         responseIsBinary: false,
@@ -493,7 +503,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/?q=1',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          host: `${server2.host} @ axios/0.24.0`,
+          host: `${server2.host} @ axios/0.26.1`,
           'user-agent': '^axios/.*$'
         },
         response: {
@@ -529,9 +539,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
 
-      await capture(() => nockRecord(async () => {
-        await axios(server.uri);
-      }, { stripHeaders: true, heal: 'stub' }));
+      await capture(() => nockRecord(mkRequest, { stripHeaders: true, heal: 'stub' }));
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([{
@@ -539,7 +547,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          'user-agent': 'axios/0.24.0'
+          'user-agent': 'axios/0.26.1'
         },
         response: {},
         responseIsBinary: false,

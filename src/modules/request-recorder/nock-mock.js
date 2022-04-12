@@ -1,11 +1,11 @@
-const nockCommon = require('nock/lib/common');
+import nockCommon from 'nock/lib/common.js';
 
 const fns = ['setInterval', 'setTimeout', 'deleteHeadersField'];
 const originals = fns.reduce((p, c) => Object.assign(p, {
   [c]: nockCommon[c]
 }), {});
 
-module.exports = {
+export default {
   patch: () => {
     fns.forEach((fn) => {
       nockCommon[fn] = (...args) => {

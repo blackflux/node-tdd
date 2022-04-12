@@ -1,6 +1,6 @@
-module.exports.buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
+export const buildKey = (interceptor) => `${interceptor.method} ${interceptor.basePath}${interceptor.uri}`;
 
-module.exports.tryParseJson = (value) => {
+export const tryParseJson = (value) => {
   if (typeof value !== 'string') {
     return value;
   }
@@ -11,9 +11,9 @@ module.exports.tryParseJson = (value) => {
   }
 };
 
-module.exports.nullAsString = (value) => (value === null ? 'null' : value);
+export const nullAsString = (value) => (value === null ? 'null' : value);
 
-module.exports.convertHeaders = (array) => {
+export const convertHeaders = (array) => {
   const obj = {};
   for (let idx = 0; idx < array.length; idx += 2) {
     obj[array[idx].toLowerCase()] = array[idx + 1];
@@ -21,7 +21,7 @@ module.exports.convertHeaders = (array) => {
   return obj;
 };
 
-module.exports.rewriteHeaders = (headers, fn = (k, v) => v) => {
+export const rewriteHeaders = (headers, fn = (k, v) => v) => {
   if (headers === undefined) {
     return {};
   }
