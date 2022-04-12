@@ -1,4 +1,4 @@
-const getParents = (test) => {
+export const getParents = (test) => {
   const names = [];
   let cTest = test;
   while (cTest !== undefined) {
@@ -7,9 +7,8 @@ const getParents = (test) => {
   }
   return names;
 };
-module.exports.getParents = getParents;
 
-const genCassetteName = (test) => getParents(test)
+export const genCassetteName = (test) => getParents(test)
   .filter((e) => !!e)
   .map((e) => e
     .replace(/[^a-zA-Z0-9]+/g, '-')
@@ -18,4 +17,3 @@ const genCassetteName = (test) => getParents(test)
     .replace(/-(.)/g, (_, char) => char.toUpperCase()))
   .concat(['recording.json'])
   .join('_');
-module.exports.genCassetteName = genCassetteName;

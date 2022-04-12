@@ -1,6 +1,6 @@
-const objectScan = require('object-scan');
+import objectScan from 'object-scan';
 
-module.exports = (input, modifiers) => {
+export default (input, modifiers) => {
   objectScan(['**'], {
     filterFn: ({ key, value, parent }) => {
       const k = key[key.length - 1];

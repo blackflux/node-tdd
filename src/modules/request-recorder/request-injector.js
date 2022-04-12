@@ -1,7 +1,7 @@
-const assert = require('assert');
-const http = require('http');
-const https = require('https');
-const nockCommon = require('nock/lib/common');
+import assert from 'assert';
+import http from 'http';
+import https from 'https';
+import nockCommon from 'nock/lib/common.js';
 
 let lastProtocol = null;
 let lastOptions = null;
@@ -41,7 +41,7 @@ const wrapper = (proto) => {
   };
 };
 
-module.exports = (() => {
+export default (() => {
   const httpWrapper = wrapper('http');
   const httpsWrapper = wrapper('https');
   return {

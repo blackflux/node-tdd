@@ -1,8 +1,8 @@
-const assert = require('assert');
-const Joi = require('joi-strict');
-const tk = require('timekeeper');
+import assert from 'assert';
+import Joi from 'joi-strict';
+import tk from 'timekeeper';
 
-module.exports = (opts) => {
+export default (opts) => {
   Joi.assert(opts, Joi.object().keys({
     timestamp: Joi.alternatives(
       Joi.number().integer().min(0),

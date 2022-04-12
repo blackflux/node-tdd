@@ -1,9 +1,9 @@
-const assert = require('assert');
-const expect = require('chai').expect;
-const crypto = require('crypto');
-const { v4: uuid4 } = require('uuid');
-const { describe } = require('../../src/index');
-const RandomSeeder = require('../../src/modules/random-seeder');
+import assert from 'assert';
+import crypto from 'crypto';
+import { expect } from 'chai';
+import { v4 as uuid4 } from 'uuid';
+import { describe } from '../../src/index.js';
+import RandomSeeder from '../../src/modules/random-seeder.js';
 
 describe('Testing RandomSeeder', () => {
   describe('Testing RandomSeeder Not Reseeded', () => {

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-const expect = require('chai').expect;
-const { describe } = require('../../src/index');
-const LogRecorder = require('../../src/modules/log-recorder');
+import { expect } from 'chai';
+import { describe } from '../../src/index.js';
+import LogRecorder from '../../src/modules/log-recorder.js';
 
 const testConsole = (verbose) => {
   const logs = [];

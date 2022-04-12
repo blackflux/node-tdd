@@ -1,6 +1,6 @@
-const expect = require('chai').expect;
-const describe = require('../../src/util/desc');
-const { genCassetteName } = require('../../src/util/mocha-test');
+import { expect } from 'chai';
+import describe from '../../src/util/desc.js';
+import { genCassetteName } from '../../src/util/mocha-test.js';
 
 describe('Testing mocha-test.js', () => {
   it('Testing genCassetteName', ({ dir }) => {
