@@ -550,7 +550,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         qs: [1, 2]
       });
       const elapsed = process.hrtime(startTime);
-      const elapsedSeconds = (elapsed[0] + (elapsed[1] / 1e9)).toFixed(3);
+      const elapsedSeconds = elapsed[0] + (elapsed[1] / 1e9);
       expect(elapsedSeconds).to.be.greaterThan(1);
     });
 
