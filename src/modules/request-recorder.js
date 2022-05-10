@@ -183,6 +183,14 @@ export default (opts) => {
             scope.on('request', (req, interceptor, requestBodyString) => {
               const idx = pendingMocks.findIndex((e) => e.idx === scopeIdx);
 
+              // https://github.com/nock/nock/blob/79ee0429050af929c525ae21a326d22796344bfc/lib/interceptor.js#L616
+              if (Number.isInteger(pendingMocks[idx]?.record?.delayConnection)) {
+                interceptor.delayConnection(pendingMocks[idx].record.delayConnection);
+              }
+              if (Number.isInteger(pendingMocks[idx]?.record?.delayBody)) {
+                interceptor.delayBody(pendingMocks[idx].record.delayBody);
+              }
+
               if (anyFlagPresent(['magic', 'headers'])) {
                 // add new headers
                 const reqheaders = {

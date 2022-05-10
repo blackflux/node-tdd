@@ -535,6 +535,25 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       ]);
     });
 
+    it('Testing delay', async () => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [
+        makeCassetteEntry(1),
+        Object.assign(makeCassetteEntry(2), {
+          delayBody: 500,
+          delayConnection: 500
+        })
+      ]);
+      const startTime = process.hrtime();
+      await runTest({
+        heal: false,
+        qs: [1, 2]
+      });
+      const elapsed = process.hrtime(startTime);
+      const elapsedSeconds = (elapsed[0] + (elapsed[1] / 1e9)).toFixed(3);
+      expect(elapsedSeconds).to.be.greaterThan(1);
+    });
+
     it('Testing stub (empty cassette)', async ({ capture }) => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
