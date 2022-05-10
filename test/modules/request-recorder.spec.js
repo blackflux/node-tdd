@@ -253,7 +253,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
-          'user-agent': 'axios/0.26.1',
+          'user-agent': 'axios/0.27.2',
           'content-length': 59
         },
         response: { data: `${id}` },
@@ -305,9 +305,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
       };
-      mkRequest = async () => {
-        await axios(server.uri);
-      };
+      mkRequest = async () => axios(server.uri);
     });
 
     it('Testing without healing', async () => {
@@ -417,7 +415,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'content-length': 59,
-            'user-agent': 'axios/0.26.1'
+            'user-agent': 'axios/0.27.2'
           }
         }),
         makeCassetteEntry(3)
@@ -446,7 +444,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'content-length': 59,
-            'user-agent': 'axios/0.26.1'
+            'user-agent': 'axios/0.27.2'
           }
         }),
         makeCassetteEntry(3)
@@ -467,7 +465,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           host: server.host,
-          'user-agent': 'axios/0.26.1'
+          'user-agent': 'axios/0.27.2'
         },
         response: {},
         responseIsBinary: false,
@@ -503,7 +501,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/?q=1',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          host: `${server2.host} @ axios/0.26.1`,
+          host: `${server2.host} @ axios/0.27.2`,
           'user-agent': '^axios/.*$'
         },
         response: {
@@ -535,6 +533,25 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       ]);
     });
 
+    it('Testing delay', async () => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [
+        makeCassetteEntry(1),
+        Object.assign(makeCassetteEntry(2), {
+          delayBody: 500,
+          delayConnection: 500
+        })
+      ]);
+      const startTime = process.hrtime();
+      await runTest({
+        heal: false,
+        qs: [1, 2]
+      });
+      const elapsed = process.hrtime(startTime);
+      const elapsedSeconds = elapsed[0] + (elapsed[1] / 1e9);
+      expect(elapsedSeconds).to.be.greaterThan(1);
+    });
+
     it('Testing stub (empty cassette)', async ({ capture }) => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
@@ -547,7 +564,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          'user-agent': 'axios/0.26.1'
+          'user-agent': 'axios/0.27.2'
         },
         response: {},
         responseIsBinary: false,

@@ -36,6 +36,16 @@ describe('Testing some stuff', /* { ...options }, */ () => {
 
 Please see tests for further usage examples.
 
+### Custom Cassette Logic
+
+### delayConnection
+
+Delay the connection by a certain number of ms.
+
+### delayBody
+
+Delay the response body by a certain number of ms.
+
 ### Function Kwargs
 
 #### dir
