@@ -253,7 +253,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
-          'user-agent': 'axios/0.26.1',
+          'user-agent': 'axios/0.27.2',
           'content-length': 59
         },
         response: { data: `${id}` },
@@ -305,9 +305,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
       };
-      mkRequest = async () => {
-        await axios(server.uri);
-      };
+      mkRequest = async () => axios(server.uri);
     });
 
     it('Testing without healing', async () => {
@@ -417,7 +415,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'content-length': 59,
-            'user-agent': 'axios/0.26.1'
+            'user-agent': 'axios/0.27.2'
           }
         }),
         makeCassetteEntry(3)
@@ -446,7 +444,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'content-length': 59,
-            'user-agent': 'axios/0.26.1'
+            'user-agent': 'axios/0.27.2'
           }
         }),
         makeCassetteEntry(3)
@@ -467,7 +465,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           host: server.host,
-          'user-agent': 'axios/0.26.1'
+          'user-agent': 'axios/0.27.2'
         },
         response: {},
         responseIsBinary: false,
@@ -503,7 +501,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/?q=1',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          host: `${server2.host} @ axios/0.26.1`,
+          host: `${server2.host} @ axios/0.27.2`,
           'user-agent': '^axios/.*$'
         },
         response: {
@@ -566,7 +564,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         path: '/',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
-          'user-agent': 'axios/0.26.1'
+          'user-agent': 'axios/0.27.2'
         },
         response: {},
         responseIsBinary: false,
