@@ -1,10 +1,10 @@
+import crypto from 'crypto';
 import assert from 'assert';
 import os from 'os';
 import path from 'path';
 import axios from 'axios';
 import fancyLog from 'fancy-log';
 import { expect } from 'chai';
-import { v4 as uuid4 } from 'uuid';
 import describe from '../../src/util/desc.js';
 
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
@@ -141,8 +141,8 @@ describe('Testing { describe }', () => {
 
   describe('Testing random mocking', { cryptoSeed: 'ca8e7655-cd4f-47bf-a817-3b44f0f5b74e' }, () => {
     it('Testing random is mocked', () => {
-      expect(uuid4()).to.deep.equal('71ddab94-f651-4631-8aa3-651f205ed588');
-      expect(uuid4()).to.deep.equal('921e7b60-668f-4746-9aa8-a7cd964768a6');
+      expect(crypto.randomUUID()).to.deep.equal('b23876ba-9014-4c17-8ee3-b274076a958b');
+      expect(crypto.randomUUID()).to.deep.equal('c534e03d-e086-481d-9d89-c9ab07570e99');
     });
   });
 
@@ -151,8 +151,8 @@ describe('Testing { describe }', () => {
     cryptoSeedReseed: true
   }, () => {
     it('Testing random is mocked', () => {
-      expect(uuid4()).to.deep.equal('e9d78197-b53c-48ab-99d1-08b7d7661460');
-      expect(uuid4()).to.deep.equal('e9d78197-b53c-48ab-99d1-08b7d7661460');
+      expect(crypto.randomUUID()).to.deep.equal('d4bb3a4e-bd1c-4209-8f8c-24f9f1abd5d2');
+      expect(crypto.randomUUID()).to.deep.equal('d4bb3a4e-bd1c-4209-8f8c-24f9f1abd5d2');
     });
   });
 
