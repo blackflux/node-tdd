@@ -1,7 +1,7 @@
 import assert from 'assert';
 import crypto from 'crypto';
+import { Buffer } from 'node:buffer';
 import { expect } from 'chai';
-import { v4 as uuid4 } from 'uuid';
 import { describe } from '../../src/index.js';
 import RandomSeeder from '../../src/modules/random-seeder.js';
 
@@ -19,13 +19,47 @@ describe('Testing RandomSeeder', () => {
 
     describe('Testing Random Consistent', () => {
       it('Testing First', () => {
-        expect(uuid4()).to.deep.equal('85123163-cdd6-4a8c-9e47-aa0a7a0f6a91');
-        expect(uuid4()).to.deep.equal('8d1831fe-751b-4aa1-80df-7f6c546e37c7');
+        expect(crypto.randomUUID()).to.deep.equal('2942b215-a241-4108-84d4-d69b46d60704');
+        expect(crypto.randomUUID()).to.deep.equal('b254d993-0840-4ffe-8857-f11021385fa4');
       });
 
       it('Testing Second', () => {
-        expect(uuid4()).to.deep.equal('85123163-cdd6-4a8c-9e47-aa0a7a0f6a91');
-        expect(uuid4()).to.deep.equal('8d1831fe-751b-4aa1-80df-7f6c546e37c7');
+        expect(crypto.randomUUID()).to.deep.equal('2942b215-a241-4108-84d4-d69b46d60704');
+        expect(crypto.randomUUID()).to.deep.equal('b254d993-0840-4ffe-8857-f11021385fa4');
+      });
+    });
+
+    describe('Testing crypto.randomFillSync()', () => {
+      it('Testing First', () => {
+        const buffer = Buffer.alloc(16);
+        crypto.randomFillSync(buffer);
+        expect(buffer.toString('hex')).to.deep.equal('2942b215a241b10884d4d69b46d60704');
+        crypto.randomFillSync(buffer);
+        expect(buffer.toString('hex')).to.deep.equal('b254d9930840fffe8857f11021385fa4');
+      });
+
+      it('Testing Second', () => {
+        const buffer = Buffer.alloc(16);
+        crypto.randomFillSync(buffer);
+        expect(buffer.toString('hex')).to.deep.equal('2942b215a241b10884d4d69b46d60704');
+        crypto.randomFillSync(buffer);
+        expect(buffer.toString('hex')).to.deep.equal('b254d9930840fffe8857f11021385fa4');
+      });
+
+      it('Testing First with Offset and Length', () => {
+        const buffer = Buffer.alloc(16);
+        crypto.randomFillSync(buffer, 4, 8);
+        expect(buffer.toString('hex')).to.deep.equal('0000000006146e9ba205aae700000000');
+        crypto.randomFillSync(buffer, 4, 8);
+        expect(buffer.toString('hex')).to.deep.equal('0000000043d1f02caac9555600000000');
+      });
+
+      it('Testing Second with Offset and Length', () => {
+        const buffer = Buffer.alloc(16);
+        crypto.randomFillSync(buffer, 4, 8);
+        expect(buffer.toString('hex')).to.deep.equal('0000000006146e9ba205aae700000000');
+        crypto.randomFillSync(buffer, 4, 8);
+        expect(buffer.toString('hex')).to.deep.equal('0000000043d1f02caac9555600000000');
       });
     });
 
@@ -87,8 +121,8 @@ describe('Testing RandomSeeder', () => {
     });
 
     it('Testing Random Consistent Reseeded', () => {
-      expect(uuid4()).to.deep.equal('f5442998-b332-4abd-86e2-78bb848420f6');
-      expect(uuid4()).to.deep.equal('f5442998-b332-4abd-86e2-78bb848420f6');
+      expect(crypto.randomUUID()).to.deep.equal('10c23ea5-f693-4ffc-a9af-266d01fd1087');
+      expect(crypto.randomUUID()).to.deep.equal('10c23ea5-f693-4ffc-a9af-266d01fd1087');
     });
   });
 });

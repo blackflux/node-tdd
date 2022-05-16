@@ -12,6 +12,11 @@ export default (opts) => {
   }), 'Invalid Options Provided');
   let original = null;
 
+  const byteToHex = [];
+  for (let i = 0; i < 256; i += 1) {
+    byteToHex[i] = (i + 0x100).toString(16).slice(1);
+  }
+
   return {
     inject: () => {
       assert(original === null);
@@ -19,7 +24,8 @@ export default (opts) => {
       original = {
         crypto: {
           randomBytes: crypto.randomBytes,
-          randomFillSync: crypto.randomFillSync
+          randomFillSync: crypto.randomFillSync,
+          randomUUID: crypto.randomUUID
         },
         Math: {
           random: Math.random
@@ -56,6 +62,49 @@ export default (opts) => {
           res.copy(buffer, o, 0, s);
         });
         return buffer;
+      };
+      crypto.randomUUID = () => {
+        const rnds = crypto.randomBytes(16);
+
+        // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+        // eslint-disable-next-line no-bitwise
+        rnds[6] = (rnds[6] & 0x0f) | 0x40;
+        // eslint-disable-next-line no-bitwise
+        rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+        return `${
+          byteToHex[rnds[0]]
+        }${
+          byteToHex[rnds[1]]
+        }${
+          byteToHex[rnds[2]]
+        }${
+          byteToHex[rnds[3]]
+        }-${
+          byteToHex[rnds[4]]
+        }${
+          byteToHex[rnds[5]]
+        }-${
+          byteToHex[rnds[6]]
+        }${
+          byteToHex[rnds[7]]
+        }-${
+          byteToHex[rnds[8]]
+        }${
+          byteToHex[rnds[9]]
+        }-${
+          byteToHex[rnds[10]]
+        }${
+          byteToHex[rnds[11]]
+        }${
+          byteToHex[rnds[12]]
+        }${
+          byteToHex[rnds[13]]
+        }${
+          byteToHex[rnds[14]]
+        }${
+          byteToHex[rnds[15]]
+        }`;
       };
       Math.random = () => crypto.randomBytes(4).readUInt32LE() / 0xffffffff;
     },

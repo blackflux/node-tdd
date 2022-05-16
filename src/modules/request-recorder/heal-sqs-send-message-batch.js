@@ -2,7 +2,6 @@ import crypto from 'crypto';
 import qs from 'querystring';
 import get from 'lodash.get';
 
-import { v4 as uuid4 } from 'uuid';
 import xml2js from 'xml2js';
 
 const parseRequestBody = (body) => Object.values(Object
@@ -47,7 +46,7 @@ export default (requestBody, responseBody, scope) => {
           'SendMessageBatchResultEntry',
           idx,
           'MessageId'
-        ], uuid4())
+        ], crypto.randomUUID())
       }</MessageId>`,
       `<MD5OfMessageBody>${
         crypto.createHash('md5').update(MessageBody).digest('hex')
@@ -68,7 +67,7 @@ export default (requestBody, responseBody, scope) => {
         0,
         'RequestId',
         0
-      ], uuid4())
+      ], crypto.randomUUID())
     }</RequestId>`,
     '</ResponseMetadata>',
     '</SendMessageBatchResponse>'
