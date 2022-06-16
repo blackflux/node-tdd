@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'smart-fs';
 import Joi from 'joi-strict';
 import nock from 'nock';
+import get from 'lodash.get';
 import cloneDeep from 'lodash.clonedeep';
 import compareUrls from 'compare-urls';
 import nockCommon from 'nock/lib/common.js';
@@ -120,8 +121,11 @@ export default (opts) => {
             }));
           });
         } else if (anyFlagPresent(['stub'])) {
+          const host = options.host || options.hostname;
+          const port = get(options, 'port', { http: 80, https: 443 }[protocol]);
+          const scope = `${protocol}://${host}:${port}`;
           expectedCassette.push({
-            scope: `${protocol}://${options.host || options.hostname}:${options.port}`,
+            scope,
             method: options.method,
             path: options.path,
             body: tryParseJson(body),
