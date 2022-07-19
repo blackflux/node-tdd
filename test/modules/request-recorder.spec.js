@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import AWS from 'aws-sdk';
 import awsSdkWrap from 'aws-sdk-wrap';
 import { describe } from '../../src/index.js';
-import { spawnServer, NockRecord } from '../server.js';
+import { NockRecord, spawnServer } from '../server.js';
 
 const aws = awsSdkWrap({
   logger,
@@ -571,6 +571,28 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         scope: server.uri,
         status: 200
       }]);
+    });
+
+    it('Testing question mark not removed', async ({ fixture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, fixture('post-questionmark'));
+      const { expectedCassette } = await nockRecord(() => axios({
+        method: 'POST',
+        url: 'https://test.com/',
+        data: 'NEW'
+      }), { heal: 'magic' });
+      expect(expectedCassette).to.deep.equal([{ ...fixture('post-questionmark')[0], body: 'NEW' }]);
+    });
+
+    it('Testing question mark not added', async ({ fixture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, fixture('post'));
+      const { expectedCassette } = await nockRecord(() => axios({
+        method: 'POST',
+        url: 'https://test.com/?',
+        data: 'NEW'
+      }), { heal: 'magic' });
+      expect(expectedCassette).to.deep.equal([{ ...fixture('post')[0], body: 'NEW' }]);
     });
   });
 });
