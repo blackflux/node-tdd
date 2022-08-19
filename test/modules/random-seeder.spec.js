@@ -121,8 +121,8 @@ describe('Testing RandomSeeder', () => {
     });
 
     it('Testing Random Consistent Reseeded', () => {
-      expect(crypto.randomUUID()).to.deep.equal('10c23ea5-f693-4ffc-a9af-266d01fd1087');
-      expect(crypto.randomUUID()).to.deep.equal('10c23ea5-f693-4ffc-a9af-266d01fd1087');
+      expect(crypto.randomUUID()).to.deep.equal('0c0cd077-7d24-4b11-804a-1e09a670be47');
+      expect(crypto.randomUUID()).to.deep.equal('0c0cd077-7d24-4b11-804a-1e09a670be47');
     });
   });
 });

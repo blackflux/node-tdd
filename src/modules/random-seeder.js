@@ -45,7 +45,7 @@ export default (opts) => {
         let result = crypto
           .createHash('sha256')
           .update(opts.seed)
-          .update(key)
+          .update(opts.reseed === true ? 'null' : key)
           .update(String(executionCounts[key]))
           .digest();
         while (result.length < size) {
