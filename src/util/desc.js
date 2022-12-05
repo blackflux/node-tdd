@@ -12,7 +12,7 @@ import EnvManager from '../modules/env-manager.js';
 import TimeKeeper from '../modules/time-keeper.js';
 import LogRecorder from '../modules/log-recorder.js';
 import RandomSeeder from '../modules/random-seeder.js';
-import CacheVoider from '../modules/cache-voider.js';
+import CacheClearer from '../modules/cache-clearer.js';
 import { getParents, genCassetteName } from './mocha-test.js';
 
 const mocha = {
@@ -54,7 +54,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
     fixtureFolder: Joi.string().optional(),
     envVarsFile: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
-    voidCache: Joi.boolean().optional(),
+    clearCache: Joi.boolean().optional(),
     timestamp: Joi.alternatives(
       Joi.number().integer().min(0),
       Joi.date().iso()
@@ -77,7 +77,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const fixtureFolder = resolve(get(opts, 'fixtureFolder', '$FILENAME__fixtures'));
   const envVarsFile = resolve(get(opts, 'envVarsFile', '$FILENAME.env.yml'));
   const envVars = get(opts, 'envVars', null);
-  const voidCache = get(opts, 'voidCache', true);
+  const clearCache = get(opts, 'clearCache', true);
   const timestamp = get(opts, 'timestamp', null);
   const record = get(opts, 'record', false);
   const cryptoSeed = get(opts, 'cryptoSeed', null);
@@ -87,7 +87,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
 
   let dir = null;
   let requestRecorder = null;
-  let cacheVoider = null;
+  let cacheClearer = null;
   let envManagerFile = null;
   let envManagerDesc = null;
   let timeKeeper = null;
@@ -134,8 +134,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       // eslint-disable-next-line func-names
       mocha.before(function () {
         return (async () => {
-          if (voidCache !== false) {
-            cacheVoider = CacheVoider();
+          if (clearCache !== false) {
+            cacheClearer = CacheClearer();
           }
           if (getParents(this.test).length === 3 && fs.existsSync(envVarsFile)) {
             envManagerFile = EnvManager({ envVars: fs.smartRead(envVarsFile), allowOverwrite: false });
@@ -197,8 +197,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       // eslint-disable-next-line func-names
       mocha.beforeEach(function () {
         return (async () => {
-          if (cacheVoider !== null) {
-            cacheVoider.inject();
+          if (cacheClearer !== null) {
+            cacheClearer.inject();
           }
           if (useTmpDir === true) {
             tmp.setGracefulCleanup();
@@ -232,8 +232,8 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
           if (dir !== null) {
             dir = null;
           }
-          if (cacheVoider !== null) {
-            cacheVoider.release();
+          if (cacheClearer !== null) {
+            cacheClearer.release();
           }
         })();
       });

@@ -176,7 +176,7 @@ loaded from `envVarsFile` (if allowed).
 
 To allow overwriting of environment variables, prefix the name of the environment variable with `^`.
 
-#### voidCache
+#### clearCache
 
 Type: `boolean`<br>
 Default: `true`
