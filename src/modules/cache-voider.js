@@ -56,7 +56,6 @@ export default () => {
       });
       caches.splice(0).forEach((c) => c.clear());
       injected = false;
-    },
-    isInjected: () => injected
+    }
   };
 };
