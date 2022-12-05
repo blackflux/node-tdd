@@ -1,41 +1,37 @@
 import assert from 'assert';
 import LRU from 'lru-cache-ext';
 
-const getMocks = (obj) => {
+const getFns = (obj) => {
   const result = [];
-  const keys = [];
+  const properties = [];
   let o = obj;
   while (o instanceof Object) {
-    keys.push(...Object.getOwnPropertyNames(o));
+    properties.push(...Object.getOwnPropertyNames(o));
     o = Object.getPrototypeOf(o);
   }
-  for (let i = 0; i < keys.length; i += 1) {
-    const k = keys[i];
-    const v = LRU.prototype[k];
-    if (typeof v !== 'function') {
+  for (let i = 0; i < properties.length; i += 1) {
+    const key = properties[i];
+    const value = LRU.prototype[key];
+    if (typeof value !== 'function') {
       // eslint-disable-next-line no-continue
       continue;
     }
-    result.push({
-      obj,
-      key: k,
-      value: v
-    });
+    result.push({ obj, key, value });
   }
   return result;
 };
 
 export default () => {
   let injected = false;
-  const mocks = [
-    ...getMocks(LRU.prototype)
+  const fns = [
+    ...getFns(LRU.prototype)
   ];
   const caches = [];
 
   return {
     inject: () => {
       assert(injected === false);
-      mocks.forEach(({ obj, key, value }) => {
+      fns.forEach(({ obj, key, value }) => {
         try {
           // eslint-disable-next-line no-param-reassign,func-names
           obj[key] = function (...args) {
@@ -48,7 +44,7 @@ export default () => {
     },
     release: () => {
       assert(injected === true);
-      mocks.forEach(({ obj, key, value }) => {
+      fns.forEach(({ obj, key, value }) => {
         try {
           // eslint-disable-next-line no-param-reassign
           obj[key] = value;
