@@ -181,7 +181,7 @@ To allow overwriting of environment variables, prefix the name of the environmen
 Type: `boolean`<br>
 Default: `true`
 
-Known, accessed caches will be cleared after test has executed when set to `true`.
+Known accessed caches will be cleared after test has executed when set to `true`.
 
 #### timestamp
 
