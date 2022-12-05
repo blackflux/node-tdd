@@ -176,6 +176,13 @@ loaded from `envVarsFile` (if allowed).
 
 To allow overwriting of environment variables, prefix the name of the environment variable with `^`.
 
+#### clearCache
+
+Type: `boolean`<br>
+Default: `true`
+
+Known accessed caches will be cleared after test has executed when set to `true`.
+
 #### timestamp
 
 Type: `number|string`<br>
