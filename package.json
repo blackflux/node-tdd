@@ -81,6 +81,7 @@
     "joi-strict": "2.0.1",
     "lodash.clonedeep": "4.5.0",
     "lodash.get": "4.4.2",
+    "lru-cache-ext": "3.0.2",
     "minimist": "1.2.6",
     "nock": "13.2.4",
     "object-scan": "18.0.1",

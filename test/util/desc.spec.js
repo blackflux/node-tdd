@@ -5,6 +5,7 @@ import path from 'path';
 import axios from 'axios';
 import fancyLog from 'fancy-log';
 import { expect } from 'chai';
+import LRU from 'lru-cache-ext';
 import describe from '../../src/util/desc.js';
 
 const dirPrefix = path.join(os.tmpdir(), 'tmp-');
@@ -259,6 +260,23 @@ describe('Testing { describe }', () => {
 
     it('Test two', () => {
       state.push('testTwo');
+    });
+  });
+
+  describe('Testing Clear Cache', () => {
+    let cache;
+    before(() => {
+      cache = new LRU({ ttl: 100, max: 100 });
+    });
+
+    it('First', () => {
+      expect(cache.has('a')).to.equal(false);
+      cache.set('a', 1);
+    });
+
+    it('Second', () => {
+      expect(cache.has('a')).to.equal(false);
+      cache.set('a', 1);
     });
   });
 });
