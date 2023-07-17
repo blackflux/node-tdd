@@ -10,7 +10,8 @@
       "content-length": 3,
       "content-type": "application/x-www-form-urlencoded",
       "host": "test.com",
-      "user-agent": "axios/0.27.2"
+      "accept-encoding": "gzip, compress, deflate, br",
+      "user-agent": "axios/1.4.0"
     },
     "response": "ok"
   }
