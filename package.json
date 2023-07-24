@@ -50,7 +50,7 @@
     "aws-sdk-wrap": "13.0.2",
     "axios": "1.4.0",
     "c8": "8.0.0",
-    "chai": "4.3.7",
+    "chai": "4.3.6",
     "eslint": "8.45.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.27.5",
