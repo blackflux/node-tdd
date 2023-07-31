@@ -177,6 +177,9 @@ export default (opts) => {
                 if (!compareUrls(pendingMocks[idx].record.path, requestPath)) {
                   pendingMocks[idx].record.path = requestPath;
                 }
+                if (compareUrls(pendingMocks[idx].record.path, scope.path)) {
+                  pendingMocks[idx].record.path = scope.path;
+                }
                 return scope.path;
               }
               return requestPath;
