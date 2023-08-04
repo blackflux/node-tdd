@@ -9,14 +9,14 @@
     "reqheaders": {
       "amz-sdk-invocation-id": "e9725510-7b42-4901-b553-969b5a03e7d4",
       "amz-sdk-request": "attempt=1; max=3",
-      "authorization": "AWS4-HMAC-SHA256 Credential=XXXXXXXXXXXXXXXXXXXX/19700101/us-west-2/sqs/aws4_request, SignedHeaders=amz-sdk-invocation-id;amz-sdk-request;content-length;content-type;host;x-amz-content-sha256;x-amz-date;x-amz-user-agent, Signature=1ea6b86d608da70661cd465afad9c780fa2594b23f07791ebb3f4d9da58b835f",
+      "authorization": "AWS4-HMAC-SHA256 Credential=XXXXXXXXXXXXXXXXXXXX/19700101/us-west-2/sqs/aws4_request, SignedHeaders=amz-sdk-invocation-id;amz-sdk-request;content-length;content-type;host;x-amz-content-sha256;x-amz-date;x-amz-user-agent, Signature=46051a63bda908cbd07034a1a035c6fc53cacb9b617264fbf9fd1b6f27a62f5b",
       "content-length": "416",
       "content-type": "application/x-www-form-urlencoded",
       "host": "sqs.us-west-2.amazonaws.com",
       "user-agent": "aws-sdk-js/3.370.0 ua/2.0 os/linux#5.4.0-153-generic lang/js md/nodejs#16.20.1 api/sqs#3.370.0",
       "x-amz-content-sha256": "5f6cdab08798db82adcf77e1bdef480fb8fe70e558deeeb78045a5bfcf49cc67",
       "x-amz-date": "19700101T000000Z",
-      "x-amz-user-agent": "aws-sdk-js/3.370.0"
+      "x-amz-user-agent": "aws-sdk-js/3.385.0"
     }
   }
 ]
