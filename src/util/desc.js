@@ -1,9 +1,9 @@
 import assert from 'assert';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import fs from 'smart-fs';
 import callsites from 'callsites';
 import get from 'lodash.get';
-import { fileURLToPath } from 'url';
 import minimist from 'minimist';
 import tmp from 'tmp';
 import Joi from 'joi-strict';

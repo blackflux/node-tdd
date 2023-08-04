@@ -1,8 +1,8 @@
 import qs from 'querystring';
-import fs from 'smart-fs';
 import path from 'path';
 import http from 'http';
 import https from 'https';
+import fs from 'smart-fs';
 import RequestRecorder from '../src/modules/request-recorder.js';
 
 export const spawnServer = async (proto = 'http') => {

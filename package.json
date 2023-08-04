@@ -41,24 +41,24 @@
   },
   "homepage": "https://github.com/blackflux/node-tdd#readme",
   "devDependencies": {
-    "@aws-sdk/client-sqs": "3.370.0",
+    "@aws-sdk/client-sqs": "3.385.0",
     "@babel/core": "7.22.9",
     "@babel/eslint-parser": "7.22.9",
     "@babel/register": "7.22.5",
-    "@blackflux/eslint-plugin-rules": "2.1.0",
-    "@blackflux/robo-config-plugin": "9.0.1",
-    "aws-sdk-wrap": "13.0.2",
+    "@blackflux/eslint-plugin-rules": "3.0.0",
+    "@blackflux/robo-config-plugin": "9.1.9",
+    "aws-sdk-wrap": "13.0.6",
     "axios": "1.4.0",
-    "c8": "8.0.0",
-    "chai": "4.3.6",
-    "eslint": "8.45.0",
+    "c8": "8.0.1",
+    "chai": "4.3.7",
+    "eslint": "8.46.0",
     "eslint-config-airbnb-base": "15.0.0",
-    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-import": "2.28.0",
     "eslint-plugin-json": "3.1.0",
-    "eslint-plugin-markdown": "3.0.0",
+    "eslint-plugin-markdown": "3.0.1",
     "eslint-plugin-mocha": "10.1.0",
     "fancy-log": "2.0.0",
-    "js-gardener": "5.0.0",
+    "js-gardener": "5.0.1",
     "lambda-monitor-logger": "4.0.0"
   },
   "licenses": [
@@ -68,7 +68,7 @@
     }
   ],
   "engines": {
-    "node": ">= 14"
+    "node": ">= 16"
   },
   "files": [
     "lib"
@@ -82,10 +82,10 @@
     "minimist": "1.2.8",
     "nock": "13.3.2",
     "normalize-url": "2.0.1",
-    "object-scan": "18.5.1",
-    "smart-fs": "3.0.1",
-    "timekeeper": "2.2.0",
+    "object-scan": "19.0.0",
+    "smart-fs": "4.0.0",
+    "timekeeper": "2.3.1",
     "tmp": "0.2.1",
-    "xml2js": "0.6.0"
+    "xml2js": "0.6.2"
   }
 }
