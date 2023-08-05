@@ -59,7 +59,7 @@
     "eslint-plugin-mocha": "10.1.0",
     "fancy-log": "2.0.0",
     "js-gardener": "5.0.1",
-    "lambda-monitor-logger": "4.0.0"
+    "lambda-monitor-logger": "5.0.0"
   },
   "licenses": [
     {
@@ -75,14 +75,14 @@
   ],
   "dependencies": {
     "callsites": "4.0.0",
-    "joi-strict": "2.0.1",
+    "joi-strict": "3.0.0",
     "lodash.clonedeep": "4.5.0",
     "lodash.get": "4.4.2",
-    "lru-cache-ext": "3.0.3",
+    "lru-cache-ext": "4.0.0",
     "minimist": "1.2.8",
     "nock": "13.3.2",
     "normalize-url": "2.0.1",
-    "object-scan": "19.0.0",
+    "object-scan": "19.0.1",
     "smart-fs": "4.0.0",
     "timekeeper": "2.3.1",
     "tmp": "0.2.1",
