@@ -81,7 +81,7 @@
     "lru-cache-ext": "4.0.0",
     "minimist": "1.2.8",
     "nock": "13.3.2",
-    "normalize-url": "8.0.0",
+    "normalize-url": "2.0.1",
     "object-scan": "19.0.1",
     "smart-fs": "4.0.0",
     "timekeeper": "2.3.1",
