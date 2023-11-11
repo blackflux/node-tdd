@@ -48,7 +48,7 @@
     "@blackflux/eslint-plugin-rules": "3.0.0",
     "@blackflux/robo-config-plugin": "9.1.9",
     "aws-sdk-wrap": "13.0.6",
-    "axios": "1.4.0",
+    "axios": "1.6.0",
     "c8": "8.0.1",
     "chai": "4.3.7",
     "eslint": "8.46.0",
