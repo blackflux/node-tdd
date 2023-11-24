@@ -92,7 +92,9 @@ export default (opts) => {
       nockBack.fixtures = opts.cassetteFolder;
       nockMock.patch();
       nockListener.subscribe('no match', (req) => {
-        // todo: remove workaround when https://github.com/nock/nock/issues/2558 is done
+        assert(hasCassette === true);
+
+        // convert 404 response code to 500
         const destroyOriginal = req.destroy;
         req.destroy = (err) => {
           if (err.status === 404 && err.statusCode === 404 && err.code === 'ERR_NOCK_NO_MATCH') {
@@ -104,7 +106,6 @@ export default (opts) => {
           return destroyOriginal.call(req, err);
         };
 
-        assert(hasCassette === true);
         const { protocol, options, body } = requestInjector.getLast();
         if (anyFlagPresent(['record'])) {
           expectedCassette.push(async () => {
