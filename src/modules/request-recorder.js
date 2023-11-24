@@ -91,8 +91,21 @@ export default (opts) => {
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
       nockBack.fixtures = opts.cassetteFolder;
       nockMock.patch();
-      nockListener.subscribe('no match', () => {
+      nockListener.subscribe('no match', (req) => {
         assert(hasCassette === true);
+
+        // convert 404 response code to 500
+        const destroyOriginal = req.destroy;
+        req.destroy = (err) => {
+          if (err.status === 404 && err.statusCode === 404 && err.code === 'ERR_NOCK_NO_MATCH') {
+            // eslint-disable-next-line no-param-reassign
+            err.statusCode = 500;
+            // eslint-disable-next-line no-param-reassign
+            err.status = 500;
+          }
+          return destroyOriginal.call(req, err);
+        };
+
         const { protocol, options, body } = requestInjector.getLast();
         if (anyFlagPresent(['record'])) {
           expectedCassette.push(async () => {

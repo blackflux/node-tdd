@@ -485,6 +485,20 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       }]);
     });
 
+    it('Testing nock not found', async ({ capture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, [
+        makeCassetteEntry(1),
+        makeCassetteEntry(3)
+      ]);
+      const e = await capture(() => runTest({
+        heal: false,
+        qs: [1, 2, 3]
+      }));
+      expect(e.code).to.equal('ERR_NOCK_NO_MATCH');
+      expect(e.status).to.equal(500);
+    });
+
     it('Testing record (https)', async ({ capture }) => {
       const cassettePath = path.join(tmpDir, cassetteFile);
       fs.smartWrite(cassettePath, []);
