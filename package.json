@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/blackflux/node-tdd#readme",
   "devDependencies": {
-    "@aws-sdk/client-sqs": "3.385.0",
+    "@aws-sdk/client-sqs": "3.458.0",
     "@babel/core": "7.23.3",
     "@babel/eslint-parser": "7.23.3",
     "@babel/register": "7.22.15",
@@ -51,7 +51,7 @@
     "axios": "1.6.2",
     "c8": "8.0.1",
     "chai": "4.3.10",
-    "eslint": "8.53.0",
+    "eslint": "8.54.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.29.0",
     "eslint-plugin-json": "3.1.0",
@@ -80,12 +80,11 @@
     "lodash.get": "4.4.2",
     "lru-cache-ext": "4.0.0",
     "minimist": "1.2.8",
-    "nock": "13.3.8",
+    "nock": "13.4.0",
     "normalize-url": "2.0.1",
     "object-scan": "19.0.5",
     "smart-fs": "4.0.1",
     "timekeeper": "2.3.1",
-    "tmp": "0.2.1",
-    "xml2js": "0.6.2"
+    "tmp": "0.2.1"
   }
 }
