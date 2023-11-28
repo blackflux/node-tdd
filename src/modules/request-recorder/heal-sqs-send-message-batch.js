@@ -1,75 +1,18 @@
 import crypto from 'crypto';
-import qs from 'querystring';
-import get from 'lodash.get';
-
-import xml2js from 'xml2js';
-
-const parseRequestBody = (body) => Object.values(Object
-  .entries(qs.parse(body))
-  .filter(([k, v]) => k.startsWith('SendMessageBatchRequestEntry.'))
-  .sort((a, b) => a[0].localeCompare(b[0]))
-  .map(([k, v]) => [k.split('.'), v])
-  .reduce((p, [k, v]) => {
-    if (p[k[1]] === undefined) {
-      Object.assign(p, { [k[1]]: {} });
-    }
-    Object.assign(p[k[1]], { [k[2]]: v });
-    return p;
-  }, {}));
-
-const parseResponseBody = (body) => {
-  let parsed = null;
-  xml2js.parseString(body, (err, result) => {
-    parsed = result;
-  });
-  return parsed;
-};
+import { tryParseJson } from './util.js';
 
 export default (requestBody, responseBody, scope) => {
-  if (
-    !/^https:\/\/sqs\.[a-z0-9-]+\.amazonaws\.com:443$/.test(scope.basePath)
-    || !responseBody.startsWith('<?xml version="1.0"?><SendMessageBatchResponse')) {
+  if (scope.basePath !== 'https://sqs.us-west-2.amazonaws.com:443') {
     return responseBody;
   }
 
-  const responseBodyParsed = parseResponseBody(responseBody);
-
-  const resultEntries = parseRequestBody(requestBody)
-    .map(({ Id, MessageBody }, idx) => [
-      '<SendMessageBatchResultEntry>',
-      `<Id>${Id}</Id>`,
-      `<MessageId>${
-        get(responseBodyParsed, [
-          'SendMessageBatchResponse',
-          'SendMessageBatchResult',
-          0,
-          'SendMessageBatchResultEntry',
-          idx,
-          'MessageId'
-        ], crypto.randomUUID())
-      }</MessageId>`,
-      `<MD5OfMessageBody>${
-        crypto.createHash('md5').update(MessageBody).digest('hex')
-      }</MD5OfMessageBody>`,
-      '</SendMessageBatchResultEntry>'
-    ].join(''));
-  return [
-    '<?xml version="1.0"?>',
-    '<SendMessageBatchResponse xmlns="http://queue.amazonaws.com/doc/2012-11-05/">',
-    '<SendMessageBatchResult>',
-    ...resultEntries,
-    '</SendMessageBatchResult>',
-    '<ResponseMetadata>',
-    `<RequestId>${
-      get(responseBodyParsed, [
-        'SendMessageBatchResponse',
-        'ResponseMetadata',
-        0,
-        'RequestId',
-        0
-      ], crypto.randomUUID())
-    }</RequestId>`,
-    '</ResponseMetadata>',
-    '</SendMessageBatchResponse>'
-  ].join('');
+  const requestJson = tryParseJson(requestBody);
+  const responseJson = tryParseJson(responseBody);
+  return {
+    Successful: requestJson.Entries.map(({ Id, MessageBody }, idx) => ({
+      Id,
+      MessageId: responseJson?.Successful?.[idx]?.MessageId || crypto.randomUUID(),
+      MD5OfMessageBody: crypto.createHash('md5').update(MessageBody).digest('hex')
+    }))
+  };
 };
