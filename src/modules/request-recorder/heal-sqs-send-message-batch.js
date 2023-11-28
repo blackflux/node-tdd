@@ -1,8 +1,11 @@
 import crypto from 'crypto';
 import { tryParseJson } from './util.js';
 
-export default (requestBody, responseBody, scope) => {
-  if (scope.basePath !== 'https://sqs.us-west-2.amazonaws.com:443') {
+export default (requestBody, responseBody, scope, req) => {
+  if (
+    scope?.basePath !== 'https://sqs.us-west-2.amazonaws.com:443'
+    || req?.options?.headers?.['x-amz-target'] !== 'AmazonSQS.SendMessageBatch'
+  ) {
     return responseBody;
   }
 

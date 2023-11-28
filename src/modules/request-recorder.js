@@ -224,7 +224,7 @@ export default (opts) => {
                 const responseBody = tryParseJson([
                   healSqsSendMessageBatch
                 ].reduce(
-                  (respBody, fn) => fn(requestBodyString, respBody, scope),
+                  (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
                 ));
                 // eslint-disable-next-line no-param-reassign
