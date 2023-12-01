@@ -1,0 +1,20 @@
+{
+  "fn": "call",
+  "params": [
+    "sqs:TagQueueCommand",
+    {
+      "QueueUrl": "$queueUrl"
+    }
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueUrl=https%3A%2F%2Fsqs.us-west-2.amazonaws.com%2F012345678910%2Fsome-queue-url&Tag.1.Key=tagA&Tag.1.Value=07fc583e-e634-430c-aeeb-b1d39c3004ef&Tag.2.Key=tagB&Tag.2.Value=272193a4-d7ba-44f9-af56-d4f7e714f9b1&Action=TagQueue&Version=2012-11-05",
+      "status": 200,
+      "response": "<?xml version=\"1.0\"?><TagQueueResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><ResponseMetadata><RequestId>fa8d0dba-e5a1-50d2-9a2e-568efab22935</RequestId></ResponseMetadata></TagQueueResponse>",
+      "responseIsBinary": false
+    }
+  ]
+}

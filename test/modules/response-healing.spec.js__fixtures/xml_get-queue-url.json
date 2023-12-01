@@ -1,0 +1,18 @@
+{
+  "fn": "call",
+  "params": [
+    "sqs:GetQueueUrlCommand",
+    {"QueueName": "some-queue-name"}
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueName=some-queue-url&Action=GetQueueUrl&Version=2012-11-05",
+      "status": 200,
+      "response": "<?xml version=\"1.0\"?><GetQueueUrlResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><GetQueueUrlResult><QueueUrl>https://sqs.us-west-2.amazonaws.com/012345678910/some-queue-url</QueueUrl></GetQueueUrlResult><ResponseMetadata><RequestId>ef534ad7-e2af-594f-b8da-10a86f37deb1</RequestId></ResponseMetadata></GetQueueUrlResponse>",
+      "responseIsBinary": false
+    }
+  ]
+}

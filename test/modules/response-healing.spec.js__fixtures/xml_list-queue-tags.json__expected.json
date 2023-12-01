@@ -1,0 +1,32 @@
+[
+  {
+    "scope": "https://sqs.us-west-2.amazonaws.com:443",
+    "method": "POST",
+    "path": "/",
+    "body": {
+      "QueueUrl": "https://sqs.us-west-2.amazonaws.com/123456789101/service-name-data-local-SomeQueue"
+    },
+    "status": 200,
+    "response": {
+      "Tags": {
+        "lastModified": "2022-02-10T21:54:53.039Z",
+        "tagB": "ccfc9f9b-5379-4ae7-ba5c-5891a8259f83",
+        "tagA": "4cbc382c-94d0-48fb-b625-f098683afd3d"
+      }
+    },
+    "responseIsBinary": false,
+    "reqheaders": {
+      "amz-sdk-invocation-id": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "amz-sdk-request": "attempt=1; max=3",
+      "authorization": "^AWS4-HMAC-SHA256 Credential=.+$",
+      "content-length": "^[1-9][0-9]*$",
+      "content-type": "application/x-amz-json-1.0",
+      "host": "sqs.us-west-2.amazonaws.com",
+      "user-agent": "^aws-sdk-js/.+$",
+      "x-amz-content-sha256": "^[a-f0-9]{64}$",
+      "x-amz-date": "^[0-9]{8}T[0-9]{6}Z$",
+      "x-amz-target": "AmazonSQS.ListQueueTags",
+      "x-amz-user-agent": "^aws-sdk-js/[0-9]+.[0-9]+.[0-9]+$"
+    }
+  }
+]

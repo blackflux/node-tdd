@@ -1,1 +1,2 @@
 test/util/cache-clearer-disabled.spec.js
+test/modules/response-healing.spec.js

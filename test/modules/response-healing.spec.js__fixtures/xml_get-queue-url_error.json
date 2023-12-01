@@ -1,0 +1,20 @@
+
+{
+  "fn": "call",
+  "params": [
+    "sqs:GetQueueUrlCommand",
+    {"QueueName": "some-queue-name"},
+    {"expectedErrorCodes": ["QueueDoesNotExist"]}
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueName=some-queue-name&Action=GetQueueUrl&Version=2012-11-05",
+      "status": 400,
+      "response": "<?xml version=\"1.0\"?><ErrorResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><Error><Type>Sender</Type><Code>AWS.SimpleQueueService.NonExistentQueue</Code><Message>The specified queue does not exist for this wsdl version.</Message><Detail/></Error><RequestId>7fb23608-cc30-515b-89b2-6c7fbfb18a2c</RequestId></ErrorResponse>",
+      "responseIsBinary": false
+    }
+  ]
+}
