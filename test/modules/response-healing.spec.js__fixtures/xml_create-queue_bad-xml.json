@@ -17,6 +17,9 @@
         "tagB": "92769396-e725-452e-b56c-969b765bb731",
         "lastModified": "2022-06-27T21:08:54.033Z"
       }
+    },
+    {
+      "expectedErrorCodes": ["SyntaxError"]
     }
   ],
   "cassette": [
