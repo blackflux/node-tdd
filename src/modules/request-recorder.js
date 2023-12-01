@@ -11,7 +11,7 @@ import nockCommon from 'nock/lib/common.js';
 import compareUrls from '../util/compare-urls.js';
 import nockListener from './request-recorder/nock-listener.js';
 import nockMock from './request-recorder/nock-mock.js';
-import healSqsSendMessageBatch from './request-recorder/heal-sqs-send-message-batch.js';
+import healSqs from './request-recorder/heal-sqs.js';
 import applyModifiers from './request-recorder/apply-modifiers.js';
 import requestInjector from './request-recorder/request-injector.js';
 
@@ -223,7 +223,7 @@ export default (opts) => {
 
               if (anyFlagPresent(['magic', 'response'])) {
                 const responseBody = tryParseJson([
-                  healSqsSendMessageBatch
+                  healSqs
                 ].reduce(
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
