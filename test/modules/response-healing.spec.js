@@ -11,7 +11,8 @@ import {
   ListQueueTagsCommand,
   CreateQueueCommand,
   ListQueuesCommand,
-  TagQueueCommand
+  TagQueueCommand,
+  SetQueueAttributesCommand
 } from '@aws-sdk/client-sqs';
 import objectScan from 'object-scan';
 import { describe } from '../../src/index.js';
@@ -29,7 +30,8 @@ const aws = awsSdkWrap({
       ListQueueTagsCommand,
       CreateQueueCommand,
       ListQueuesCommand,
-      TagQueueCommand
+      TagQueueCommand,
+      SetQueueAttributesCommand
     }
   }
 });
