@@ -1,0 +1,19 @@
+
+{
+  "fn": "call",
+  "params": [
+    "sqs:ListQueueTagsCommand",
+    {"QueueUrl": "$queueUrl"}
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueUrl=https%3A%2F%2Fsqs.us-west-2.amazonaws.com%2F012345678910%2Fsome-queue-url&Action=ListQueueTags&Version=2012-11-05",
+      "status": 200,
+      "response": "<?xml version=\"1.0\"?><ListQueueTagsResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><ListQueueTagsResult><Tag><Key>tagA</Key><Value>4cbc382c-94d0-48fb-b625-f098683afd3d</Value></Tag><Tag><Key>tagB</Key><Value>ccfc9f9b-5379-4ae7-ba5c-5891a8259f83</Value></Tag><Tag><Key>lastModified</Key><Value>2022-02-10T21:54:53.039Z</Value></Tag></ListQueueTagsResult><ResponseMetadata><RequestId>b3fee173-056e-5034-bd15-bbf9244fa0de</RequestId></ResponseMetadata></ListQueueTagsResponse>",
+      "responseIsBinary": false
+    }
+  ]
+}

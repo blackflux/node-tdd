@@ -7,7 +7,8 @@ import {
   SQSClient,
   SendMessageBatchCommand,
   GetQueueUrlCommand,
-  GetQueueAttributesCommand
+  GetQueueAttributesCommand,
+  ListQueueTagsCommand
 } from '@aws-sdk/client-sqs';
 import objectScan from 'object-scan';
 import { describe } from '../../src/index.js';
@@ -21,7 +22,8 @@ const aws = awsSdkWrap({
     'SQS:CMD': {
       SendMessageBatchCommand,
       GetQueueUrlCommand,
-      GetQueueAttributesCommand
+      GetQueueAttributesCommand,
+      ListQueueTagsCommand
     }
   }
 });
