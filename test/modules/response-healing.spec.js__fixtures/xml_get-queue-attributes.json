@@ -1,0 +1,25 @@
+{
+  "fn": "call",
+  "params": [
+    "sqs:GetQueueAttributesCommand",
+    {
+      "QueueUrl": "some-queue-url",
+      "AttributeNames": [
+        "ApproximateNumberOfMessages",
+        "ApproximateNumberOfMessagesDelayed",
+        "ApproximateNumberOfMessagesNotVisible"
+      ]
+    }
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueUrl=https%3A%2F%2Fsqs.us-west-2.amazonaws.com%2F012345678910%2Fsome-queue-url&AttributeName.1=ApproximateNumberOfMessages&AttributeName.2=ApproximateNumberOfMessagesDelayed&AttributeName.3=ApproximateNumberOfMessagesNotVisible&AttributeName.4=QueueArn&Action=GetQueueAttributes&Version=2012-11-05",
+      "status": 200,
+      "response": "<?xml version=\"1.0\"?><GetQueueAttributesResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><GetQueueAttributesResult><Attribute><Name>ApproximateNumberOfMessages</Name><Value>1</Value></Attribute><Attribute><Name>ApproximateNumberOfMessagesDelayed</Name><Value>0</Value></Attribute><Attribute><Name>ApproximateNumberOfMessagesNotVisible</Name><Value>0</Value></Attribute><Attribute><Name>QueueArn</Name><Value>arn:aws:sqs:us-west-2:012345678910:some-queue-arn</Value></Attribute></GetQueueAttributesResult><ResponseMetadata><RequestId>b8ca4c86-2fd1-5481-9e72-160c0ef00529</RequestId></ResponseMetadata></GetQueueAttributesResponse>",
+      "responseIsBinary": false
+    }
+  ]
+}
