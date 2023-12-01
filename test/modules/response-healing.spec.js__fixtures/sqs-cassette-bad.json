@@ -1,26 +1,33 @@
-[
-  {
-    "scope": "https://sqs.us-west-2.amazonaws.com:443",
-    "method": "POST",
-    "path": "/",
-    "body": {
-      "Entries": [
-        {
-          "Id": "4f494d6b422d1e5fbbe6b6d82584ce7f70c1530f",
-          "MessageBody": "{\"k\":1}"
-        }
-      ],
-      "QueueUrl": "https://sqs.us-west-2.amazonaws.com/123456789101/service-name-data-local-SomeQueue"
-    },
-    "status": 200,
-    "response": {
-      "Successful": [
-        {
-          "Id": "feabf4c420f7eec1fbd3ad1b74e972af9f879cad",
-          "MessageId": "e40625e7-e66f-4c6c-8d9b-7bb8944b0108",
-          "MD5OfMessageBody": "some-bad-hash45be96b2d5b9d22cdc4"
-        }
-      ]
+{
+  "fn": "sqs.sendMessageBatch",
+  "param": {
+    "messages": [{ "k": 1 }, { "k": 2 }],
+    "queueUrl": "$queueUrl"
+  },
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "Entries": [
+          {
+            "Id": "4f494d6b422d1e5fbbe6b6d82584ce7f70c1530f",
+            "MessageBody": "{\"k\":1}"
+          }
+        ],
+        "QueueUrl": "https://sqs.us-west-2.amazonaws.com/123456789101/service-name-data-local-SomeQueue"
+      },
+      "status": 200,
+      "response": {
+        "Successful": [
+          {
+            "Id": "feabf4c420f7eec1fbd3ad1b74e972af9f879cad",
+            "MessageId": "e40625e7-e66f-4c6c-8d9b-7bb8944b0108",
+            "MD5OfMessageBody": "some-bad-hash45be96b2d5b9d22cdc4"
+          }
+        ]
+      }
     }
-  }
-]
+  ]
+}

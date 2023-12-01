@@ -4,6 +4,7 @@ import { logger } from 'lambda-monitor-logger';
 import { expect } from 'chai';
 import awsSdkWrap from 'aws-sdk-wrap';
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
+import objectScan from 'object-scan';
 import { describe } from '../../src/index.js';
 import { NockRecord } from '../server.js';
 import reqHeaderOverwrite from '../req-header-overwrite.js';
@@ -40,11 +41,18 @@ describe('Testing Response Healing', {
   // eslint-disable-next-line mocha/no-setup-in-describe
   files.forEach((f) => {
     it(`Testing ${f}`, async ({ fixture }) => {
-      fs.smartWrite(path.join(tmpDir, cassetteFile), fixture(f));
-      const r = await nockRecord(() => aws.sqs.sendMessageBatch({
-        messages: [{ k: 1 }, { k: 2 }],
-        queueUrl: process.env.QUEUE_URL
-      }), { heal: 'magic', reqHeaderOverwrite });
+      const { fn, param, cassette } = fixture(f);
+      fs.smartWrite(path.join(tmpDir, cassetteFile), cassette);
+      const func = fn.split('.').reduce((p, v) => p[v], aws);
+      objectScan(['**'], {
+        filterFn: ({ value, parent, property }) => {
+          if (value === '$queueUrl') {
+            // eslint-disable-next-line no-param-reassign
+            parent[property] = process.env.QUEUE_URL;
+          }
+        }
+      })(param);
+      const r = await nockRecord(() => func(param), { heal: 'magic', reqHeaderOverwrite });
       const outFile = path.join(fixtureFolder, `${f}__expected.json`);
       const overwritten = fs.smartWrite(outFile, r.expectedCassette);
       expect(overwritten).to.deep.equal(false);
