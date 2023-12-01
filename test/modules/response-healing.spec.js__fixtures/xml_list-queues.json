@@ -1,0 +1,19 @@
+{
+  "fn": "call",
+  "params": [
+    "sqs:ListQueuesCommand",
+    {
+      "QueueNamePrefix": "queue-na"
+    }
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueNamePrefix=queue-na&MaxResults=1000&Action=ListQueues&Version=2012-11-05",
+      "status": 200,
+      "response": "<?xml version=\"1.0\"?><ListQueuesResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><ListQueuesResult><QueueUrl>https://sqs.us-west-2.amazonaws.com/799715345196/queue-name</QueueUrl><NextToken>AAcAAgGAARSS5TwyARjKvEtzRiU9-7SLAAAAAQAET2RpbgAVMgAAAIAAAAAMADV49xkN9M81B1-uACCMSfA4lSikCuU6IfjOm61yC2XRJCgrqG454BMG9s91VQIAAAAADAAAEAAAAAAAAAAAAAAAAACuISguSDtCCtrLIMNdib1c_____wAAAAEAAAAAAAAAAAAAAAEAAACsum_OBChhP2KkJbd8aE8zIxNaJVkyY47PG8XJTtmTYDskzekNdLuLn54pq7hJY3V4xlpzIfVUzrn94lkVzN9M-IvkkJylyF44cVGgMUBQagjjI3v2oKy6aOenskJgvly264lHDjfuIh2XEdgdVW-lvcPZHauFtjY-JtXxIta9iLYDFOonRUWC45jnv6y4ayK8Eu7gtlWa-Jn_ORgsYo9y0tecQVhhlXEswB3M864NnyG6U-6spJQKjogOyB4=</NextToken></ListQueuesResult><ResponseMetadata><RequestId>93225a9a-fc00-5341-bce5-00e8c6330d6b</RequestId></ResponseMetadata></ListQueuesResponse>",
+      "responseIsBinary": false
+    }  ]
+}
