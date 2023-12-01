@@ -1,0 +1,31 @@
+{
+  "fn": "call",
+  "params": [
+    "sqs:GetQueueUrlCommand",
+    {"QueueName": "some-queue-name"}
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueName=some-queue-url&Action=GetQueueUrl&Version=2012-11-05",
+      "status": 200,
+      "response": "<?xml version=\"1.0\"?><GetQueueUrlResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><GetQueueUrlResult><QueueUrl>https://sqs.us-west-2.amazonaws.com/012345678910/some-queue-url</QueueUrl></GetQueueUrlResult><ResponseMetadata><RequestId>ef534ad7-e2af-594f-b8da-10a86f37deb1</RequestId></ResponseMetadata></GetQueueUrlResponse>",
+      "reqheaders": {
+        "amz-sdk-invocation-id": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        "amz-sdk-request": "attempt=1; max=3",
+        "authorization": "^AWS4-HMAC-SHA256 Credential=.+$",
+        "content-length": "^[1-9][0-9]*$",
+        "content-type": "application/x-amz-json-1.0",
+        "host": "sqs.us-west-2.amazonaws.com",
+        "user-agent": "^aws-sdk-js/.+$",
+        "x-amz-content-sha256": "^[a-f0-9]{64}$",
+        "x-amz-date": "^[0-9]{8}T[0-9]{6}Z$",
+        "x-amz-target": "AmazonSQS.GetQueueUrl",
+        "x-amz-user-agent": "^aws-sdk-js/[0-9]+.[0-9]+.[0-9]+$"
+      },
+      "responseIsBinary": false
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 {
   "fn": "sqs.sendMessageBatch",
-  "param": {
+  "params": [{
     "messages": [{ "k": 1 }, { "k": 2 }],
     "queueUrl": "$queueUrl"
-  },
+  }],
   "cassette": [
     {
       "scope": "https://sqs.us-west-2.amazonaws.com:443",
