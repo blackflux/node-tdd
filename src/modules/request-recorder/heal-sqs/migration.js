@@ -8,13 +8,17 @@ const tryParseXML = (body) => {
     xml2js.parseString(body, (err, result) => {
       parsed = JSON.parse(JSON.stringify(result));
     });
-  } catch (e) { /* ignored */
+  } catch (e) {
+    return null;
   }
   return parsed;
 };
 
 export default ({ responseBody, header }) => {
   const responseXml = tryParseXML(responseBody);
+  if (responseXml === null) {
+    return {};
+  }
   if (header === 'AmazonSQS.ListQueueTags') {
     const scanner = objectScan(['ListQueueTagsResponse.ListQueueTagsResult[0].Tag[*]'], {
       rtn: ({ value }) => [value.Key, value.Value[0]],
