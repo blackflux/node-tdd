@@ -21,29 +21,28 @@
       "Successful": [
         {
           "Id": "4f494d6b422d1e5fbbe6b6d82584ce7f70c1530f",
-          "MessageId": "c0004b0c-ea00-498a-a5a2-362703c0b621",
+          "MessageId": "e40625e7-e66f-4c6c-8d9b-7bb8944b0108",
           "MD5OfMessageBody": "e59138f35192e320088b83d28388d6bb"
         },
         {
           "Id": "743966ceb52ce2e8c7a2424f4d652e3b7936f1ee",
-          "MessageId": "c0004b0c-ea00-498a-a5a2-362703c0b621",
+          "MessageId": "a38aa57b-eaf7-401c-b78c-cf900009a8ac",
           "MD5OfMessageBody": "0dc3f48bc3e78aed8f69f72be8a11087"
         }
-      ],
-      "Failed": []
+      ]
     },
     "reqheaders": {
-      "amz-sdk-invocation-id": "cae6ff7b-efc4-4695-b1ad-cf7b80d80573",
+      "amz-sdk-invocation-id": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
       "amz-sdk-request": "attempt=1; max=3",
-      "authorization": "AWS4-HMAC-SHA256 Credential=XXXXXXXXXXXXXXXXXXXX/19700101/us-west-2/sqs/aws4_request, SignedHeaders=amz-sdk-invocation-id;amz-sdk-request;content-length;content-type;host;x-amz-content-sha256;x-amz-date;x-amz-target;x-amz-user-agent, Signature=04d81ab3a1f18a8d0d9e1bf44af30633d6f0cda97c5db36fed60e229d63ccaf6",
-      "content-length": "261",
+      "authorization": "^AWS4-HMAC-SHA256 Credential=.+$",
+      "content-length": "^[1-9][0-9]*$",
       "content-type": "application/x-amz-json-1.0",
       "host": "sqs.us-west-2.amazonaws.com",
-      "user-agent": "aws-sdk-js/3.458.0 ua/2.0 os/linux#5.4.0-166-generic lang/js md/nodejs#18.18.2 api/sqs#3.458.0",
-      "x-amz-content-sha256": "42d9205526e005eece0404131937f30da55578dcb4a17bdd14751d2706474acf",
-      "x-amz-date": "19700101T000000Z",
+      "user-agent": "^aws-sdk-js/.+$",
+      "x-amz-content-sha256": "^[a-f0-9]{64}$",
+      "x-amz-date": "^[0-9]{8}T[0-9]{6}Z$",
       "x-amz-target": "AmazonSQS.SendMessageBatch",
-      "x-amz-user-agent": "aws-sdk-js/3.458.0"
+      "x-amz-user-agent": "^aws-sdk-js/[0-9]+.[0-9]+.[0-9]+$"
     }
   }
 ]

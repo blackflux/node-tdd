@@ -6,6 +6,7 @@ import awsSdkWrap from 'aws-sdk-wrap';
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { describe } from '../../src/index.js';
 import { NockRecord } from '../server.js';
+import reqHeaderOverwrite from '../req-header-overwrite.js';
 
 const aws = awsSdkWrap({
   logger,
@@ -16,6 +17,11 @@ const aws = awsSdkWrap({
     }
   }
 });
+
+const fixtureFolder = `${fs.filename(import.meta.url)}__fixtures`;
+const files = fs
+  .walkDir(fixtureFolder)
+  .filter((f) => !f.endsWith('.json__expected.json'));
 
 describe('Testing Response Healing', {
   useTmpDir: true,
@@ -31,27 +37,17 @@ describe('Testing Response Healing', {
     nockRecord = NockRecord(tmpDir, cassetteFile);
   });
 
-  it('Testing heal bad SQS response', async ({ fixture }) => {
-    fs.smartWrite(path.join(tmpDir, cassetteFile), fixture('sqs-cassette-bad'));
-    const r = await nockRecord(() => aws.sqs.sendMessageBatch({
-      messages: [{ k: 1 }, { k: 2 }],
-      queueUrl: process.env.QUEUE_URL
-    }), { heal: 'magic' });
-    const expected = fixture('sqs-cassette-bad-expected');
-    expected[0].reqheaders['user-agent'] = r.expectedCassette[0].reqheaders['user-agent'];
-    expect(r.expectedCassette[0].reqheaders['user-agent'].startsWith('aws-sdk-js/3.')).to.equal(true);
-    expect(r.expectedCassette).to.deep.equal(expected);
-  });
-
-  it('Testing heal xml SQS response', async ({ fixture }) => {
-    fs.smartWrite(path.join(tmpDir, cassetteFile), fixture('sqs-cassette-xml'));
-    const r = await nockRecord(() => aws.sqs.sendMessageBatch({
-      messages: [{ k: 1 }, { k: 2 }],
-      queueUrl: process.env.QUEUE_URL
-    }), { heal: 'magic' });
-    const expected = fixture('sqs-cassette-xml-expected');
-    expected[0].reqheaders['user-agent'] = r.expectedCassette[0].reqheaders['user-agent'];
-    expect(r.expectedCassette[0].reqheaders['user-agent'].startsWith('aws-sdk-js/3.')).to.equal(true);
-    expect(r.expectedCassette).to.deep.equal(expected);
+  // eslint-disable-next-line mocha/no-setup-in-describe
+  files.forEach((f) => {
+    it(`Testing ${f}`, async ({ fixture }) => {
+      fs.smartWrite(path.join(tmpDir, cassetteFile), fixture(f));
+      const r = await nockRecord(() => aws.sqs.sendMessageBatch({
+        messages: [{ k: 1 }, { k: 2 }],
+        queueUrl: process.env.QUEUE_URL
+      }), { heal: 'magic', reqHeaderOverwrite });
+      const outFile = path.join(fixtureFolder, `${f}__expected.json`);
+      const overwritten = fs.smartWrite(outFile, r.expectedCassette);
+      expect(overwritten).to.deep.equal(false);
+    });
   });
 });
