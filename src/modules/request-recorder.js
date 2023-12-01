@@ -6,6 +6,7 @@ import Joi from 'joi-strict';
 import nock from 'nock';
 import get from 'lodash.get';
 import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
 import nockCommon from 'nock/lib/common.js';
 import compareUrls from '../util/compare-urls.js';
 import nockListener from './request-recorder/nock-listener.js';
@@ -227,9 +228,11 @@ export default (opts) => {
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
                 ));
-                // eslint-disable-next-line no-param-reassign
-                interceptor.body = responseBody;
-                pendingMocks[idx].record.response = responseBody;
+                if (!isEqual(interceptor.body, responseBody)) {
+                  // eslint-disable-next-line no-param-reassign
+                  interceptor.body = responseBody;
+                  pendingMocks[idx].record.response = responseBody;
+                }
               }
 
               expectedCassette.push(pendingMocks[idx].record);
