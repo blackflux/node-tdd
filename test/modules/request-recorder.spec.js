@@ -3,25 +3,9 @@ import https from 'https';
 import fs from 'smart-fs';
 import get from 'lodash.get';
 import axios from 'axios';
-import { logger } from 'lambda-monitor-logger';
 import { expect } from 'chai';
-import awsSdkWrap from 'aws-sdk-wrap';
-import {
-  SQSClient,
-  SendMessageBatchCommand
-} from '@aws-sdk/client-sqs';
 import { describe } from '../../src/index.js';
 import { NockRecord, spawnServer } from '../server.js';
-
-const aws = awsSdkWrap({
-  logger,
-  services: {
-    SQS: SQSClient,
-    'SQS:CMD': {
-      SendMessageBatchCommand
-    }
-  }
-});
 
 describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   const cassetteFile = 'file1.json';
@@ -381,20 +365,6 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
 
     it('Testing prune', async () => {
       await runner('prune,record', { qs: [1], raises: true });
-    });
-
-    describe('Testing magic healing', { cryptoSeed: 'd28095c6-19f4-4dc2-a7cc-f7640c032967' }, () => {
-      it('Testing heal SQS response', async ({ fixture }) => {
-        fs.smartWrite(path.join(tmpDir, cassetteFile), fixture('sqs-cassette-bad'));
-        const r = await nockRecord(() => aws.sqs.sendMessageBatch({
-          messages: [{ k: 1 }, { k: 2 }],
-          queueUrl: process.env.QUEUE_URL
-        }), { heal: 'magic' });
-        const expected = fixture('sqs-cassette-expected');
-        expected[0].reqheaders['user-agent'] = r.expectedCassette[0].reqheaders['user-agent'];
-        expect(r.expectedCassette[0].reqheaders['user-agent'].startsWith('aws-sdk-js/3.')).to.equal(true);
-        expect(r.expectedCassette).to.deep.equal(expected);
-      });
     });
 
     it('Testing record (with headers)', async () => {

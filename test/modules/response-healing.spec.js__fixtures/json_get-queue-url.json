@@ -1,0 +1,22 @@
+{
+  "fn": "call",
+  "params": [
+    "sqs:GetQueueUrlCommand",
+    {"QueueName": "some-queue-name"}
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "QueueName": "some-queue-name"
+      },
+      "status": 200,
+      "response": {
+        "QueueUrl": "https://sqs.us-west-2.amazonaws.com/012345678910/some-queue-url"
+      },
+      "responseIsBinary": false
+    }
+  ]
+}

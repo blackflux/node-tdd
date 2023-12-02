@@ -1,0 +1,22 @@
+{
+  "fn": "call",
+  "params": [
+    "sqs:SetQueueAttributesCommand",
+    {
+      "QueueUrl": "$queueUrl",
+      "Attributes": {
+        "RedrivePolicy": "{\"deadLetterTargetArn\":\"arn:aws:sqs:us-west-2:12345678910:some-queue-arn\",\"maxReceiveCount\":10}"
+      }
+    }
+  ],
+  "cassette": [
+    {
+      "scope": "https://sqs.us-west-2.amazonaws.com:443",
+      "method": "POST",
+      "path": "/",
+      "body": "QueueUrl=https%3A%2F%2Fsqs.us-west-2.amazonaws.com%2F12345678910%2Fsome-queue-url&Attribute.1.Name=RedrivePolicy&Attribute.1.Value=%7B%22deadLetterTargetArn%22%3A%22arn%3Aaws%3Asqs%3Aus-west-2%3A799715345196%3Asome-queue-arn%22%2C%22maxReceiveCount%22%3A10%7D&Action=SetQueueAttributes&Version=2012-11-05",
+      "status": 200,
+      "response": "<?xml version=\"1.0\"?><SetQueueAttributesResponse xmlns=\"http://queue.amazonaws.com/doc/2012-11-05/\"><ResponseMetadata><RequestId>f6b2708b-5902-5f1c-b06d-2bbc8a19eb95</RequestId></ResponseMetadata></SetQueueAttributesResponse>",
+      "responseIsBinary": false
+    }  ]
+}
