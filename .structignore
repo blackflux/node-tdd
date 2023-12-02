@@ -1,2 +1,3 @@
 test/util/cache-clearer-disabled.spec.js
 test/modules/response-healing.spec.js
+test/req-header-overwrite.spec.js
