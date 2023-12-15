@@ -179,7 +179,10 @@ export default (opts) => {
               if (anyFlagPresent(['magic', 'body'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 const requestBody = tryParseJson(body);
-                pendingMocks[idx].record.body = nullAsString(requestBody);
+                const requestBodyStr = nullAsString(requestBody);
+                if (!isEqual(scope.body, requestBodyStr)) {
+                  pendingMocks[idx].record.body = requestBodyStr;
+                }
                 return scope.body;
               }
               return body;
