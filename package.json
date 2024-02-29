@@ -9,7 +9,7 @@
     "clean": "rm -rf lib",
     "build": "cp -rf ./src ./lib",
     "build-clean": "yarn run clean && yarn run build",
-    "test-simple": "c8 mocha --experimental-loader=./test/hot.js \"./test/**/*.spec.js\"",
+    "test-simple": "c8 mocha --import=./test/reg.js \"./test/**/*.spec.js\"",
     "docker": "docker run --net host -u`id -u`:`id -g` -v $(pwd):/user/project -v ~/.aws:/user/.aws -v ~/.npmrc:/user/.npmrc -w /user/project -it --entrypoint /bin/bash",
     "t": "yarn test",
     "ts": "yarn run test-simple",
@@ -41,22 +41,22 @@
   },
   "homepage": "https://github.com/blackflux/node-tdd#readme",
   "devDependencies": {
-    "@aws-sdk/client-sqs": "3.458.0",
-    "@babel/core": "7.23.3",
-    "@babel/eslint-parser": "7.23.3",
-    "@babel/register": "7.22.15",
+    "@aws-sdk/client-sqs": "3.523.0",
+    "@babel/core": "7.24.0",
+    "@babel/eslint-parser": "7.23.10",
+    "@babel/register": "7.23.7",
     "@blackflux/eslint-plugin-rules": "3.0.1",
-    "@blackflux/robo-config-plugin": "9.2.4",
-    "aws-sdk-wrap": "13.1.2",
-    "axios": "1.6.2",
-    "c8": "8.0.1",
-    "chai": "4.3.10",
-    "eslint": "8.54.0",
+    "@blackflux/robo-config-plugin": "9.3.2",
+    "aws-sdk-wrap": "13.2.1",
+    "axios": "1.6.7",
+    "c8": "9.1.0",
+    "chai": "5.1.0",
+    "eslint": "8.57.0",
     "eslint-config-airbnb-base": "15.0.0",
-    "eslint-plugin-import": "2.29.0",
+    "eslint-plugin-import": "2.29.1",
     "eslint-plugin-json": "3.1.0",
     "eslint-plugin-markdown": "3.0.1",
-    "eslint-plugin-mocha": "10.2.0",
+    "eslint-plugin-mocha": "10.3.0",
     "fancy-log": "2.0.0",
     "js-gardener": "5.0.4",
     "lambda-monitor-logger": "5.0.1"
@@ -68,7 +68,7 @@
     }
   ],
   "engines": {
-    "node": ">= 16"
+    "node": ">= 18"
   },
   "files": [
     "lib"
@@ -81,12 +81,12 @@
     "lodash.isequal": "4.5.0",
     "lru-cache-ext": "4.0.0",
     "minimist": "1.2.8",
-    "nock": "13.4.0",
+    "nock": "13.5.4",
     "normalize-url": "2.0.1",
     "object-scan": "19.0.5",
     "smart-fs": "4.0.1",
     "timekeeper": "2.3.1",
-    "tmp": "0.2.1",
+    "tmp": "0.2.3",
     "xml2js": "0.6.2"
   }
 }
