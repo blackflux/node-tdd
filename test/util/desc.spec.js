@@ -265,6 +265,7 @@ describe('Testing { describe }', () => {
 
   describe('Testing Clear Cache', () => {
     let cache;
+
     before(() => {
       cache = new LRU({ ttl: 100, max: 100 });
     });

@@ -8,6 +8,7 @@ import RandomSeeder from '../../src/modules/random-seeder.js';
 describe('Testing RandomSeeder', () => {
   describe('Testing RandomSeeder Not Reseeded', () => {
     let seeder;
+
     beforeEach(() => {
       seeder = RandomSeeder({ seed: 'test', reseed: false });
       seeder.inject();
@@ -107,6 +108,7 @@ describe('Testing RandomSeeder', () => {
 
   describe('Testing RandomSeeder Reseeded', () => {
     let seeder;
+
     beforeEach(() => {
       seeder = RandomSeeder({ seed: 'test', reseed: true });
       assert(seeder.isInjected() === false);

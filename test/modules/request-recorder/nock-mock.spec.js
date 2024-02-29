@@ -7,6 +7,7 @@ describe('Testing nock-mock.js', () => {
   beforeEach(() => {
     nockMock.patch();
   });
+
   afterEach(() => {
     nockMock.unpatch();
   });

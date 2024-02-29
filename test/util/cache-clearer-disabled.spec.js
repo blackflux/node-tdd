@@ -4,6 +4,7 @@ import describe from '../../src/util/desc.js';
 
 describe('Testing Clear Cache Disabled', { clearCache: false }, () => {
   let cache;
+
   before(() => {
     cache = new LRU({ ttl: 100, max: 100 });
   });
