@@ -46,7 +46,7 @@
     "@babel/eslint-parser": "7.23.10",
     "@babel/register": "7.23.7",
     "@blackflux/eslint-plugin-rules": "3.0.1",
-    "@blackflux/robo-config-plugin": "9.3.1",
+    "@blackflux/robo-config-plugin": "9.3.2",
     "aws-sdk-wrap": "13.2.1",
     "axios": "1.6.7",
     "c8": "9.1.0",
@@ -68,7 +68,7 @@
     }
   ],
   "engines": {
-    "node": ">= 16"
+    "node": ">= 18"
   },
   "files": [
     "lib"
