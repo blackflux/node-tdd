@@ -186,7 +186,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       expect(recorder.get()).to.deep.equal([]);
     });
 
-    it('Testing unknown modifiers (top level)', async ({ recorder }) => {
+    it('Testing unknown modifiers (top level)', async ({ capture }) => {
       prepareCassette({
         'response|jsonStringify|toBase64': {},
         'body|jsonStringify|toBase64': {
@@ -195,18 +195,19 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           }
         }
       });
-      await validate({
+      const err = await capture(() => validate({
         json: true,
-        body: undefined,
-        response: ''
-      });
-      expect(recorder.get()).to.deep.equal([
-        'Unknown Modifier(s) detected: jsonStringify, toBase64',
-        'Unknown Modifier(s) detected: jsonStringify, toBase64'
-      ]);
+        body: {
+          payload: {
+            key: 'value'
+          }
+        },
+        response: {}
+      }));
+      expect(err.message).to.deep.equal('Unknown Modifier(s) detected: jsonStringify, toBase64');
     });
 
-    it('Testing unknown modifiers (nested)', async ({ recorder }) => {
+    it('Testing unknown modifiers (nested)', async ({ capture }) => {
       prepareCassette({
         response: {},
         body: {
@@ -215,18 +216,17 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           }
         }
       });
-      await validate({
+
+      const err = await capture(() => validate({
         json: true,
         body: {
-          'payload|jsonStringify|toBase64': {
+          payload: {
             key: 'value'
           }
         },
         response: {}
-      });
-      expect(recorder.get()).to.deep.equal([
-        'Unknown Modifier(s) detected: jsonStringify, toBase64'
-      ]);
+      }));
+      expect(err.message).to.deep.equal('Unknown Modifier(s) detected: jsonStringify, toBase64');
     });
   });
 
