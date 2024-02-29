@@ -178,10 +178,9 @@ export default (opts) => {
             scope.filteringRequestBody = (body) => {
               if (anyFlagPresent(['magic', 'body'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
-                const requestBody = tryParseJson(body);
-                const requestBodyStr = nullAsString(requestBody);
-                if (!isEqual(scope.body, requestBodyStr)) {
-                  pendingMocks[idx].record.body = requestBodyStr;
+                const requestBody = nullAsString(tryParseJson(body));
+                if (!isEqual(scope.body, requestBody)) {
+                  pendingMocks[idx].record.body = requestBody;
                 }
                 return scope.body;
               }
@@ -213,6 +212,18 @@ export default (opts) => {
               }
               if (Number.isInteger(pendingMocks[idx]?.record?.delayBody)) {
                 interceptor.delayBody(pendingMocks[idx].record.delayBody);
+              }
+
+              const hasSentBody = requestBodyString !== undefined;
+              // eslint-disable-next-line no-underscore-dangle
+              const hasRecordBody = interceptor._requestBody !== undefined;
+              if (hasSentBody !== hasRecordBody) {
+                if (anyFlagPresent(['magic', 'body'])) {
+                  pendingMocks[idx].record.body = nullAsString(tryParseJson(requestBodyString));
+                } else {
+                  // eslint-disable-next-line no-param-reassign
+                  interceptor.errorMessage = 'Recording body mismatch';
+                }
               }
 
               if (anyFlagPresent(['magic', 'headers'])) {

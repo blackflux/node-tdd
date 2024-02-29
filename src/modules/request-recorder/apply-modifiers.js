@@ -9,9 +9,7 @@ export default (input, modifiers) => {
         const unknownModifiers = modifierNames
           .filter((n) => typeof modifiers[n] !== 'function');
         if (unknownModifiers.length !== 0) {
-          // eslint-disable-next-line no-console
-          console.warn(`Unknown Modifier(s) detected: ${unknownModifiers.join(', ')}`);
-          return;
+          throw new Error(`Unknown Modifier(s) detected: ${unknownModifiers.join(', ')}`);
         }
         // eslint-disable-next-line no-param-reassign
         delete parent[k];

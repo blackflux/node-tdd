@@ -186,7 +186,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       expect(recorder.get()).to.deep.equal([]);
     });
 
-    it('Testing unknown modifiers (top level)', async ({ recorder }) => {
+    it('Testing unknown modifiers (top level)', async ({ capture }) => {
       prepareCassette({
         'response|jsonStringify|toBase64': {},
         'body|jsonStringify|toBase64': {
@@ -195,18 +195,19 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           }
         }
       });
-      await validate({
+      const err = await capture(() => validate({
         json: true,
-        body: undefined,
-        response: ''
-      });
-      expect(recorder.get()).to.deep.equal([
-        'Unknown Modifier(s) detected: jsonStringify, toBase64',
-        'Unknown Modifier(s) detected: jsonStringify, toBase64'
-      ]);
+        body: {
+          payload: {
+            key: 'value'
+          }
+        },
+        response: {}
+      }));
+      expect(err.message).to.deep.equal('Unknown Modifier(s) detected: jsonStringify, toBase64');
     });
 
-    it('Testing unknown modifiers (nested)', async ({ recorder }) => {
+    it('Testing unknown modifiers (nested)', async ({ capture }) => {
       prepareCassette({
         response: {},
         body: {
@@ -215,18 +216,17 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           }
         }
       });
-      await validate({
+
+      const err = await capture(() => validate({
         json: true,
         body: {
-          'payload|jsonStringify|toBase64': {
+          payload: {
             key: 'value'
           }
         },
         response: {}
-      });
-      expect(recorder.get()).to.deep.equal([
-        'Unknown Modifier(s) detected: jsonStringify, toBase64'
-      ]);
+      }));
+      expect(err.message).to.deep.equal('Unknown Modifier(s) detected: jsonStringify, toBase64');
     });
   });
 
@@ -315,6 +315,41 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
 
     it('Testing body healing with null body', async () => {
       await runner('body', { body: null });
+    });
+
+    it('Testing body healing with missing body', async () => {
+      await runner('body', {
+        body: {},
+        cassetteContent: [
+          {
+            scope: server.uri,
+            method: 'GET',
+            path: '/?q=1',
+            status: 200,
+            reqheaders: {},
+            response: { data: '1' },
+            responseIsBinary: false
+          }
+        ]
+      });
+    });
+
+    it('Testing missing body error', async ({ capture }) => {
+      const err = await capture(() => runner(false, {
+        body: {},
+        cassetteContent: [
+          {
+            scope: server.uri,
+            method: 'GET',
+            path: '/?q=1',
+            status: 200,
+            reqheaders: {},
+            response: { data: '1' },
+            responseIsBinary: false
+          }
+        ]
+      }));
+      expect(err.message).to.deep.equal('Recording body mismatch');
     });
 
     it('Testing body healing with mismatched request method', async () => {
