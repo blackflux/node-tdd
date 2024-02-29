@@ -317,6 +317,41 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       await runner('body', { body: null });
     });
 
+    it('Testing body healing with missing body', async () => {
+      await runner('body', {
+        body: {},
+        cassetteContent: [
+          {
+            scope: server.uri,
+            method: 'GET',
+            path: '/?q=1',
+            status: 200,
+            reqheaders: {},
+            response: { data: '1' },
+            responseIsBinary: false
+          }
+        ]
+      });
+    });
+
+    it('Testing missing body error', async ({ capture }) => {
+      const err = await capture(() => runner(false, {
+        body: {},
+        cassetteContent: [
+          {
+            scope: server.uri,
+            method: 'GET',
+            path: '/?q=1',
+            status: 200,
+            reqheaders: {},
+            response: { data: '1' },
+            responseIsBinary: false
+          }
+        ]
+      }));
+      expect(err.message).to.deep.equal('Recording body mismatch');
+    });
+
     it('Testing body healing with mismatched request method', async () => {
       await runner('body', { raises: true, heals: false, method: 'POST' });
     });
