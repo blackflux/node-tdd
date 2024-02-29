@@ -56,7 +56,9 @@ export default (() => {
     getLast: () => ({
       protocol: lastProtocol,
       options: lastOptions,
-      body: lastBody.length === 0 ? undefined : lastBody.join('')
+      body: lastBody.length !== 0 || ['POST', 'PUT', 'PATCH'].includes(lastOptions.method)
+        ? lastBody.join('')
+        : undefined
     })
   };
 })();
