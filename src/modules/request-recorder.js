@@ -22,6 +22,7 @@ import {
   convertHeaders,
   rewriteHeaders
 } from './request-recorder/util.js';
+import healBody from './request-recorder/heal-body.js';
 
 const nockBack = nock.back;
 const nockRecorder = nock.recorder;
@@ -180,7 +181,7 @@ export default (opts) => {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 const requestBody = nullAsString(tryParseJson(body));
                 if (!isEqual(scope.body, requestBody)) {
-                  pendingMocks[idx].record.body = requestBody;
+                  pendingMocks[idx].record.body = healBody(pendingMocks[idx].record.body, scope.body, requestBody);
                 }
                 return scope.body;
               }
