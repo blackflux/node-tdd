@@ -20,12 +20,7 @@ const healer = objectScan(['**.*|*'], {
     const parentActual = context.actual[depth - 1];
     const childExpected = parentExpected?.[k];
     const childActual = parentActual?.[k];
-    if (
-      parentActual !== undefined
-      && !(childExpected instanceof Object)
-      && !(childActual instanceof Object)
-      && childExpected === childActual
-    ) {
+    if (childExpected === childActual) {
       delete parentActual[k];
       parentActual[property] = value;
     }
