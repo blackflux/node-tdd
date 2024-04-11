@@ -37,7 +37,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     },
     stripHeaders = undefined,
     strict = undefined,
-    heal = undefined
+    heal = undefined,
+    method = 'GET'
   } = {}) => nockRecord(
     async () => {
       for (let idx = 0; idx < qs.length; idx += 1) {
@@ -45,12 +46,20 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         const { data } = await axios({
           url: `${server.uri}?q=${qs[idx]}`,
           data: body,
-          responseType: 'json'
+          responseType: 'json',
+          method
         });
         expect(data).to.deep.equal({ data: String(qs[idx]) });
       }
     },
-    { stripHeaders, strict, heal }
+    {
+      stripHeaders,
+      strict,
+      heal,
+      modifiers: {
+        'JSON.stringify': JSON.stringify
+      }
+    }
   );
 
   it('Testing headers captured', async () => {
@@ -267,7 +276,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           cassetteContent === null
             ? [{
               scope: server.uri,
-              method,
+              method: 'GET',
               path: '/?q=1',
               body: method === 'GET' ? '' : {
                 id: 123,
@@ -281,19 +290,19 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         );
         if (raises) {
           const e = await capture(() => runTest({
-            heal, qs, body, stripHeaders
+            heal, qs, body, stripHeaders, method
           }));
           expect(e.message).to.match(/^Nock: No match for request/);
         } else {
           await runTest({
-            heal, qs, body, stripHeaders
+            heal, qs, body, stripHeaders, method
           });
         }
         const content = fs.smartRead(cassettePath);
         if (heals) {
           expect(content[0].body.payload).to.not.equal(null);
           expect(content[0].path).to.equal(`/?q=${qs[0]}`);
-          await runTest({ qs, body });
+          await runTest({ qs, body, method });
         } else {
           expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
@@ -311,6 +320,41 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
 
     it('Testing body healing', async () => {
       await runner('body');
+    });
+
+    it('Testing body healing with modifiers', async () => {
+      const cassette = {
+        ...makeCassetteEntry(1),
+        method: 'POST',
+        reqheaders: {
+          accept: 'application/json, text/plain, */*',
+          'content-type': 'application/json',
+          'user-agent': 'axios/1.6.7',
+          'content-length': '^\\d+$',
+          'accept-encoding': 'gzip, compress, deflate, br'
+        },
+        body: {
+          'data|JSON.stringify': { a: 1 },
+          'other|JSON.stringify': { a: 1 }
+        }
+      };
+      await runner('body', {
+        raises: false,
+        heals: true,
+        body: {
+          data: '{"a":1}',
+          other: '{"a":2}'
+        },
+        method: 'POST',
+        qs: [1],
+        cassetteContent: [cassette]
+      });
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      const content = fs.smartRead(cassettePath);
+      expect(content[0].body).to.deep.equal({
+        'data|JSON.stringify': { a: 1 },
+        other: '{"a":2}'
+      });
     });
 
     it('Testing body healing with null body', async () => {
