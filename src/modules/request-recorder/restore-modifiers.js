@@ -28,7 +28,7 @@ const restorer = objectScan(['**.*|*'], {
   afterFn: ({ context }) => context.actual[0]
 });
 
-export default (original, expected, actual, field) => {
+export default (original, field, expected, actual) => {
   const context = {
     expected: [{ [field]: expected }],
     actual: [{ [field]: cloneDeep(actual) }],
