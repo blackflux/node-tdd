@@ -28,10 +28,13 @@ const healer = objectScan(['**.*|*'], {
   afterFn: ({ context }) => context.actual[0]
 });
 
-export default (original, expected, actual) => healer(
-  original,
-  {
-    expected: [expected],
-    actual: [cloneDeep(actual)]
-  }
-);
+export default (original, expected, actual, field) => {
+  // eslint-disable-next-line no-param-reassign
+  original[field] = healer(
+    original[field],
+    {
+      expected: [expected],
+      actual: [cloneDeep(actual)]
+    }
+  );
+};

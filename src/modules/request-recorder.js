@@ -179,11 +179,7 @@ export default (opts) => {
               if (anyFlagPresent(['magic', 'body'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 const requestBody = nullAsString(tryParseJson(body));
-                pendingMocks[idx].record.body = healModifiers(
-                  pendingMocks[idx].record.body,
-                  scope.body,
-                  requestBody
-                );
+                healModifiers(pendingMocks[idx].record, scope.body, requestBody, 'body');
                 return scope.body;
               }
               return body;
@@ -245,11 +241,7 @@ export default (opts) => {
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
                 ));
-                pendingMocks[idx].record.response = healModifiers(
-                  pendingMocks[idx].record.response,
-                  interceptorBody,
-                  responseBody
-                );
+                healModifiers(pendingMocks[idx].record, interceptorBody, responseBody, 'response');
                 // eslint-disable-next-line no-param-reassign
                 interceptor.body = responseBody;
               }
