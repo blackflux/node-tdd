@@ -1,16 +1,16 @@
 import objectScan from 'object-scan';
 import cloneDeep from 'lodash.clonedeep';
 
-const healer = objectScan(['**.*|*'], {
+const restorer = objectScan(['**.*|*'], {
   breakFn: ({
     isMatch, depth, property, context
   }) => {
-    if (property === undefined) {
+    if (depth === 0) {
       return false;
     }
     context.expected[depth] = context.expected[depth - 1]?.[property];
     context.actual[depth] = context.actual[depth - 1]?.[property];
-    return isMatch;
+    return isMatch || (depth === 1 && property !== context.field);
   },
   filterFn: ({
     context, depth, property, value
@@ -28,10 +28,12 @@ const healer = objectScan(['**.*|*'], {
   afterFn: ({ context }) => context.actual[0]
 });
 
-export default (original, expected, actual) => healer(
-  original,
-  {
-    expected: [expected],
-    actual: [cloneDeep(actual)]
-  }
-);
+export default (original, field, expected, actual) => {
+  const context = {
+    expected: [{ [field]: expected }],
+    actual: [{ [field]: cloneDeep(actual) }],
+    field
+  };
+  const restored = restorer(original, context);
+  Object.assign(original, restored);
+};
