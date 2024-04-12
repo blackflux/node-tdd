@@ -234,16 +234,16 @@ export default (opts) => {
               }
 
               if (anyFlagPresent(['magic', 'response'])) {
-                const interceptorBody = tryParseJson(interceptor.body);
                 const responseBody = tryParseJson([
                   healSqs
                 ].reduce(
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
                 ));
-                updateAndRestoreModifiers(pendingMocks[idx].record, 'response', interceptorBody, responseBody);
+                const interceptorBody = tryParseJson(interceptor.body);
                 // eslint-disable-next-line no-param-reassign
                 interceptor.body = responseBody;
+                updateAndRestoreModifiers(pendingMocks[idx].record, 'response', interceptorBody, responseBody);
               }
 
               expectedCassette.push(pendingMocks[idx].record);
