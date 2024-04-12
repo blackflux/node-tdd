@@ -6,7 +6,6 @@ import Joi from 'joi-strict';
 import nock from 'nock';
 import get from 'lodash.get';
 import cloneDeep from 'lodash.clonedeep';
-import isEqual from 'lodash.isequal';
 import nockCommon from 'nock/lib/common.js';
 import compareUrls from '../util/compare-urls.js';
 import nockListener from './request-recorder/nock-listener.js';
@@ -22,7 +21,7 @@ import {
   convertHeaders,
   rewriteHeaders
 } from './request-recorder/util.js';
-import healBody from './request-recorder/heal-body.js';
+import updateAndRestoreModifiers from './request-recorder/update-and-restore-modifiers.js';
 
 const nockBack = nock.back;
 const nockRecorder = nock.recorder;
@@ -180,9 +179,7 @@ export default (opts) => {
               if (anyFlagPresent(['magic', 'body'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 const requestBody = nullAsString(tryParseJson(body));
-                if (!isEqual(scope.body, requestBody)) {
-                  pendingMocks[idx].record.body = healBody(pendingMocks[idx].record.body, scope.body, requestBody);
-                }
+                updateAndRestoreModifiers(pendingMocks[idx].record, 'body', scope.body, requestBody);
                 return scope.body;
               }
               return body;
@@ -237,17 +234,16 @@ export default (opts) => {
               }
 
               if (anyFlagPresent(['magic', 'response'])) {
+                const interceptorBody = tryParseJson(interceptor.body);
                 const responseBody = tryParseJson([
                   healSqs
                 ].reduce(
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
                 ));
-                if (!isEqual(interceptor.body, responseBody)) {
-                  // eslint-disable-next-line no-param-reassign
-                  interceptor.body = responseBody;
-                  pendingMocks[idx].record.response = responseBody;
-                }
+                updateAndRestoreModifiers(pendingMocks[idx].record, 'response', interceptorBody, responseBody);
+                // eslint-disable-next-line no-param-reassign
+                interceptor.body = responseBody;
               }
 
               expectedCassette.push(pendingMocks[idx].record);
