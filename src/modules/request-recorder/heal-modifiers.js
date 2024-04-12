@@ -5,7 +5,7 @@ const healer = objectScan(['**.*|*'], {
   breakFn: ({
     isMatch, depth, property, context
   }) => {
-    if (property === undefined) {
+    if (depth === 0) {
       return false;
     }
     context.expected[depth] = context.expected[depth - 1]?.[property];
