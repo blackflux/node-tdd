@@ -1,7 +1,7 @@
 import objectScan from 'object-scan';
 import cloneDeep from 'lodash.clonedeep';
 
-const healer = objectScan(['**.*|*'], {
+const restorer = objectScan(['**.*|*'], {
   breakFn: ({
     isMatch, depth, property, context
   }) => {
@@ -10,7 +10,7 @@ const healer = objectScan(['**.*|*'], {
     }
     context.expected[depth] = context.expected[depth - 1]?.[property];
     context.actual[depth] = context.actual[depth - 1]?.[property];
-    return isMatch;
+    return isMatch || (depth === 1 && property !== context.field);
   },
   filterFn: ({
     context, depth, property, value
@@ -29,12 +29,11 @@ const healer = objectScan(['**.*|*'], {
 });
 
 export default (original, expected, actual, field) => {
-  // eslint-disable-next-line no-param-reassign
-  original[field] = healer(
-    original[field],
-    {
-      expected: [expected],
-      actual: [cloneDeep(actual)]
-    }
-  );
+  const context = {
+    expected: [{ [field]: expected }],
+    actual: [{ [field]: cloneDeep(actual) }],
+    field
+  };
+  const restored = restorer(original, context);
+  Object.assign(original, restored);
 };

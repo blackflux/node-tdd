@@ -21,7 +21,7 @@ import {
   convertHeaders,
   rewriteHeaders
 } from './request-recorder/util.js';
-import healModifiers from './request-recorder/heal-modifiers.js';
+import restoreModifiers from './request-recorder/restore-modifiers.js';
 
 const nockBack = nock.back;
 const nockRecorder = nock.recorder;
@@ -179,7 +179,7 @@ export default (opts) => {
               if (anyFlagPresent(['magic', 'body'])) {
                 const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 const requestBody = nullAsString(tryParseJson(body));
-                healModifiers(pendingMocks[idx].record, scope.body, requestBody, 'body');
+                restoreModifiers(pendingMocks[idx].record, scope.body, requestBody, 'body');
                 return scope.body;
               }
               return body;
@@ -241,7 +241,7 @@ export default (opts) => {
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
                 ));
-                healModifiers(pendingMocks[idx].record, interceptorBody, responseBody, 'response');
+                restoreModifiers(pendingMocks[idx].record, interceptorBody, responseBody, 'response');
                 // eslint-disable-next-line no-param-reassign
                 interceptor.body = responseBody;
               }
