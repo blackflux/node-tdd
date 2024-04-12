@@ -237,13 +237,14 @@ export default (opts) => {
               }
 
               if (anyFlagPresent(['magic', 'response'])) {
+                const interceptorBody = tryParseJson(interceptor.body);
                 const responseBody = tryParseJson([
                   healSqs
                 ].reduce(
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body
                 ));
-                if (!isEqual(interceptor.body, responseBody)) {
+                if (!isEqual(interceptorBody, responseBody)) {
                   // eslint-disable-next-line no-param-reassign
                   interceptor.body = responseBody;
                   pendingMocks[idx].record.response = responseBody;
