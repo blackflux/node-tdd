@@ -15,7 +15,7 @@ const getFns = (obj) => {
       const value = LRU.prototype[key];
       assert(typeof value === 'function');
       result.push({ obj, key, value });
-    } catch (e) { /* ignored */ }
+    } catch { /* ignored */ }
   }
   return result;
 };
