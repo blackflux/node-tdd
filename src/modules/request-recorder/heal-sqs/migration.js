@@ -8,7 +8,7 @@ const tryParseXML = (body) => {
     xml2js.parseString(body, (err, result) => {
       parsed = JSON.parse(JSON.stringify(result));
     });
-  } catch (e) {
+  } catch {
     return null;
   }
   return parsed;

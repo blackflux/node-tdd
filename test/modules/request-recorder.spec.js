@@ -255,7 +255,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
           'accept-encoding': 'gzip, compress, deflate, br',
-          'user-agent': 'axios/1.6.7',
+          'user-agent': 'axios/1.7.9',
           'content-length': '59'
         },
         response: { data: `${id}` },
@@ -329,7 +329,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
-          'user-agent': 'axios/1.6.7',
+          'user-agent': 'axios/1.7.9',
           'content-length': '^\\d+$',
           'accept-encoding': 'gzip, compress, deflate, br'
         },
@@ -475,7 +475,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             host: server.host,
             'content-length': '59',
             'accept-encoding': 'gzip, compress, deflate, br',
-            'user-agent': 'axios/1.6.7'
+            'user-agent': 'axios/1.7.9'
           }
         }),
         makeCassetteEntry(3)
@@ -505,7 +505,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             host: server.host,
             'content-length': '59',
             'accept-encoding': 'gzip, compress, deflate, br',
-            'user-agent': 'axios/1.6.7'
+            'user-agent': 'axios/1.7.9'
           }
         }),
         makeCassetteEntry(3)
@@ -527,7 +527,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           accept: 'application/json, text/plain, */*',
           host: server.host,
           'accept-encoding': 'gzip, compress, deflate, br',
-          'user-agent': 'axios/1.6.7'
+          'user-agent': 'axios/1.7.9'
         },
         response: {},
         responseIsBinary: false,
@@ -578,7 +578,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, compress, deflate, br',
-          host: `${server2.host} @ axios/1.6.7`,
+          host: `${server2.host} @ axios/1.7.9`,
           'user-agent': '^axios/.*$'
         },
         response: {
@@ -642,7 +642,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, compress, deflate, br',
-          'user-agent': 'axios/1.6.7'
+          'user-agent': 'axios/1.7.9'
         },
         response: {},
         responseIsBinary: false,
