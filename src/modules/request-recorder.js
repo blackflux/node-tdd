@@ -235,7 +235,8 @@ export default (opts) => {
 
               if (anyFlagPresent(['magic', 'response'])) {
                 const responseBody = tryParseJson([
-                  healSqs
+                  healSqs,
+                  (_, b) => (b instanceof Buffer ? b.toString('hex') : b)
                 ].reduce(
                   (respBody, fn) => fn(requestBodyString, respBody, scope, req),
                   interceptor.body

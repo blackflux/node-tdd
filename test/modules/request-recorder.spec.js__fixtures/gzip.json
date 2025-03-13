@@ -1,0 +1,25 @@
+[
+  {
+    "scope": "https://test.com:443",
+    "method": "POST",
+    "path": "/",
+    "body": "DATA",
+    "status": 200,
+    "reqheaders": {
+      "accept": "application/json, text/plain, */*",
+      "content-length": "4",
+      "content-type": "application/x-www-form-urlencoded",
+      "host": "test.com",
+      "accept-encoding": "gzip, compress, deflate, br",
+      "user-agent": "axios/1.7.9"
+    },
+    "responseIsBinary": true,
+    "rawHeaders": [
+      "Content-Encoding",
+      "gzip",
+      "Content-Type",
+      "application/json"
+    ],
+    "response": "1f8b08000000000002035d93d96e83301045ffc57d459597197b9c5fa92a64c0595412249a449522febdb6c33209bc202f67eedc3b3c443bf4c3f82b765f0f31c64eece4a7f7563aaac431fe899df8d8c7f436a2124d7f8b659fc028a8c4618cf1b25d98aa95401e94da0811baa60d8ce0bc56e81881904803233892c6eb95d03a6f9c670470808a01d059708a01701639033c7a49c40068f2c30909202d2340d1b4121c5a422ec180979a0120790086018c324ee30a4089122207c85c81119e17a6ef4a847b1cc321d6fded7cba844bfbec39f98cc9d56e288bd77a89ee21eea7664c2bf97389208b515b04521b2d5971a5113cab5d4ae35489f3ed1abbba3f1d8e1ce75e67a26d1a1f782f96b4416ea7cbfc05c740cbc11914229135dc14ca07782e25a8449a7bacbb30fe30a029c9af402b3569f5d2681a46eeb24a415a0e7cef957c1ebecd3a6cf70d1f1d9786d772ef48296737efde044229b8090c4086ff4e3ac7ceadd3c5a2699afe01f4f916539d030000"
+  }
+]

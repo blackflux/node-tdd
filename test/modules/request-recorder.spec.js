@@ -672,5 +672,16 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       }), { heal: 'magic' });
       expect(expectedCassette).to.deep.equal([{ ...fixture('post')[0], body: 'NEW' }]);
     });
+
+    it('Testing hex response not changed', async ({ fixture }) => {
+      const cassettePath = path.join(tmpDir, cassetteFile);
+      fs.smartWrite(cassettePath, fixture('gzip'));
+      const { expectedCassette } = await nockRecord(() => axios({
+        method: 'POST',
+        url: 'https://test.com/',
+        data: 'DATA'
+      }), { heal: 'response' });
+      expect(expectedCassette).to.deep.equal([{ ...fixture('gzip')[0] }]);
+    });
   });
 });
