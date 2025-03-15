@@ -32,6 +32,13 @@
       "327",
       "Connection",
       "close"
-    ]
+    ],
+    "reqheaders": {
+      "accept": "application/json, text/plain, */*",
+      "accept-encoding": "gzip, compress, deflate, br",
+      "connection": "close",
+      "host": "ip-api.com",
+      "user-agent": "axios/1.7.9"
+    }
   }
 ]

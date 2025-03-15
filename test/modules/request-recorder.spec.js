@@ -2,7 +2,7 @@ import path from 'path';
 import https from 'https';
 import fs from 'smart-fs';
 import get from 'lodash.get';
-import axios from 'axios';
+import axios from '@blackflux/axios';
 import { expect } from 'chai';
 import { describe } from '../../src/index.js';
 import { NockRecord, spawnServer } from '../server.js';
@@ -38,14 +38,14 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     stripHeaders = undefined,
     strict = undefined,
     heal = undefined,
-    method = 'GET'
+    method = 'POST'
   } = {}) => nockRecord(
     async () => {
       for (let idx = 0; idx < qs.length; idx += 1) {
         // eslint-disable-next-line no-await-in-loop
         const { data } = await axios({
           url: `${server.uri}?q=${qs[idx]}`,
-          data: body,
+          ...(method === 'GET' ? {} : { data: body }),
           responseType: 'json',
           method
         });
@@ -89,10 +89,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     expect(cassette.length).to.equal(2);
     expect(cassette).to.deep.equal(records);
     expect(outOfOrderErrors).to.deep.equal([
-      `GET ${server.uri}/?q=2`
+      `POST ${server.uri}/?q=2`
     ]);
     expect(unmatchedRecordings).to.deep.equal([
-      `GET ${server.uri}/?q=1`
+      `POST ${server.uri}/?q=1`
     ]);
     expect(expectedCassette.map((e) => e.path)).to.deep.equal(['/?q=2']);
     expect(cassetteFilePath).to.equal(path.join(tmpDir, cassetteFile));
@@ -102,13 +102,13 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     it('Testing incorrect recording ordering error', async ({ capture }) => {
       await runTest({ qs: [1, 2] });
       const e = await capture(() => runTest({ strict: true, qs: [2, 1] }));
-      expect(e.message).to.equal(`Out of Order Recordings: GET ${server.uri}/?q=2`);
+      expect(e.message).to.equal(`Out of Order Recordings: POST ${server.uri}/?q=2`);
     });
 
     it('Testing unmatched recording error', async ({ capture }) => {
       await runTest({ qs: [1, 2] });
       const e = await capture(() => runTest({ strict: true, qs: [1] }));
-      expect(e.message).to.equal(`Unmatched Recordings: GET ${server.uri}/?q=2`);
+      expect(e.message).to.equal(`Unmatched Recordings: POST ${server.uri}/?q=2`);
     });
   });
 
@@ -145,6 +145,9 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           method: 'POST',
           url: server.uri,
           data: body,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
           responseType: json === true ? 'json' : undefined
         });
         expect(data).to.deep.equal(response);
@@ -247,7 +250,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     beforeEach(({ capture }) => {
       makeCassetteEntry = (id) => ({
         scope: server.uri,
-        method: 'GET',
+        method: 'POST',
         path: `/?q=${id}`,
         body: { id: 123, payload: '15543754-fe97-43b5-9b49-7ddcc6cc60c6' },
         status: 200,
@@ -255,6 +258,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
           'accept-encoding': 'gzip, compress, deflate, br',
+          connection: 'close',
           'user-agent': 'axios/1.7.9',
           'content-length': '59'
         },
@@ -262,7 +266,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         responseIsBinary: false
       });
       runner = async (heal, {
-        method = 'GET',
+        method = 'POST',
         qs = [1],
         body = undefined,
         raises = false,
@@ -276,7 +280,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           cassetteContent === null
             ? [{
               scope: server.uri,
-              method: 'GET',
+              method: 'POST',
               path: '/?q=1',
               body: method === 'GET' ? '' : {
                 id: 123,
@@ -292,7 +296,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           const e = await capture(() => runTest({
             heal, qs, body, stripHeaders, method
           }));
-          expect(e.message).to.match(/^Nock: No match for request/);
+          expect(e.code).to.equal('ERR_NOCK_NO_MATCH');
         } else {
           await runTest({
             heal, qs, body, stripHeaders, method
@@ -307,7 +311,10 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           expect(get(content, [0, 'body', 'payload'], null)).to.equal(null);
         }
       };
-      mkRequest = async () => axios(server.uri);
+      mkRequest = async () => axios({
+        method: 'POST',
+        url: server.uri
+      });
     });
 
     it('Testing without healing', async () => {
@@ -367,7 +374,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         cassetteContent: [
           {
             scope: server.uri,
-            method: 'GET',
+            method: 'POST',
             path: '/?q=1',
             status: 200,
             reqheaders: {},
@@ -384,7 +391,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         cassetteContent: [
           {
             scope: server.uri,
-            method: 'GET',
+            method: 'POST',
             path: '/?q=1',
             status: 200,
             reqheaders: {},
@@ -397,7 +404,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     });
 
     it('Testing body healing with mismatched request method', async () => {
-      await runner('body', { raises: true, heals: false, method: 'POST' });
+      await runner('body', { raises: true, heals: false, method: 'PATCH' });
     });
 
     it('Testing body healing with mismatched request path', async () => {
@@ -433,6 +440,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'accept-encoding': 'gzip, compress, deflate, br',
+            connection: 'close',
             'content-length': '59',
             'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
           }
@@ -445,7 +453,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
     });
 
     it('Testing prune', async () => {
-      await runner('prune,record', { qs: [1], raises: true });
+      await runner('prune,record', { method: 'GET', qs: [1], raises: true });
     });
 
     it('Testing record (with headers)', async () => {
@@ -475,6 +483,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             host: server.host,
             'content-length': '59',
             'accept-encoding': 'gzip, compress, deflate, br',
+            connection: 'close',
             'user-agent': 'axios/1.7.9'
           }
         }),
@@ -505,6 +514,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             host: server.host,
             'content-length': '59',
             'accept-encoding': 'gzip, compress, deflate, br',
+            connection: 'close',
             'user-agent': 'axios/1.7.9'
           }
         }),
@@ -521,13 +531,16 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([{
         body: '',
-        method: 'GET',
+        method: 'POST',
         path: '/',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           host: server.host,
           'accept-encoding': 'gzip, compress, deflate, br',
-          'user-agent': 'axios/1.7.9'
+          connection: 'close',
+          'content-type': 'application/json',
+          'user-agent': 'axios/1.7.9',
+          'transfer-encoding': 'chunked'
         },
         response: {},
         responseIsBinary: false,
@@ -558,7 +571,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         rejectUnauthorized: false
       });
       await capture(() => nockRecord(() => axios({
-        method: 'GET',
+        method: 'POST',
         url: `${server2.uri}/?q=1`,
         httpsAgent: agentHTTPS
       }), {
@@ -573,19 +586,22 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([{
         body: '',
-        method: 'GET',
+        method: 'POST',
         path: '/?q=1',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, compress, deflate, br',
+          connection: 'close',
+          'content-type': 'application/json',
           host: `${server2.host} @ axios/1.7.9`,
+          'transfer-encoding': 'chunked',
           'user-agent': '^axios/.*$'
         },
         response: {
           data: '1'
         },
         responseIsBinary: false,
-        scope: server2.uri.replace('https', 'http'),
+        scope: server2.uri,
         status: 200
       }]);
     });
@@ -600,12 +616,14 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         heal: 'stub',
         qs: [1, 2, 3]
       }));
-      expect(e.message).to.match(/^Nock: No match for request/);
+      expect(e.code).to.equal('ERR_NOCK_NO_MATCH');
 
       const cassetteContent = fs.smartRead(cassettePath);
+      const stubCassette = Object.assign(makeCassetteEntry(2), { response: {} });
+      delete stubCassette.reqheaders.connection;
       expect(cassetteContent).to.deep.equal([
         makeCassetteEntry(1),
-        Object.assign(makeCassetteEntry(2), { response: {} }),
+        stubCassette,
         makeCassetteEntry(3)
       ]);
     });
@@ -637,11 +655,13 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
 
       const cassetteContent = fs.smartRead(cassettePath);
       expect(cassetteContent).to.deep.equal([{
-        method: 'GET',
+        method: 'POST',
+        body: '',
         path: '/',
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, compress, deflate, br',
+          'content-type': 'application/json',
           'user-agent': 'axios/1.7.9'
         },
         response: {},
@@ -679,6 +699,9 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       const { expectedCassette } = await nockRecord(() => axios({
         method: 'POST',
         url: 'https://test.com/',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
         data: 'DATA'
       }), { heal: 'response' });
       expect(expectedCassette).to.deep.equal([{ ...fixture('gzip')[0] }]);

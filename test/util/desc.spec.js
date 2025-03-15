@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import assert from 'assert';
 import os from 'os';
 import path from 'path';
-import axios from 'axios';
+import axios from '@blackflux/axios';
 import fancyLog from 'fancy-log';
 import { expect } from 'chai';
 import LRU from 'lru-cache-ext';
