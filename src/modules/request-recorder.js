@@ -1,5 +1,6 @@
 import assert from 'assert';
 import http from 'http';
+import https from 'https';
 import path from 'path';
 import fs from 'smart-fs';
 import Joi from 'joi-strict';
@@ -18,7 +19,6 @@ import {
   buildKey,
   tryParseJson,
   nullAsString,
-  convertHeaders,
   rewriteHeaders
 } from './request-recorder/util.js';
 import updateAndRestoreModifiers from './request-recorder/update-and-restore-modifiers.js';
@@ -117,7 +117,7 @@ export default (opts) => {
             });
             await new Promise((resolve) => {
               options.protocol = `${protocol}:`;
-              const r = { http, https: http }[protocol].request(options, (response) => {
+              const r = { http, https }[protocol].request(options, (response) => {
                 response.on('data', () => {});
                 response.on('end', resolve);
               });
@@ -129,7 +129,7 @@ export default (opts) => {
             const recorded = nockRecorder.play();
             nockRecorder.clear();
             return recorded.map((record) => Object.assign(record, {
-              headers: opts.stripHeaders === true ? undefined : convertHeaders(record.rawHeaders),
+              headers: opts.stripHeaders === true ? undefined : rewriteHeaders(record.rawHeaders),
               rawHeaders: undefined,
               reqheaders: rewriteHeaders(record.reqheaders, overwriteHeaders)
             }));
