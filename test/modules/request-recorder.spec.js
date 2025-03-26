@@ -706,5 +706,19 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       }), { heal: 'response' });
       expect(expectedCassette).to.deep.equal([{ ...fixture('gzip')[0] }]);
     });
+
+    // todo: make sure this doesn't throw
+    //  -> https://github.com/nock/nock/issues/2826
+    // it('Testing recording get with body throws', async ({ capture }) => {
+    //   const err = await capture(() => nockRecord(async () => {
+    //     await axios({
+    //       url: server.uri,
+    //       responseType: 'json',
+    //       data: {}, // <- this body is causing the problem
+    //       method: 'GET'
+    //     });
+    //   }, { heal: 'record' }));
+    //   expect(err.message).to.equal('123123123123');
+    // });
   });
 });
