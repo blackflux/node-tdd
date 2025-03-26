@@ -14,14 +14,14 @@ import nockMock from './request-recorder/nock-mock.js';
 import healSqs from './request-recorder/heal-sqs.js';
 import applyModifiers from './request-recorder/apply-modifiers.js';
 import requestInjector from './request-recorder/request-injector.js';
-
+import updateAndRestoreModifiers from './request-recorder/update-and-restore-modifiers.js';
+import healResponseHeaders from './request-recorder/heal-response-headers.js';
 import {
   buildKey,
   tryParseJson,
   nullAsString,
   rewriteHeaders
 } from './request-recorder/util.js';
-import updateAndRestoreModifiers from './request-recorder/update-and-restore-modifiers.js';
 
 const nockBack = nock.back;
 const nockRecorder = nock.recorder;
@@ -231,6 +231,16 @@ export default (opts) => {
                   ...rewriteHeaders(pendingMocks[idx].record.reqheaders)
                 };
                 pendingMocks[idx].record.reqheaders = rewriteHeaders(reqheaders, overwriteHeaders);
+
+                // heal response headers
+                const newHeaders = healResponseHeaders(interceptor);
+                if (newHeaders.length === 0) {
+                  delete pendingMocks[idx].record.rawHeaders;
+                } else {
+                  pendingMocks[idx].record.rawHeaders = newHeaders;
+                }
+                // eslint-disable-next-line no-param-reassign
+                interceptor.rawHeaders = newHeaders; // ensure response handled correctly
               }
 
               if (anyFlagPresent(['magic', 'response'])) {
