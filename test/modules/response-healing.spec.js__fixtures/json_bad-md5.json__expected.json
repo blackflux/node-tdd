@@ -45,6 +45,10 @@
       "x-amz-user-agent": "^aws-sdk-js/[0-9]+.[0-9]+.[0-9]+$",
       "x-amzn-query-mode": "true",
       "connection": "close"
-    }
+    },
+    "rawHeaders": [
+      "Content-Type",
+      "application/json"
+    ]
   }
 ]
