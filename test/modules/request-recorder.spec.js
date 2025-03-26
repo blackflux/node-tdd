@@ -426,7 +426,11 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             reqheaders: {
               'content-type': 'other/type',
               'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
-            }
+            },
+            rawHeaders: [
+              'content-length',
+              '777'
+            ]
           }
         ]
       });
@@ -443,7 +447,13 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             connection: 'close',
             'content-length': '59',
             'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
-          }
+          },
+          rawHeaders: [
+            'content-length',
+            '12',
+            'Content-Type',
+            'application/json'
+          ]
         })
       ]);
     });
@@ -703,8 +713,24 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           'content-type': 'application/x-www-form-urlencoded'
         },
         data: 'DATA'
-      }), { heal: 'response' });
-      expect(expectedCassette).to.deep.equal([{ ...fixture('gzip')[0] }]);
+      }), { heal: 'response,headers' });
+      const expected = [{ ...fixture('gzip')[0] }];
+      expected[0].rawHeaders[5] = '373'; // response header got healed
+      expect(expectedCassette).to.deep.equal(expected);
     });
+
+    // todo: make sure this doesn't throw
+    //  -> https://github.com/nock/nock/issues/2826
+    // it('Testing recording get with body throws', async ({ capture }) => {
+    //   const err = await capture(() => nockRecord(async () => {
+    //     await axios({
+    //       url: server.uri,
+    //       responseType: 'json',
+    //       data: {}, // <- this body is causing the problem
+    //       method: 'GET'
+    //     });
+    //   }, { heal: 'record' }));
+    //   expect(err.message).to.equal('123123123123');
+    // });
   });
 });
