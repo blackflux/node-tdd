@@ -176,10 +176,14 @@ export default (opts) => {
             );
             // eslint-disable-next-line no-param-reassign
             scope.filteringRequestBody = (body) => {
+              const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
+              const record = pendingMocks[idx].record;
+              if (record?.body === null) {
+                return scope.body;
+              }
               if (anyFlagPresent(['magic', 'body'])) {
-                const idx = pendingMocks.findIndex((m) => m.idx === scopeIdx);
                 const requestBody = nullAsString(tryParseJson(body));
-                updateAndRestoreModifiers(pendingMocks[idx].record, 'body', scope.body, requestBody);
+                updateAndRestoreModifiers(record, 'body', scope.body, requestBody);
                 return scope.body;
               }
               return body;

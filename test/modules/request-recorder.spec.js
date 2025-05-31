@@ -304,7 +304,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         }
         const content = fs.smartRead(cassettePath);
         if (heals) {
-          expect(content[0].body.payload).to.not.equal(null);
+          expect(content[0].body?.payload).to.not.equal(null);
           expect(content[0].path).to.equal(`/?q=${qs[0]}`);
           await runTest({ qs, body, method });
         } else {
@@ -401,6 +401,23 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         ]
       }));
       expect(err.message).to.deep.equal('Recording body mismatch');
+    });
+
+    it('Testing cassette body null matches all', async () => {
+      await runner(false, {
+        cassetteContent: [
+          {
+            scope: server.uri,
+            method: 'POST',
+            path: '/?q=1',
+            status: 200,
+            body: null,
+            reqheaders: {},
+            response: { data: '1' },
+            responseIsBinary: false
+          }
+        ]
+      });
     });
 
     it('Testing body healing with mismatched request method', async () => {
