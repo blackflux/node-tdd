@@ -719,18 +719,37 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       expect(expectedCassette).to.deep.equal(expected);
     });
 
-    // todo: make sure this doesn't throw
-    //  -> https://github.com/nock/nock/issues/2826
-    // it('Testing recording get with body throws', async ({ capture }) => {
-    //   const err = await capture(() => nockRecord(async () => {
-    //     await axios({
-    //       url: server.uri,
-    //       responseType: 'json',
-    //       data: {}, // <- this body is causing the problem
-    //       method: 'GET'
-    //     });
-    //   }, { heal: 'record' }));
-    //   expect(err.message).to.equal('123123123123');
-    // });
+    // https://github.com/nock/nock/issues/2826
+    it('Testing recording get with body', async () => {
+      const { cassetteFilePath } = await nockRecord(async () => {
+        const { data } = await axios({
+          url: `${server.uri}?q=x`,
+          responseType: 'json',
+          data: {}, // <- this body is causing the problem
+          method: 'GET'
+        });
+        expect(data).to.deep.equal({ data: 'x' });
+      }, { heal: false });
+      const cassette = fs.smartRead(cassetteFilePath);
+      expect(cassette).to.deep.equal([
+        {
+          scope: server.uri,
+          method: 'GET',
+          path: '/?q=x',
+          rawHeaders: {
+            connection: 'close',
+            date: 'Thu, 01 Jan 1970 00:00:00 GMT',
+            'transfer-encoding': 'chunked'
+          },
+          body: '',
+          status: 200,
+          reqheaders: {},
+          response: {
+            data: 'x'
+          },
+          responseIsBinary: false
+        }
+      ]);
+    });
   });
 });
