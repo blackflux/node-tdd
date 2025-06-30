@@ -258,7 +258,6 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
           'accept-encoding': 'gzip, compress, deflate, br',
-          connection: 'close',
           'user-agent': 'axios/1.7.9',
           'content-length': '59'
         },
@@ -461,7 +460,6 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             'content-type': 'application/json',
             host: server.host,
             'accept-encoding': 'gzip, compress, deflate, br',
-            connection: 'close',
             'content-length': '59',
             'user-agent': '^axios/\\d+\\.\\d+\\.\\d+$'
           },
@@ -500,9 +498,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         makeCassetteEntry(1),
         Object.assign(makeCassetteEntry(2), {
           headers: {
-            ...cassetteContent[1].headers,
-            date: 'Thu, 01 Jan 1970 00:00:00 GMT',
-            'transfer-encoding': 'chunked'
+            ...cassetteContent[1].headers
           },
           reqheaders: {
             accept: 'application/json, text/plain, */*',
@@ -510,7 +506,6 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             host: server.host,
             'content-length': '59',
             'accept-encoding': 'gzip, compress, deflate, br',
-            connection: 'close',
             'user-agent': 'axios/1.7.9'
           }
         }),
@@ -541,7 +536,6 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
             host: server.host,
             'content-length': '59',
             'accept-encoding': 'gzip, compress, deflate, br',
-            connection: 'close',
             'user-agent': 'axios/1.7.9'
           }
         }),
@@ -564,10 +558,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           accept: 'application/json, text/plain, */*',
           host: server.host,
           'accept-encoding': 'gzip, compress, deflate, br',
-          connection: 'close',
           'content-type': 'application/json',
-          'user-agent': 'axios/1.7.9',
-          'transfer-encoding': 'chunked'
+          'user-agent': 'axios/1.7.9'
         },
         response: {},
         responseIsBinary: false,
@@ -618,10 +610,8 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
         reqheaders: {
           accept: 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, compress, deflate, br',
-          connection: 'close',
           'content-type': 'application/json',
           host: `${server2.host} @ axios/1.7.9`,
-          'transfer-encoding': 'chunked',
           'user-agent': '^axios/.*$'
         },
         response: {
@@ -754,11 +744,12 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
           method: 'GET',
           path: '/?q=x',
           rawHeaders: {
-            connection: 'close',
+            connection: 'keep-alive',
             date: 'Thu, 01 Jan 1970 00:00:00 GMT',
+            'keep-alive': 'timeout=5',
             'transfer-encoding': 'chunked'
           },
-          body: '',
+          body: {},
           status: 200,
           reqheaders: {},
           response: {
