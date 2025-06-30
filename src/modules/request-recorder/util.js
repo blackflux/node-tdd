@@ -13,6 +13,14 @@ export const tryParseJson = (value) => {
 
 export const nullAsString = (value) => (value === null ? 'null' : value);
 
+export const convertHeaders = (array) => {
+  const obj = {};
+  for (let idx = 0; idx < array.length; idx += 2) {
+    obj[array[idx].toLowerCase()] = array[idx + 1];
+  }
+  return obj;
+};
+
 export const rewriteHeaders = (headers, fn = (k, v) => v) => {
   if (headers === undefined) {
     return {};

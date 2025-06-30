@@ -20,7 +20,8 @@ import {
   buildKey,
   tryParseJson,
   nullAsString,
-  rewriteHeaders
+  rewriteHeaders,
+  convertHeaders
 } from './request-recorder/util.js';
 
 const nockBack = nock.back;
@@ -271,7 +272,7 @@ export default (opts) => {
           afterRecord: (recordings) => JSON.stringify(recordings.map((r) => ({
             ...r,
             body: tryParseJson(r.body),
-            rawHeaders: opts.stripHeaders === true ? undefined : r.rawHeaders,
+            rawHeaders: opts.stripHeaders === true ? undefined : convertHeaders(r.rawHeaders),
             reqheaders: rewriteHeaders(r.reqheaders, overwriteHeaders)
           })), null, 2)
         }, resolve);

@@ -11,7 +11,6 @@
       "content-type": "application/json",
       "host": "test.com",
       "accept-encoding": "gzip, compress, deflate, br",
-      "connection": "close",
       "user-agent": "axios/1.7.9"
     },
     "response": "ok"
