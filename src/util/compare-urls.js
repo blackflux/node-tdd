@@ -7,5 +7,8 @@ export default (firstUrl, secondUrl) => {
   const options = {
     removeTrailingSlash: false
   };
-  return normalizeUrl(firstUrl, options) === normalizeUrl(secondUrl, options);
+  return (
+    normalizeUrl(`https://test.com${firstUrl}`, options)
+    === normalizeUrl(`https://test.com${secondUrl}`, options)
+  );
 };
