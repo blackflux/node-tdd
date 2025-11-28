@@ -315,7 +315,10 @@ export default (opts) => {
       }
     },
     shutdown: () => {
-      const unexpectedFiles = fs.walkDir(opts.cassetteFolder).filter((f) => !knownCassetteNames.includes(f));
+      const unexpectedFiles = fs
+        .walkDir(opts.cassetteFolder)
+        .filter((f) => !knownCassetteNames.includes(f))
+        .filter((f) => !['.DS_Store'].includes(f));
       if (unexpectedFiles.length !== 0) {
         throw new Error(`Unexpected file(s) in cassette folder: ${unexpectedFiles.join(', ')}`);
       }
