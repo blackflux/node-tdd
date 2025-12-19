@@ -3,7 +3,7 @@ import { tryParseJson } from './util.js';
 import migration from './heal-sqs/migration.js';
 
 export default (requestBody, responseBody, scope, req) => {
-  if (scope?.basePath !== 'https://sqs.us-west-2.amazonaws.com:443') {
+  if (!/^https:\/\/sqs\.[\w-]+\.amazonaws\.com:443$/.test(scope?.basePath)) {
     return responseBody;
   }
 
