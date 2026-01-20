@@ -25,7 +25,7 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
   });
 
   beforeEach(async ({ dir }) => {
-    tmpDir = dir;
+    tmpDir = path.join(dir, 'cassettes');
     nockRecord = NockRecord(tmpDir, cassetteFile);
   });
 
@@ -109,6 +109,23 @@ describe('Testing RequestRecorder', { useTmpDir: true, timestamp: 0 }, () => {
       await runTest({ qs: [1, 2] });
       const e = await capture(() => runTest({ strict: true, qs: [1] }));
       expect(e.message).to.equal(`Unmatched Recordings: POST ${server.uri}/?q=2`);
+    });
+  });
+
+  describe('Testing env-vars', () => {
+    it('Testing recording env-vars are used', async () => {
+      const run = async () => {
+        let recorded = null;
+        await nockRecord(async () => { recorded = process.env.CUSTOM_ENV_VAR; }, {});
+        return recorded;
+      };
+      expect(await run()).to.deep.equal(undefined); // no env vars file
+      const uuid = crypto.randomUUID();
+      fs.smartWrite(path.join(tmpDir, '..', 'env-vars.yml'), { CUSTOM_ENV_VAR: uuid });
+      expect(await run()).to.deep.equal(undefined); // already has a cassette
+      fs.unlinkSync(path.join(tmpDir, cassetteFile)); // delete recording
+      expect(await run()).to.deep.equal(uuid); // no recording and env-vars file exist
+      expect(await run()).to.deep.equal(undefined); // already has a cassette
     });
   });
 
