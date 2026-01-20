@@ -172,11 +172,11 @@ Type: `string`<br>
 Default: `$FILENAME.env.recording.yml` (depends on `envVarsFile`)
 
 Used to customize the name of the file that environment variables are loaded from,
-if it exists, when `useNock` is true and no cassette file exists.
+if it exists, `useNock` is true and no cassette file exists.
 
-Environment variables are loaded after envVars and envVarsFile variables are loaded.
+Environment variables are loaded after `envVars` and `envVarsFile` variables are loaded.
 
-Environment variables will overwrite set ones.
+Defined environment variables will overwrite set ones.
 
 #### envVars
 
