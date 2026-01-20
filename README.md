@@ -166,6 +166,16 @@ Used to customize the name of the file that environment variables are loaded fro
 
 To allow overwriting of environment variables, prefix the name of the environment variable with `^`.
 
+#### envVarsFileRecording
+
+Type: `string`<br>
+Default: `$FILENAME.env.recording.yml` (depends on `envVarsFile`)
+
+Used to customize the name of the file that environment variables are loaded from,
+if it exists, when `useNock` is true and no cassette file exists.
+
+Defined environment variables will overwrite set ones.
+
 #### envVars
 
 Type: `object`<br>
