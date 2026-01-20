@@ -9,6 +9,7 @@ import get from 'lodash.get';
 import cloneDeep from 'lodash.clonedeep';
 import nockCommon from 'nock/lib/common.js';
 import compareUrls from '../util/compare-urls.js';
+import EnvManager from './env-manager.js';
 import nockListener from './request-recorder/nock-listener.js';
 import nockMock from './request-recorder/nock-mock.js';
 import healSqs from './request-recorder/heal-sqs.js';
@@ -35,6 +36,7 @@ export default (opts) => {
       Joi.string().case('lower'),
       Joi.alternatives(Joi.string(), Joi.function())
     ),
+    envVarsFileRecording: Joi.string().optional(),
     strict: Joi.boolean(),
     heal: Joi.alternatives(Joi.boolean(), Joi.string()),
     modifiers: Joi.object().pattern(
@@ -42,8 +44,9 @@ export default (opts) => {
       Joi.alternatives(Joi.function(), Joi.link('#modifiers'))
     )
   }), 'Invalid Options Provided');
-  let nockDone = null;
   let cassetteFilePath = null;
+  let envManagerFile = null;
+  let nockDone = null;
   const knownCassetteNames = [];
   const records = [];
   const outOfOrderErrors = [];
@@ -88,6 +91,11 @@ export default (opts) => {
             key: buildKey(e.interceptors[0]),
             record: cassetteContent[idx]
           })));
+      }
+
+      if (!hasCassette && typeof opts.envVarsFileRecording === 'string' && fs.existsSync(opts.envVarsFileRecording)) {
+        envManagerFile = EnvManager({ envVars: fs.smartRead(opts.envVarsFileRecording), allowOverwrite: true });
+        envManagerFile.apply();
       }
 
       nockBack.setMode(hasCassette ? 'lockdown' : 'record');
@@ -295,6 +303,11 @@ export default (opts) => {
       nockDone = null;
       nockListener.unsubscribeAll('no match');
       nockMock.unpatch();
+
+      if (envManagerFile !== null) {
+        envManagerFile.unapply();
+        envManagerFile = null;
+      }
 
       if (opts.heal !== false) {
         fs.smartWrite(
