@@ -45,6 +45,7 @@ export const NockRecord = (tmpDir, cassetteFile) => async (fn, {
     cassetteFolder: tmpDir,
     stripHeaders,
     reqHeaderOverwrite,
+    envVarsFileRecording: path.join(tmpDir, '..', 'env-vars.yml'),
     strict,
     heal,
     modifiers

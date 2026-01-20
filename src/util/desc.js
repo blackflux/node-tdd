@@ -38,9 +38,10 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       /* c8 ignore next */
       : filenameOrUrl
   );
-  const resolve = (name) => path.join(
-    path.dirname(testFile),
-    name.replace(/\$FILENAME/g, path.basename(testFile))
+  const resolve = (name) => (
+    name.startsWith('/')
+      ? name
+      : path.join(path.dirname(testFile), name.replace(/\$FILENAME/g, path.basename(testFile)))
   );
 
   Joi.assert(opts, Joi.object().keys({
@@ -53,6 +54,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
       .pattern(Joi.string(), Joi.alternatives(Joi.function(), Joi.string())),
     fixtureFolder: Joi.string().optional(),
     envVarsFile: Joi.string().optional(),
+    envVarsFileRecording: Joi.string().optional(),
     envVars: Joi.object().optional().unknown(true).pattern(Joi.string(), Joi.string()),
     clearCache: Joi.boolean().optional(),
     timestamp: Joi.alternatives(
@@ -76,6 +78,11 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
   const nockReqHeaderOverwrite = get(opts, 'nockReqHeaderOverwrite', {});
   const fixtureFolder = resolve(get(opts, 'fixtureFolder', '$FILENAME__fixtures'));
   const envVarsFile = resolve(get(opts, 'envVarsFile', '$FILENAME.env.yml'));
+  const envVarsFileRecording = resolve(get(
+    opts,
+    'envVarsFileRecording',
+    envVarsFile.replace(/(\.[^.]+)$/, '.recording$1')
+  ));
   const envVars = get(opts, 'envVars', null);
   const clearCache = get(opts, 'clearCache', true);
   const timestamp = get(opts, 'timestamp', null);
@@ -158,6 +165,7 @@ const desc = (suiteName, optsOrTests, testsOrNull = null) => {
               cassetteFolder: `${nockFolder}/`,
               stripHeaders: nockStripHeaders,
               reqHeaderOverwrite: nockReqHeaderOverwrite,
+              envVarsFileRecording,
               strict: true,
               heal: nockHeal,
               modifiers: nockModifiers
