@@ -256,7 +256,10 @@ export default (opts) => {
                 interceptor.rawHeaders = newHeaders; // ensure response handled correctly
               }
 
-              if (anyFlagPresent(['magic', 'response'])) {
+              if (
+                anyFlagPresent(['magic', 'response'])
+                && !Object.keys(pendingMocks[idx].record).some((k) => k.startsWith('response|'))
+              ) {
                 const responseBody = tryParseJson([
                   healSqs,
                   (_, b) => (b instanceof Buffer ? b.toString('hex') : b)
